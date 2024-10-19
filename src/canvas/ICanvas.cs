@@ -7,7 +7,7 @@ public interface ICanvas {
   void Rect(Vector2 start, Vector2 end, Vector4 col);
 
   // draw text onto the screen
-  void Text(Vector2 origin, string text);
+  void Text(Vector2 origin, string text, float scale);
 
   // tba: drawing images?
 
