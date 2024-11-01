@@ -1,10 +1,18 @@
+using digipet.canvas;
 using digipet.component;
+using digipet.input;
+using digipet.sprite.attrib;
 
 namespace digipet.framework;
 
-public class SingleSceneManager {
+public class SingleSceneManager : IEngine {
   private readonly Scene scene;
   private readonly ICanvas canvas;
+  private readonly IEngineBase base_engine;
+
+  public SingleSceneManager(IEngineBase b) => base_engine = b;
+
+  public void PushScene(Scene scene) { /* no op */ }
   public SingleSceneManager(Scene initScene, ICanvas canvas) {
     scene = initScene;
     this.canvas = canvas;
@@ -21,5 +29,17 @@ public class SingleSceneManager {
     scene.SceneTick(delta);
     scene.Draw(canvas);
     canvas.Flush();
+  }
+
+  public ISubCanvas CreateSubCanvas() {
+    return base_engine.CreateSubCanvas();
+  }
+
+  public ISpriteFetcher GetSpriteFetcher() {
+    return base_engine.GetSpriteFetcher();
+  }
+
+  public IInputManager GetInputManager() {
+    return base_engine.GetInputManager();
   }
 }

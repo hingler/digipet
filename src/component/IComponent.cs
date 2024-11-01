@@ -1,11 +1,15 @@
+using System.Numerics;
 using digipet.input;
 
 namespace digipet.component;
 
-public interface IComponent {
+public interface IDigiComponent {
+
   // called when input is received
   // (enum for input types)
-  void HandleInput(
+  // inputs bubble down call stack
+  // return true to consume, false to let bubble down
+  bool HandleInput(
     InputType input,
     InputState state
   );

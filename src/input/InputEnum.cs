@@ -10,8 +10,9 @@ public enum InputType {
 }
 
 public enum InputState {
+  // broadcast on init press
   PRESS,
+  // after short interval, broadcast as "hold" repeatedly
   HOLD,
   RELEASE
-
 }

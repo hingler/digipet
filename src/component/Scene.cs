@@ -1,17 +1,24 @@
 using System.Collections.Generic;
-using System.Reflection.Metadata;
+using digipet.framework;
 using digipet.input;
+using digipet.transition;
 
 namespace digipet.component;
 
-public abstract class Scene : IComponent {
+public abstract class Scene : IDigiComponent {
   private readonly IList<ViewComponent> stack = [];
-
   private bool init_flag;
+
+  private bool _finished;
+  public bool Finished {
+    get => _finished;
+  }
+
+  private readonly Queue<ITransition> transitions = new();
 
   // how do we want to "initialize" scenes?
 
-  public Scene() {
+  public Scene(IEngine engine) {
     init_flag = false;
   }
 
@@ -51,12 +58,18 @@ public abstract class Scene : IComponent {
     return stack.Count > 0 ? stack[stack.Count - 1] : null;
   }
 
-  public void HandleInput(
+  public void PreInput(
     InputType type,
     InputState state
   ) {
-    GetTopComponent()?.HandleInput(type, state);
+    bool consumed = HandleInput(type, state);
+    int cursor = stack.Count - 1;
+    while (!consumed && cursor >= 0) {
+      consumed = consumed || stack[cursor--].PreInput(type, state);
+    }
   }
+
+  public virtual bool HandleInput(InputType type, InputState state) => false;
 
   // called by the user to initialize this scene
   public abstract void InitScene();
@@ -75,30 +88,65 @@ public abstract class Scene : IComponent {
   public virtual void Tick(double delta) {}
   public virtual void Deactivate() {}
 
+  public void EnqueueTransition(ITransition transition) {
+    // should we be able to run multiple at once??
+    transitions.Enqueue(transition);
+  }
+
+  public void AdvanceTransition() {
+    if (transitions.TryPeek(out ITransition transition)) {
+      transition.Advance();
+    }
+  }
+
+  public bool TransitionComplete() {
+    // complete if empty, or if last transition is complete
+    return (
+      !transitions.TryPeek(out ITransition transition) 
+      || transition.Complete() && transitions.Count == 1
+    );
+  }
+
   // non-overridable method used to delegate activate to descendants
   public void PreActivate() {
     Activate();
     GetTopComponent()?.PreActivate();
   }
+
   public void SceneTick(double delta) {
-    // call scene tick first
+    while (transitions.TryPeek(out ITransition transition) && transition.Complete()) {
+      transitions.Dequeue();
+    }
+
+    if (transitions.Count > 0) {
+      transitions.Peek().Tick(delta);
+    }
+
     Tick(delta);
 
     // then call component tick
-    GetTopComponent()?.Tick(delta);
+    for (int i = 0; i < stack.Count; i++) {
+      stack[i].PreTick(delta);
+    }
+
     CheckForStackChanges();
   }
 
 
   public void Draw(ICanvas canvas) {
     for (int i = 0; i < stack.Count; i++) {
-      stack[i].Draw(canvas);
+      stack[i].PreDraw(canvas);
     }
   }
 
   public void PreDeactivate() {
     Deactivate();
     GetTopComponent()?.PreDeactivate();
+  }
+
+  protected void Finish() {
+    // no cleanup
+    _finished = true;
   }
 
 
