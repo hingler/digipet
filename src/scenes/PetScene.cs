@@ -9,6 +9,8 @@ using digipet.transition.animator;
 using digipet.transition.state;
 using digipet.util;
 using digipet.view;
+using digipet.view.pet;
+using Godot;
 
 namespace digipet.scenes;
 
@@ -27,7 +29,21 @@ public class PetScene : Scene {
   }
 
   public override bool HandleInput(InputType type, InputState state) {
+    if (type == InputType.LEFT && state == InputState.PRESS) {
+      CreateQuickMenu();
+      return true;
+    }
     return false;
+  }
+
+  private void CreateQuickMenu() {
+    QuickMenu menu = new(Engine);
+    menu.SizeX = 0.38f;
+    menu.SizeY = 1.0f;
+    menu.Offset = new(0.0f, 0.0f);
+
+    logger.Log("pushing   quickmenu to stack!!!");
+    PushToStack(menu);
   }
 
   public override void InitScene() {

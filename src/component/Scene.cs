@@ -15,11 +15,13 @@ public abstract class Scene : IDigiComponent {
   }
 
   private TransitionQueue transitions = new();
+  public readonly IEngine Engine;
 
   // how do we want to "initialize" scenes?
 
   public Scene(IEngine engine) {
     init_flag = false;
+    Engine = engine;
   }
 
   public bool Initialized() {
@@ -62,10 +64,14 @@ public abstract class Scene : IDigiComponent {
     InputType type,
     InputState state
   ) {
-    bool consumed = HandleInput(type, state);
+    bool consumed = false;
     int cursor = stack.Count - 1;
     while (!consumed && cursor >= 0) {
       consumed = consumed || stack[cursor--].PreInput(type, state);
+    }
+
+    if (!consumed) {
+      HandleInput(type, state);
     }
   }
 

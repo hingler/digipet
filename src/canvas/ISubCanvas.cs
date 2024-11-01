@@ -12,5 +12,4 @@ public interface ISubCanvas : ICanvas, IContainer {
   public Vector2 Size { get; set; }
   ISprite GetCanvasAsSprite();
   IDigiComponent GetRoot();
-  IReadOnlyList<ViewComponent> GetChildren();
 }

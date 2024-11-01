@@ -4,7 +4,6 @@ namespace digipet.component;
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Numerics;
 using digipet.canvas;
 using digipet.transition;
@@ -229,7 +228,19 @@ public class ViewComponent : IDigiComponent, IContainer {
     Tick(delta);
     foreach (ViewComponent child in GetChildren()) {
       child.PreTick(delta);
+      // check for child-disposes or self-disposes
+      if (child.Dispose) {
+        child.AcknowledgeDispose();
+        RemoveView(child);
+      } else {
+        ViewComponent v = child.AcknowledgePush();
+        if (v != null) {
+          AddView(v);
+        }
+      }
     }
+
+
   }
   public virtual void Tick(double delta) {}
   public virtual void Deactivate() {}
