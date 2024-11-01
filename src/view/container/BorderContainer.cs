@@ -10,16 +10,12 @@ public class BorderContainer : ViewComponent, IContainer {
   static private readonly int MARGIN_SIZE = 3;
   public BorderContainer() {}
 
-  public void AddView(ViewComponent v) {
+  public override void AddView(ViewComponent v) {
     contents.AddView(v);
   }
 
-  public void RemoveView(ViewComponent v) {
+  public override void RemoveView(ViewComponent v) {
     contents.RemoveView(v);
-  }
-
-  public IReadOnlyList<ViewComponent> GetComponents() {
-    return GetChildren();
   }
 
   public override IReadOnlyList<ViewComponent> GetChildren() {

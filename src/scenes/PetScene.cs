@@ -58,6 +58,7 @@ public class PetScene : Scene {
     // does it make sense to give scenes the ability to run a transition by default?
     TransitionStateBuilder bb = new();
     bb.Animate(root, "Y", 1.0f, 0.0f, EasingFunctions.EaseOutQuart).WithDuration(1.0f);
+    // mark transitions as "blocking" to deny inputs until complete??
     b.AddState(bb.Build());
 
   }

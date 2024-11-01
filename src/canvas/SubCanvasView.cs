@@ -43,15 +43,17 @@ public class SubCanvasView : ViewComponent, IContainer {
     canvas.Tex(sprite, Vector2.Zero, Vector2.One, false);
   }
 
-  public IReadOnlyList<ViewComponent> GetComponents() {
-    return dep.GetChildren();
+  public override IReadOnlyList<ViewComponent> GetChildren() {
+    return [];
   }
 
-  public void AddView(ViewComponent v) {
+  public override void AddView(ViewComponent v) {
     dep.AddView(v);
   }
 
-  public void RemoveView(ViewComponent v) {
+  // the idea should be: push a view with a guaranteed height/width
+
+  public override void RemoveView(ViewComponent v) {
     dep.RemoveView(v);
   }
 }

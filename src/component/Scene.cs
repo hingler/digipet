@@ -14,7 +14,7 @@ public abstract class Scene : IDigiComponent {
     get => _finished;
   }
 
-  private readonly Queue<ITransition> transitions = new();
+  private TransitionQueue transitions = new();
 
   // how do we want to "initialize" scenes?
 
@@ -94,17 +94,12 @@ public abstract class Scene : IDigiComponent {
   }
 
   public void AdvanceTransition() {
-    if (transitions.TryPeek(out ITransition transition)) {
-      transition.Advance();
-    }
+    transitions.Advance();
   }
 
   public bool TransitionComplete() {
     // complete if empty, or if last transition is complete
-    return (
-      !transitions.TryPeek(out ITransition transition) 
-      || transition.Complete() && transitions.Count == 1
-    );
+    return transitions.Complete();
   }
 
   // non-overridable method used to delegate activate to descendants
@@ -114,13 +109,7 @@ public abstract class Scene : IDigiComponent {
   }
 
   public void SceneTick(double delta) {
-    while (transitions.TryPeek(out ITransition transition) && transition.Complete()) {
-      transitions.Dequeue();
-    }
-
-    if (transitions.Count > 0) {
-      transitions.Peek().Tick(delta);
-    }
+    transitions.Tick(delta);
 
     Tick(delta);
 

@@ -4,10 +4,39 @@ namespace digipet.component;
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
 using digipet.canvas;
+using digipet.transition;
+using digipet.view;
 
-public class ViewComponent : IDigiComponent {
+public class ViewComponent : IDigiComponent, IContainer {
+  private enum CoordMetric {
+    Relative, Absolute
+  };
+
+  private struct CoordState {
+    public CoordMetric OffsetX = CoordMetric.Relative;
+    public CoordMetric OffsetY = CoordMetric.Relative;
+    public CoordMetric SizeX = CoordMetric.Relative;
+    public CoordMetric SizeY = CoordMetric.Relative;
+
+    public CoordMetric Offset {
+      set {
+        OffsetX = value;
+        OffsetY = value;
+      }
+    }
+
+    public CoordMetric Size {
+      set {
+        SizeX = value;
+        SizeY = value;
+      }
+    }
+
+    public CoordState() {}
+  }
 
   private Vector2 offset_;
   private Vector2 offset_px_;
@@ -15,25 +44,18 @@ public class ViewComponent : IDigiComponent {
   private Vector2 size_;
   private Vector2 size_px_;
 
-  // for offsets
-  private bool pixel_coords = false;
-
-  // for sizes
-  private bool pixel_size = false;
+  private CoordState coord_state = new();
 
 
 
   private Vector2 anchor_;
-
-  private bool reflow_dirty_;
 
   // offset of anchor relative to parent
   public Vector2 Offset {
     get => offset_;
     set {
       offset_ = value;
-      reflow_dirty_ = true;
-      pixel_coords = false;
+      coord_state.Offset = CoordMetric.Relative;
     }
   }
 
@@ -41,8 +63,7 @@ public class ViewComponent : IDigiComponent {
     get => offset_px_;
     set {
       offset_px_ = value;
-      reflow_dirty_ = true;
-      pixel_coords = true;
+      coord_state.Offset = CoordMetric.Absolute;
     }
   }
 
@@ -50,8 +71,7 @@ public class ViewComponent : IDigiComponent {
     get => offset_.X;
     set {
       offset_.X = value;
-      reflow_dirty_ = true;
-      pixel_coords = false;
+      coord_state.OffsetX = CoordMetric.Relative;
     }
   }
 
@@ -59,8 +79,7 @@ public class ViewComponent : IDigiComponent {
     get => offset_.Y;
     set {
       offset_.Y = value;
-      reflow_dirty_ = true;
-      pixel_coords = false;
+      coord_state.OffsetY = CoordMetric.Relative;
     }
   }
 
@@ -68,8 +87,7 @@ public class ViewComponent : IDigiComponent {
     get => offset_px_.X;
     set {
       offset_px_.X = value;
-      reflow_dirty_ = true;
-      pixel_coords = true;
+      coord_state.OffsetX = CoordMetric.Absolute;
     }
   }
 
@@ -77,8 +95,7 @@ public class ViewComponent : IDigiComponent {
     get => offset_px_.Y;
     set {
       offset_px_.Y = value;
-      reflow_dirty_ = true;
-      pixel_coords = true;
+      coord_state.OffsetY = CoordMetric.Absolute;
     }
   }
 
@@ -87,8 +104,7 @@ public class ViewComponent : IDigiComponent {
     get => size_;
     set {
       size_ = value;
-      reflow_dirty_ = true;
-      pixel_size = false;
+      coord_state.Size = CoordMetric.Relative;
     }
   }
 
@@ -96,8 +112,39 @@ public class ViewComponent : IDigiComponent {
     get => size_px_;
     set {
       size_px_ = value;
-      reflow_dirty_ = true;
-      pixel_size = true;
+      coord_state.Size = CoordMetric.Absolute;
+    }
+  }
+
+  public float SizeX {
+    get => size_.X;
+    set {
+      size_.X = value;
+      coord_state.SizeX = CoordMetric.Relative;
+    }
+  }
+
+  public float SizeY {
+    get => size_.Y;
+    set {
+      size_.Y = value;
+      coord_state.SizeY = CoordMetric.Relative;
+    }
+  }
+
+  public float PixelSizeX {
+    get => size_px_.X;
+    set {
+      size_px_.X = value;
+      coord_state.SizeX = CoordMetric.Absolute;
+    }
+  }
+
+  public float PixelSizeY {
+    get => size_px_.Y;
+    set {
+      size_px_.Y = value;
+      coord_state.SizeY = CoordMetric.Absolute;
     }
   }
 
@@ -106,13 +153,16 @@ public class ViewComponent : IDigiComponent {
     get => anchor_;
     set {
       anchor_ = value;
-      reflow_dirty_ = true;
     }
   }
 
   public float Opacity;
 
   public int ZIndex;
+
+  private HashSet<ViewComponent> children = [];
+
+  private TransitionQueue transitions = new();
 
   public ViewComponent() {
     _stack_child = null;
@@ -126,23 +176,32 @@ public class ViewComponent : IDigiComponent {
     ZIndex = 0;
   }
 
-  public virtual IReadOnlyList<ViewComponent> GetChildren() => [];
+  public virtual IReadOnlyList<ViewComponent> GetChildren() => [.. children];
+
+  public virtual void AddView(ViewComponent v) {
+    children.Add(v);
+  }
+
+  public virtual void RemoveView(ViewComponent v) {
+    children.Remove(v);
+  }
 
   public bool PreInput(InputType input, InputState state) {
     // container handles first
+    IReadOnlyList<ViewComponent> children = GetChildren();
+    // children handle first (top down)
+    for (int i = children.Count - 1; i >= 0; i--) {
+      ViewComponent c = children[i];
+      if (c.PreInput(input, state)) {
+        return true;
+      }
+    }
+
+    // parent handles last
     if (HandleInput(input, state)) {
       return true;
     }
 
-    IReadOnlyList<ViewComponent> children = GetChildren();
-
-    // children handle second
-    for (int i = children.Count - 1; i >= 0; i--) {
-      ViewComponent c = children[i];
-      if (c.HandleInput(input, state)) {
-        return true;
-      }
-    }
 
     return false;
   }
@@ -166,6 +225,7 @@ public class ViewComponent : IDigiComponent {
   public virtual void Activate() {}
 
   public virtual void PreTick(double delta) {
+    transitions.Tick(delta);
     Tick(delta);
     foreach (ViewComponent child in GetChildren()) {
       child.PreTick(delta);
@@ -175,24 +235,26 @@ public class ViewComponent : IDigiComponent {
   public virtual void Deactivate() {}
 
   public void PreDraw(ICanvas canvas) {
-    // flush changes
-    if (pixel_coords) {
-      // convert from relative -> absolute
-      offset_ = canvas.PxToRelative(OffsetPx);
-    } else {
-      // convert from absolute -> relative
-      offset_px_ = offset_ * canvas.GetSizePx();
-    }
 
-    // always updates sizing - i'm fine with that tbh
-    if (pixel_size) {
-      size_ = canvas.PxToRelative(SizePx);
-    } else {
-      size_px_ = size_ * canvas.GetSizePx();
-    }
+    // not gonna worry about this anymore
+    Vector2 offset_rel = offset_;
+    Vector2 size_rel = size_;
 
-    Vector2 start = Offset - (Size * Anchor);
-    OffsetCanvas c = new(canvas, start, Size, 1.0f, Opacity, ZIndex);
+    Vector2 offset_abs = canvas.PxToRelative(OffsetPx);
+    Vector2 size_abs = canvas.PxToRelative(SizePx);
+
+    Vector2 offset = new(
+      coord_state.OffsetX == CoordMetric.Relative ? offset_rel.X : offset_abs.X,
+      coord_state.OffsetY == CoordMetric.Relative ? offset_rel.Y : offset_abs.Y
+    );
+
+    Vector2 size = new(
+      coord_state.SizeX == CoordMetric.Relative ? size_rel.X : size_abs.X,
+      coord_state.SizeY == CoordMetric.Relative ? size_rel.Y : size_abs.Y
+    );
+
+    Vector2 start = offset - (size * Anchor);
+    OffsetCanvas c = new(canvas, start, size, 1.0f, Opacity, ZIndex);
     Draw(c);
 
     IReadOnlyList<ViewComponent> children = GetChildren();
@@ -224,6 +286,19 @@ public class ViewComponent : IDigiComponent {
     bool res = _dispose;
     _dispose = false;
     return res;
+  }
+
+  // transition logic
+  public void EnqueueTransition(ITransition transition) {
+    transitions.Enqueue(transition);
+  }
+
+  public void AdvanceTransition() {
+    transitions.Advance();
+  }
+
+  public bool TransitionsComplete() {
+    return transitions.Complete();
   }
 
   private ViewComponent _stack_child;
