@@ -45,7 +45,7 @@ public class ViewComponent : IDigiComponent, IContainer {
 
   private CoordState coord_state = new();
 
-
+  private bool reflow_dirty_ = false;
 
   private Vector2 anchor_;
 
@@ -104,6 +104,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     set {
       size_ = value;
       coord_state.Size = CoordMetric.Relative;
+      reflow_dirty_ = true;
     }
   }
 
@@ -112,6 +113,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     set {
       size_px_ = value;
       coord_state.Size = CoordMetric.Absolute;
+      reflow_dirty_ = true;
     }
   }
 
@@ -120,6 +122,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     set {
       size_.X = value;
       coord_state.SizeX = CoordMetric.Relative;
+      reflow_dirty_ = true;
     }
   }
 
@@ -128,6 +131,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     set {
       size_.Y = value;
       coord_state.SizeY = CoordMetric.Relative;
+      reflow_dirty_ = true;
     }
   }
 
@@ -136,6 +140,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     set {
       size_px_.X = value;
       coord_state.SizeX = CoordMetric.Absolute;
+      reflow_dirty_ = true;
     }
   }
 
@@ -144,6 +149,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     set {
       size_px_.Y = value;
       coord_state.SizeY = CoordMetric.Absolute;
+      reflow_dirty_ = true;
     }
   }
 
@@ -159,9 +165,9 @@ public class ViewComponent : IDigiComponent, IContainer {
 
   public int ZIndex;
 
-  private HashSet<ViewComponent> children = [];
+  private readonly HashSet<ViewComponent> children = [];
 
-  private TransitionQueue transitions = new();
+  private readonly TransitionQueue transitions = new();
 
   public ViewComponent() {
     _stack_child = null;
@@ -266,6 +272,12 @@ public class ViewComponent : IDigiComponent, IContainer {
 
     Vector2 start = offset - (size * Anchor);
     OffsetCanvas c = new(canvas, start, size, 1.0f, Opacity, ZIndex);
+
+    if (reflow_dirty_) {
+      reflow_dirty_ = false;
+      Reflow(c);
+    }
+
     Draw(c);
 
     IReadOnlyList<ViewComponent> children = GetChildren();
@@ -273,6 +285,10 @@ public class ViewComponent : IDigiComponent, IContainer {
       children[i].PreDraw(c);
     }
   }
+
+  // called when the size of a given component changes
+  // gives view the opportunity to resize its contents
+  public virtual void Reflow(ICanvas canvas) {}
   
   public virtual void Draw(ICanvas canvas) {}
 

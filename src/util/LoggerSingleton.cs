@@ -12,4 +12,8 @@ public static class LoggerSingleton {
   public static ILogger GetLogger() {
     return f();
   }
+
+  public static ILogger GetLogger(this object o) {
+    return new ClassAwareLogger(f(), o.GetType());
+  }
 }

@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using digipet.image;
 
 namespace digipet.sim;
@@ -6,5 +9,5 @@ namespace digipet.sim;
 
 // no defn yet
 public interface IWorldItem {
-  ISprite Sprite { get; }
+  int RID { get; }
 }

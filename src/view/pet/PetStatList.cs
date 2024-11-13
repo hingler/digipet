@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Numerics;
 using digipet.component;
 using digipet.image;
+using digipet.input;
 using digipet.sim;
 using digipet.sprite.attrib;
 using digipet.view.container;
@@ -17,14 +18,13 @@ public class PetStatList : ViewComponent {
 
   private readonly IList<PetStat> stats = [];
 
-  private readonly MarginContainer container = new();
+  private readonly BorderContainer container = new();
 
   public PetStatList(
     ISpriteFetcher sprite_fetcher,
     IPetModel model
   ) {
     this.model = model;
-    container.MarginPx = 6;
 
     stats.Add(CreateStats(sprite_fetcher, SpriteID.STAT_FOOD));
     stats.Add(CreateStats(sprite_fetcher, SpriteID.STAT_WATER));
@@ -32,10 +32,17 @@ public class PetStatList : ViewComponent {
     stats.Add(CreateStats(sprite_fetcher, SpriteID.STAT_SOCIAL));
     stats.Add(CreateStats(sprite_fetcher, SpriteID.STAT_ENERGY));
 
+    MarginContainer container_margin = new() {
+      MarginPx = 3
+    };
+
     for (int i = 0; i < stats.Count; i++) {
       stats[i].Offset = new(0.0f, i * 0.2f);
-      container.AddView(stats[i]);
+      container_margin.AddView(stats[i]);
     }
+
+    container.AddView(container_margin);
+    AddView(container);
   }
 
   public override void Tick(double delta) {
@@ -47,25 +54,16 @@ public class PetStatList : ViewComponent {
     stats[4].Fill = (float)model.Energy;
   }
 
-  public override void Draw(ICanvas canvas) {
-    base.Draw(canvas);
+  public override bool HandleInput(InputType input, InputState state) {
+    if (base.HandleInput(input, state)) {
+      return true;
+    }
 
-    // draw border
+    if (state == InputState.PRESS && input == InputType.BACK) {
+      PopSelf();
+    }
 
-    Vector2 pixel_size = canvas.GetPixelDims();
-
-    Vector4 color_gray = new(0.5f, 0.5f, 0.5f, 1.0f);
-
-    canvas.Rect(Vector2.Zero, Vector2.One, 4, color_gray);
-
-    // generify this for other windows
-
-    // (tba: alpha dither?)
-    canvas.Rect(pixel_size, Vector2.One - pixel_size, 3, new(0, 0, 0, 1));
-    canvas.Rect(2.0f * pixel_size, Vector2.One - 2.0f * pixel_size, 2, color_gray);
-    canvas.Rect(3.0f * pixel_size, Vector2.One - 3.0f * pixel_size, 1, Vector4.One);
-
-    container.Draw(canvas);
+    return true;
   }
 
   private static PetStat CreateStats(ISpriteFetcher fetcher, SpriteID id) {

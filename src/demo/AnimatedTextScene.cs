@@ -8,6 +8,8 @@ using digipet.sprite.attrib;
 using digipet.view;
 using digipet.view.pet;
 using digipet.view.sky;
+
+// tba: factor out
 using Godot;
 
 namespace digipet.demo;
@@ -52,6 +54,8 @@ public class AnimatedTextScene : Scene {
 
     PushToStack(t);
 
+
+    // shouldnt be here
     CompoundView sv = new();
     Texture2D img = ResourceLoader.Load<Texture2D>("res://res/img/fh_test.jpg");
     Texture2D sa_sprite = ResourceLoader.Load<Texture2D>("res://res/img/pet/pixilart-sprite20px.png");
@@ -72,7 +76,7 @@ public class AnimatedTextScene : Scene {
     PushToStack(bar);
 
     SpriteView sprite_view = new(sprite);
-    SimplePetSprite anime = new(sa);
+    SimplePetSprite anime = new(Engine);
 
     sprite_view.Size = new(0.6f, 0.15f);
     sprite_view.Offset = new(0.1f, 0.4f);

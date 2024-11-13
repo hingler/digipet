@@ -1,14 +1,26 @@
 using digipet.canvas;
 using digipet.component;
+using digipet.file;
 using digipet.input;
+using digipet.sim;
+using digipet.sim.db;
 using digipet.sprite.attrib;
+using digipet.world;
 
 namespace digipet.framework;
+
+#nullable enable
 
 public interface IEngine : IEngineBase {
   
   // push a scene to scene stack (a la android) and begin running
   void PushScene(Scene scene);
+
+  // returns an asset repo for the specified asset type
+  ISimRepo<T>? GetAssetRepo<T>() where T : IWorldItem;
+
+  // returns ref to underlying 
+  IPhysWorld GetPhysWorld();
 }
 
 public interface IEngineBase {
@@ -16,4 +28,6 @@ public interface IEngineBase {
   ISubCanvas CreateSubCanvas();
   ISpriteFetcher GetSpriteFetcher();
   IInputManager GetInputManager();
+  IFileLoader GetResourceLoader();
+  IFileLoader GetUserdataLoader();
 }

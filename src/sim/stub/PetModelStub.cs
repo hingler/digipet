@@ -1,3 +1,6 @@
+using digipet.sim.edible;
+using digipet.sim.water;
+
 namespace digipet.sim.stub;
 
 public class PetModelStub : IPetModel
@@ -15,4 +18,17 @@ public class PetModelStub : IPetModel
   public long PetExp => 128;
 
   public string PetName => "DINGUS";
+
+  public bool CanEat(IEdiblePickup food_item) {
+    return true;
+  }
+
+  public bool TryEat(IEdiblePickup food_item, out double score) {
+    score = 0.0;
+    return true;
+  }
+
+  public double Drink(double units, IWaterSource source) {
+    return 0.0;
+  }
 }

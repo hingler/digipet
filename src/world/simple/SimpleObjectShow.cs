@@ -1,34 +1,54 @@
 using System.Collections.Generic;
 using System.Numerics;
+using digipet.framework;
 using digipet.image;
 using digipet.sim;
+using digipet.sprite.attrib;
+using digipet.util;
 using static digipet.util.Closure;
+
+using static digipet.util.LoggerSingleton;
 
 namespace digipet.world.simple;
 
 #nullable enable
 
-public class SimpleObjectShow : IObjectShow {
+public class SimpleObjectShow : IPhysWorld {
   
   private IPhysObject? obj;
-  
-  public SimpleObjectShow() {}
+  private readonly ISpriteFetcher fetcher;
+  private readonly ILogger log;
 
-  public bool SpawnObject(
+  public float FloorHeight { get => 0.8f; }
+  
+  public SimpleObjectShow(IEngine engine) {
+    fetcher = engine.GetSpriteFetcher();
+    obj = null;
+
+    log = this.GetLogger();
+  }
+
+  public IPhysObject SpawnObject(IWorldItem pickup, Vector2 position, Vector2 velocity) => SpawnObject(pickup);
+  public IPhysObject SpawnObject(IWorldItem pickup, Vector2 position) => SpawnObject(pickup);
+
+  public IPhysObject SpawnObject(
     IWorldItem pickup
   ) {
     if (obj != null) {
-      return false;
+      return obj;
     }
 
     // treat objects as point parti cles for now
-    obj = new SimplePhysObject(Vector2.Zero, pickup);
-    return true;
+    obj = new SimplePhysObject(new Vector2(0.2f, 0.0f), fetcher.GetSprite(pickup.RID), pickup);
+    log.Log("created new object: ", obj.Sprite);
+    return obj;
   }
 
-  public ICollection<IPhysObject> GetPhysObjects() {
-    ICollection<IPhysObject> res = new HashSet<IPhysObject>();
-    obj?.Let(res.Add);
+  public IReadOnlySet<IPhysObject> GetPhysObjects() {
+    HashSet<IPhysObject> res = [];
+    if (obj != null) {
+      obj?.Let((o) => res.Add(o));
+    }
 
     return res;
   }

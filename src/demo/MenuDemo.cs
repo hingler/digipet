@@ -12,7 +12,7 @@ namespace digipet.demo;
 public class MenuDemo : Scene {
   private readonly TextMenu m;
 
-  private readonly ILogger logger = LoggerSingleton.GetLogger();
+  private readonly ILogger logger;
   private readonly IEngine engine;
 
   public MenuDemo(
@@ -20,6 +20,8 @@ public class MenuDemo : Scene {
   ) : base(engine) {
     m = new(engine, canvas.font.FontType.TINY);
     this.engine = engine;
+
+    logger = this.GetLogger();
   }
 
   public override void InitScene() {
@@ -29,7 +31,6 @@ public class MenuDemo : Scene {
     SpriteView test_sprite = new();
     test_sprite.sprite = engine.GetSpriteFetcher().GetSprite(sprite.attrib.SpriteID.STAT_FOOD);
     test_sprite.ZIndex = -100;
-
 
     PushToStack(test_sprite);
     PushToStack(container);

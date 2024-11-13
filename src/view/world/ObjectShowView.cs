@@ -2,39 +2,47 @@ using System.Collections.Generic;
 using System.Numerics;
 using digipet.component;
 using digipet.framework;
+using digipet.util;
 using digipet.world;
 
 namespace digipet.view.world;
 
 public class ObjectShowView : ViewComponent {
-  private static readonly Vector2 VIEW_OFFSET = new(0.5f, 0.0f);
+  private static readonly Vector2 VIEW_OFFSET = new(0.5f, 0.8f);
   private readonly CompoundView root = new();
   private readonly Dictionary<IPhysObject, SpriteView> sprites;
-  private readonly IObjectShow objectShow;
+  private readonly IPhysWorld objectShow;
+  private readonly ILogger l = LoggerSingleton.GetLogger();
 
-  public ObjectShowView(IObjectShow objectShow) : base() {
+  public ObjectShowView(IPhysWorld objectShow) : base() {
     sprites = [];
     this.objectShow = objectShow;
+    AddView(root);
+    root.Offset = Vector2.Zero;
+    root.Size = Vector2.One;
   }
 
-  // for each phys object
-  // - create a unique sprite tracking it
-
   public override void Draw(ICanvas canvas) {
-    ICollection<IPhysObject> objects = objectShow.GetPhysObjects();
-
+    IReadOnlySet<IPhysObject> objects = objectShow.GetPhysObjects();
     foreach (IPhysObject o in objects) {
       if (!sprites.TryGetValue(o, out SpriteView sprite)) {
-        sprite = new(o.Sprite) {
-          Anchor = new(0.5f, 1.0f)
+        sprite = new(
+          o.Sprite
+        ) {
+          Anchor = new(0.5f, 1.0f),
+          SizePx = o.Sprite.Dims,
+          Opacity = 1.0f
         };
+
+        l.Log("created new sprite - ", o.Sprite, ", ", o.Pickup.RID);
 
         root.AddView(sprite);
         sprites[o] = sprite;
       }
 
-      sprite.Offset = o.Position + VIEW_OFFSET;
-      sprite.Size = canvas.PxToRelative(sprite.Dims);
+      sprite.Offset = VIEW_OFFSET;
+      sprite.X = VIEW_OFFSET.X + o.Position.X;
+      sprite.Y = objectShow.FloorHeight - o.Position.Y;
     }
 
     foreach (IPhysObject o in sprites.Keys) {
@@ -46,7 +54,5 @@ public class ObjectShowView : ViewComponent {
         sprites.Remove(o);
       }
     }
-
-    root.PreDraw(canvas);
   }
 }

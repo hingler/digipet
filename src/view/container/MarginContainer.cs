@@ -13,9 +13,9 @@ public class MarginContainer : ViewComponent, IContainer {
     cv.Anchor = new(0.0f, 0.0f);
   }
 
-  public override IReadOnlyList<ViewComponent> GetChildren() => cv.GetChildren();
+  public override IReadOnlyList<ViewComponent> GetChildren() => [ cv ];
   public override void AddView(ViewComponent v) => cv.AddView(v);
-  public override void RemoveView(ViewComponent v) => cv.AddView(v);
+  public override void RemoveView(ViewComponent v) => cv.RemoveView(v);
 
   public override void Draw(ICanvas canvas) {
     Vector2 margin_size = canvas.PxToRelative(MarginPx, MarginPx);

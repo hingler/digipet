@@ -1,5 +1,3 @@
-using Godot;
-
 namespace digipet.transition.helper;
 
 public class FallbackFieldWrap<T> : IMemberWrap<T> {

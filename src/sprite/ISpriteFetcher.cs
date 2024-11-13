@@ -23,6 +23,14 @@ public enum SpriteID {
 
   ICON_SELECTOR,
 
+  WATER_SPOUT,
+  WATER_BOWL,
+  WATER_STREAM,
+
+  OFFSET_EMOTE = 4096,
+
+  OFFSET_FIXTURE = 8192,
+
 
   // for larger datasets, let's just give it a large offset and catalogue things separately
   OFFSET_FOOD = 16384

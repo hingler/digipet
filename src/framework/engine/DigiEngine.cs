@@ -1,10 +1,16 @@
+using System;
 using System.Collections.Generic;
 using digipet.canvas;
 using digipet.component;
+using digipet.file;
 using digipet.input;
+using digipet.sim;
+using digipet.sim.db;
+using digipet.sim.edible;
 using digipet.sprite.attrib;
 using digipet.util;
-
+using digipet.world;
+using digipet.world.simple;
 using static digipet.util.Closure;
 
 namespace digipet.framework.engine;
@@ -14,10 +20,19 @@ namespace digipet.framework.engine;
 public class DigiEngine : IEngine, IInputListener {
   private readonly IEngineBase platform_base;
   private readonly Stack<Scene> scene_stack = new();
+  private readonly PhysicsObjectShow phys_world;
+  private readonly Dictionary<Type, object> repos = [];
 
   public DigiEngine(IEngineBase platform_base) {
     this.platform_base = platform_base;
+    phys_world = new PhysicsObjectShow(this);
     platform_base.GetInputManager().Register(this);
+
+    InitDB();
+  }
+
+  private void InitDB() {
+    repos[typeof(IEdiblePickup)] = new FoodRepo(this);
   }
 
   private Scene? GetActiveScene() {
@@ -28,6 +43,19 @@ public class DigiEngine : IEngine, IInputListener {
   public void PushScene(Scene scene) {
     GetActiveScene()?.Deactivate();
     scene_stack.Push(scene);
+  }
+
+  public ISimRepo<T>? GetAssetRepo<T>() where T : IWorldItem {
+    Type dataType = typeof(T);
+    if (repos.TryGetValue(dataType, out object? value)) {
+      return value as ISimRepo<T>;
+    }
+
+    return null;
+  }
+
+  public IPhysWorld GetPhysWorld() {
+    return phys_world;
   }
 
   public ISubCanvas CreateSubCanvas() {
@@ -42,6 +70,14 @@ public class DigiEngine : IEngine, IInputListener {
     return platform_base.GetInputManager();
   }
 
+  public IFileLoader GetResourceLoader() {
+    return platform_base.GetResourceLoader();
+  }
+
+  public IFileLoader GetUserdataLoader() {
+    return platform_base.GetUserdataLoader();
+  }
+
   public void OnInput(InputType type, InputState state) {
     GetActiveScene()?.PreInput(type, state);
   }
@@ -53,6 +89,9 @@ public class DigiEngine : IEngine, IInputListener {
         s.PreActivate();
       }
     });
+
+    // update phys world here
+    phys_world.Update(delta);
 
     GetActiveScene()?.SceneTick(delta);
   }

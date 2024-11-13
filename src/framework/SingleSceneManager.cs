@@ -1,7 +1,11 @@
 using digipet.canvas;
 using digipet.component;
+using digipet.file;
 using digipet.input;
+using digipet.sim;
+using digipet.sim.db;
 using digipet.sprite.attrib;
+using digipet.world;
 
 namespace digipet.framework;
 
@@ -41,5 +45,21 @@ public class SingleSceneManager : IEngine {
 
   public IInputManager GetInputManager() {
     return base_engine.GetInputManager();
+  }
+
+  public IFileLoader GetResourceLoader() {
+    return base_engine.GetResourceLoader();
+  }
+
+  public IFileLoader GetUserdataLoader() {
+    return base_engine.GetUserdataLoader();
+  }
+
+  public ISimRepo<T> GetAssetRepo<T>() where T : IWorldItem {
+    return null;
+  }
+
+  public IPhysWorld GetPhysWorld() {
+    return null;
   }
 }

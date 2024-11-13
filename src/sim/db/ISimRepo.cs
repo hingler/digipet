@@ -4,6 +4,7 @@ namespace digipet.sim.db;
 
 #nullable enable
 
+// (tba: write a r/w db repo later!)
 public interface ISimRepo<T> where T : IWorldItem {
   // returns a list of all entries stored in this DB
   IReadOnlyCollection<T> GetEntries();
