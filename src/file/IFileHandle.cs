@@ -1,4 +1,6 @@
 
+using digipet.file.stream;
+
 namespace digipet.file;
 
 public interface IFileHandle {
@@ -9,9 +11,12 @@ public interface IFileHandle {
   // this is all i care for rn - might need more later
 
   // true if eof reached
+
+  void Seek(ulong pos);
+  ulong Pos();
   bool Eof();
 
-  // file write if open
-  // writes to end of file
-  void Write(string content);
+  byte[] ReadBytes(long byte_count);
+  void WriteBytes(byte[] bytes);
+  long GetByteCount();
 }

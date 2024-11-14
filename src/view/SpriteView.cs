@@ -1,6 +1,5 @@
 using System.Numerics;
 using System.Reflection;
-using digidev.impl;
 using digipet.component;
 using digipet.image;
 using digipet.util;
