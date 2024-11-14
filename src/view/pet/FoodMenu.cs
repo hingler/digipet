@@ -13,12 +13,14 @@ using digipet.world;
 
 namespace digipet.view.pet;
 
+#nullable enable
+
 public class FoodMenu : ViewComponent {
   private readonly BorderContainer container = new();
   private readonly TextMenu menu;
   private readonly ILogger logger = LoggerSingleton.GetLogger();
   private readonly HashSet<Action> confirm_actions = new();
-  private readonly ISimRepo<IEdiblePickup> edibles;
+  private readonly ISimRepo<IEdiblePickup>? edibles;
   private readonly IPhysWorld physWorld;
   public override IReadOnlyList<ViewComponent> GetChildren() {
     return [ container ];

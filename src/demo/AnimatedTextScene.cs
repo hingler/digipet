@@ -1,16 +1,13 @@
 using System;
-using digidev.impl;
 using digipet.component;
 using digipet.framework;
+using digipet.image;
 using digipet.sim;
 using digipet.sprite;
 using digipet.sprite.attrib;
 using digipet.view;
 using digipet.view.pet;
 using digipet.view.sky;
-
-// tba: factor out
-using Godot;
 
 namespace digipet.demo;
 
@@ -57,16 +54,6 @@ public class AnimatedTextScene : Scene {
 
     // shouldnt be here
     CompoundView sv = new();
-    Texture2D img = ResourceLoader.Load<Texture2D>("res://res/img/fh_test.jpg");
-    Texture2D sa_sprite = ResourceLoader.Load<Texture2D>("res://res/img/pet/pixilart-sprite20px.png");
-
-    GodotSprite sprite = new(img);
-    AnimatedGodotSprite sa = new(sa_sprite);
-
-    sa.HFrames = 2;
-    sa.VFrames = 1;
-    
-    sa.Frame = 0;
 
     sv.Offset = new(0.0f, 0.2f);
     sv.Size = new(0.5f, 0.5f);
@@ -74,30 +61,13 @@ public class AnimatedTextScene : Scene {
     sv.AddView(bar);
     PushToStack(sv);
     PushToStack(bar);
-
-    SpriteView sprite_view = new(sprite);
     SimplePetSprite anime = new(Engine);
-
-    sprite_view.Size = new(0.6f, 0.15f);
-    sprite_view.Offset = new(0.1f, 0.4f);
 
     // no longer square :/
     anime.Size = new(1.0f, 1.0f);
     anime.Offset = new(0.0f, 0.0f);
     anime.Anchor = new(0.0f, 0.0f);
-
-    PushToStack(sprite_view);
     PushToStack(anime);
-
-
-    PetStat ps = new(new GodotSprite("res://res/img/stat/meat.png")) {
-      Fill = 0.6f,
-      Offset = new(0.2f, 0.2f),
-      Size = new(0.6f, 0.25f),
-      Anchor = new(0.0f, 0.5f)
-    };
-
-    PushToStack(ps);
 
     PetStatList l = new(fetcher, model);
     l.Offset = new(0.0f, 0.0f);

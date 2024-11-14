@@ -4,12 +4,14 @@ using digipet.sim.water;
 
 namespace digipet.sim;
 
+#nullable enable
+
 public class SimProvider {
-  private ITasteModel tasteModelSingleton;
-  private IWaterSource waterSourceSingleton;
-  private IHungerModel hungerModelSingleton;
-  private IThirstModel thirstModelSingleton;
-  private IPetModel petModelSingleton;
+  private ITasteModel? tasteModelSingleton;
+  private IWaterSource? waterSourceSingleton;
+  private IHungerModel? hungerModelSingleton;
+  private IThirstModel? thirstModelSingleton;
+  private IPetModel? petModelSingleton;
 
   public IWaterSource GetWaterSource() {
     // wire up to some save logic + provide to thirst model

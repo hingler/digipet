@@ -9,6 +9,7 @@ public class SimplePetObject : IPetState, IPetStateReadOnly {
     Position = state.Position;
     Facing = state.Facing;
     PetState = state.PetState;
+    Animation = state.Animation;
   }
   public Vector2 Position { get; set; } = Vector2.Zero;
   public Vector2 Facing { get; set; } = Vector2.UnitX;

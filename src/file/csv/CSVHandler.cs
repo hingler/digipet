@@ -17,7 +17,7 @@ public static class CSVHandler {
       file.GetLine().Split(',').Select(s => s.Trim()).ToList();
     while (!file.Eof()) {
       string line  = file.GetLine().Trim();
-      IList<string> elements = line.Split(',');
+      IList<string> elements = line.Split(',').Select(s => s.Trim()).ToList();
       T? element = converter.Parse(elements);
       element?.Let(results.Add);
     }
