@@ -49,6 +49,20 @@ public class SerializableDataStore : IDataStore {
     return null;
   }
 
+  public bool TryFetch<T>(string index, out T? output) where T : class {
+    bool res = data.TryGetValue(index, out object? obj);
+    output = obj as T;
+    return res;
+  }
+
+  public bool Contains<T>(string index) {
+    if (data.TryGetValue(Sanitize(index), out object? val)) {
+      return val is T;
+    }
+
+    return false;
+  }
+
   public IDataStore GetSubspace(string prefix) {
     return new SubDataStore(prefix + ".", this);
   }

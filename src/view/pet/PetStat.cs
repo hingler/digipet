@@ -5,6 +5,8 @@ using digipet.image;
 
 namespace digipet.view.pet;
 
+#nullable enable
+
 // displays a single pet stat
 public class PetStat : ViewComponent {
   private readonly CompoundView base_view = new();
@@ -20,14 +22,14 @@ public class PetStat : ViewComponent {
     set => prog.Fill = value;
   }
 
-  public ISprite Icon {
+  public ISprite? Icon {
     get => image.sprite;
     set => image.sprite = value;
   }
 
   public PetStat() : this(null) {}
 
-  public PetStat(ISprite sprite) : base() {
+  public PetStat(ISprite? sprite) : base() {
     image = new();
     prog = new();
 

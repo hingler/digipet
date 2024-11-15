@@ -6,11 +6,13 @@ using digipet.util;
 
 namespace digipet.view;
 
+#nullable enable
+
 public class SpriteView : ViewComponent {
   // dep
-  public ISprite sprite;
+  public ISprite? sprite;
 
-  public ISprite Sprite {
+  public ISprite? Sprite {
     get => sprite;
     set {
       sprite = value;
@@ -21,7 +23,7 @@ public class SpriteView : ViewComponent {
 
   public Vector2 Dims => sprite?.Dims ?? Vector2.Zero;
   public SpriteView() : this(null) {}
-  public SpriteView(ISprite sprite) {
+  public SpriteView(ISprite? sprite) {
     Sprite = sprite;
   }
 

@@ -4,6 +4,8 @@ using digipet.pet;
 
 namespace digipet.world.pet;
 
+#nullable enable
+
 public enum PetAnimation {
   IDLE,
   PAUSE,
@@ -19,7 +21,7 @@ public enum PetAnimation {
 // struct representing current animation state
 public interface IAnimationState {
   // animation being performed
-  public PetAnimation CurrentAnimation { get; }
+  public PetAnimation? CurrentAnimation { get; }
   
   // current frame of this animation
   public int Frame { get; }
@@ -40,5 +42,5 @@ public interface IAnimationState {
 
 
   // metadata?? (ex. which frame to do (xyz) on)
-  public ISprite Sprite { get; }
+  public ISprite? Sprite { get; }
 }

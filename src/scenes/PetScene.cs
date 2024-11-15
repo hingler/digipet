@@ -41,7 +41,7 @@ public class PetScene : Scene {
     physWorld = engine.GetPhysWorld();
     logger = this.GetLogger();
 
-    provider = new();
+    provider = new(engine.GetSaveStore());
   }
 
   public override bool HandleInput(InputType type, InputState state) {
@@ -115,7 +115,12 @@ public class PetScene : Scene {
     // do nothing
   }
 
-  private ITransition GetTransition() {
+  public override void Destroy() {
+    base.Destroy();
+    provider.SaveSimState();
+  }
+
+    private ITransition GetTransition() {
     TransitionBuilder b = new();
     SlideDownToScene(b);
     return b.Build();

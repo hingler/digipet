@@ -20,12 +20,15 @@ public class Dumdum : IStreamable<Dumdum> {
   }
 }
 
+// idea for datastore:
+// initialize/stream on each store/fetch
+// maintain ONLY byte arrays representing classes
+// - ensures that stored instances are immutable
+// - more type safety
+// (downside: can't retrieve as interface)
+
 public class DataStoreTest {
   private StreamableDataStore store = new();
-
-  [OneTimeSetUp]
-  public void Configure() {
-  }
 
   [SetUp]
   public void SetUp() {

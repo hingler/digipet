@@ -46,6 +46,7 @@ public abstract class Scene : IDigiComponent {
     if (stack.Count > 0) {
       if (init_flag) {
         GetTopComponent().PreDeactivate();
+        GetTopComponent().PreDestroy();
       }
 
       stack.RemoveAt(stack.Count - 1);
@@ -145,12 +146,15 @@ public abstract class Scene : IDigiComponent {
   }
 
 
-  public void Destroy() {
-    ViewComponent top = GetTopComponent();
+  public void PreDestroy() {
     while (GetTopComponent() != null) {
       PopFromStack();
     }
+
+    Destroy();
   }
+
+  public virtual void Destroy() {}
 
   private void CheckForStackChanges() {
     ViewComponent top = GetTopComponent();

@@ -70,11 +70,29 @@ public class StreamableDataStore : IStreamable<StreamableDataStore>, IDataStore 
   }
 
   public T? Fetch<T>(string index) where T : class {
-    return store[index] as T;
+    if (store.TryGetValue(index, out IOutStreamable? item)) {
+      return item as T;
+    }
+
+    return null;
+  }
+
+  public bool TryFetch<T>(string index, out T? output) where T : class {
+    bool res = store.TryGetValue(index, out IOutStreamable? item);
+    output = item as T;
+    return res;
+  }
+
+  public bool Contains<T>(string index) {
+    if (store.TryGetValue(index, out IOutStreamable? item)) {
+      return item is T;
+    }
+
+    return false;
   }
 
   public IDataStore GetSubspace(string prefix) {
-    return new SubDataStore(prefix, this);
+    return new SubDataStore(prefix + ".", this);
   }
 
   public void ToStream(IOutputStream stream) {

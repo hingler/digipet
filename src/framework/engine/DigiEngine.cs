@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using digipet.canvas;
 using digipet.component;
+using digipet.db;
 using digipet.file;
 using digipet.input;
 using digipet.sim;
@@ -76,6 +77,16 @@ public class DigiEngine : IEngine, IInputListener {
 
   public IFileLoader GetUserdataLoader() {
     return platform_base.GetUserdataLoader();
+  }
+
+  public IDataStore GetSaveStore() {
+    return platform_base.GetSaveStore();
+  }
+
+  public void TearDown() {
+    // tear down
+    GetActiveScene()?.PreDestroy();
+    platform_base.TearDown();
   }
 
   public void OnInput(InputType type, InputState state) {

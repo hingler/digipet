@@ -1,5 +1,6 @@
 using digipet.canvas;
 using digipet.component;
+using digipet.db;
 using digipet.file;
 using digipet.input;
 using digipet.sim;
@@ -20,6 +21,7 @@ public class SingleSceneManager : IEngine {
   public SingleSceneManager(Scene initScene, ICanvas canvas) {
     scene = initScene;
     this.canvas = canvas;
+    base_engine = null;
   }
 
   public void Update(double delta) {
@@ -60,6 +62,10 @@ public class SingleSceneManager : IEngine {
   }
 
   public IPhysWorld GetPhysWorld() {
+    return null;
+  }
+
+  public IDataStore GetSaveStore() {
     return null;
   }
 }
