@@ -4,8 +4,10 @@ using digipet.image;
 
 namespace digipet.world.pet.animation;
 
+#nullable enable
+
 public class AnimationDataBuilder : IAnimationData {
-  private IAnimationData underlying_data;
+  private IAnimationData? underlying_data;
   private IList<Vector2> frame_offsets = [];
 
   public AnimationDataBuilder() {
@@ -55,12 +57,13 @@ public class AnimationDataBuilder : IAnimationData {
     return this;
   }
 
-  public PetAnimation CurrentAnimation => underlying_data.CurrentAnimation;
-  public int Frame => underlying_data.Frame;
-  public int FrameCount => underlying_data.FrameCount;
-  public double Duration => underlying_data.Duration;
-  public double Progress => underlying_data.Progress;
-  public bool Loop => underlying_data.Loop;
+  // alerta
+  public PetAnimation? CurrentAnimation => underlying_data?.CurrentAnimation;
+  public int Frame => underlying_data?.Frame ?? 0;
+  public int FrameCount => underlying_data?.FrameCount ?? 0;
+  public double Duration => underlying_data?.Duration ?? 0.0;
+  public double Progress => underlying_data?.Progress ?? 0.0;
+  public bool Loop => underlying_data?.Loop ?? false;
 
   public Vector2 FaceOffsetPx {
     get {
@@ -75,18 +78,18 @@ public class AnimationDataBuilder : IAnimationData {
   }
 
   public bool Complete() {
-    return underlying_data.Complete();
+    return underlying_data?.Complete() ?? true;
   }
 
-  public ISprite GetCurrentSprite() {
-    return underlying_data.GetCurrentSprite();
+  public ISprite? GetCurrentSprite() {
+    return underlying_data?.GetCurrentSprite() ?? null;
   }
 
   public void Reset() {
-    underlying_data.Reset();
+    underlying_data?.Reset();
   }
 
   public void Update(double delta) {
-    underlying_data.Update(delta);
+    underlying_data?.Update(delta);
   }
 }

@@ -251,6 +251,15 @@ public class ViewComponent : IDigiComponent, IContainer {
   public virtual void Tick(double delta) {}
   public virtual void Deactivate() {}
 
+  public void PreDestroy() {
+    foreach (ViewComponent c in GetChildren()) {
+      c.PreDestroy();
+    }
+
+    Destroy();
+  }
+  public virtual void Destroy() {}
+
   public void PreDraw(ICanvas canvas) {
 
     // not gonna worry about this anymore

@@ -1,5 +1,6 @@
 using digipet.canvas;
 using digipet.component;
+using digipet.db;
 using digipet.file;
 using digipet.input;
 using digipet.sim;
@@ -30,4 +31,7 @@ public interface IEngineBase {
   IInputManager GetInputManager();
   IFileLoader GetResourceLoader();
   IFileLoader GetUserdataLoader();
+  IDataStore GetSaveStore();
+
+  public virtual void TearDown() {}
 }

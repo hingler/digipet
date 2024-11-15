@@ -1,15 +1,8 @@
 namespace digipet.util;
 
 public static class LoggerSingleton {
-  public delegate ILogger LoggerFactoryFunc();
-
-  private static LoggerFactoryFunc f = null;
   private static readonly ConsoleLogger defaultLogger = new();
   private static ILogger logger = null;
-
-  public static void SetFactoryMethod(LoggerFactoryFunc d) {
-    f = d;
-  }
 
   public static void SetLogger(ILogger logger) {
     LoggerSingleton.logger = logger;
@@ -18,8 +11,6 @@ public static class LoggerSingleton {
   public static ILogger GetLogger() {
     if (logger != null) {
       return logger;
-    } else if (f != null) {
-      return f();
     }
 
     return defaultLogger;

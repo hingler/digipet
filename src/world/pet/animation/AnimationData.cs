@@ -31,7 +31,7 @@ public class AnimatedSpriteData : IAnimationData {
     get => Math.Clamp(time, 0.0, Duration);
   }
 
-  public PetAnimation CurrentAnimation { get; }
+  public PetAnimation? CurrentAnimation { get; }
   public bool Loop { get; }
   public Vector2 FaceOffsetPx { get; set; } = Vector2.Zero;
 
@@ -75,7 +75,7 @@ public class AnimationData : IAnimationData {
   private readonly double frame_time;
   private double time;
 
-  public PetAnimation CurrentAnimation { get; }
+  public PetAnimation? CurrentAnimation { get; }
   public int Frame { 
     get => Math.Clamp(
       (int)Math.Floor(time / frame_time),

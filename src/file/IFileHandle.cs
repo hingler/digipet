@@ -3,7 +3,7 @@ using digipet.file.stream;
 
 namespace digipet.file;
 
-public interface IFileHandle {
+public interface IFileHandle : IDisposable {
   // return this file as string
   string AsString();
 

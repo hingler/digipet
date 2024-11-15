@@ -29,4 +29,6 @@ public interface IDigiComponent {
   // called (before destroy) when this component is no longer at the top of the stack
   // (either removed or covered)
   void Deactivate();
+
+  void Destroy();
 }

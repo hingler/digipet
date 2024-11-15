@@ -2,6 +2,8 @@ using System.Runtime.Serialization;
 
 namespace digipet.db;
 
+#nullable enable
+
 public class SubDataStore : IDataStore {
   private readonly string prefix;
   private readonly IDataStore superstore;
@@ -15,12 +17,20 @@ public class SubDataStore : IDataStore {
     superstore.Store(prefix + index, data);
   }
 
-  public T Fetch<T>(string index) where T : class {
+  public T? Fetch<T>(string index) where T : class {
     return superstore.Fetch<T>(prefix + index);
+  }
+
+  public bool TryFetch<T>(string index, out T? output) where T : class {
+    return superstore.TryFetch<T>(prefix + index, out output);
+  }
+
+  public bool Contains<T>(string index) {
+    return superstore.Contains<T>(prefix + index);
   }
 
   public IDataStore GetSubspace(string prefix) {
     // string concat vs recursion
-    return new SubDataStore(this.prefix + "." + prefix + ".", superstore);
+    return new SubDataStore(this.prefix + prefix + ".", superstore);
   }
 }

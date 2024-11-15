@@ -9,4 +9,6 @@ public enum FileFlags {
 public interface IFileLoader {
   // r, w, a
   IFileHandle Load(string path, FileFlags flags);
+
+  bool Exists(string path);
 }

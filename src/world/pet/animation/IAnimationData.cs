@@ -4,9 +4,11 @@ using digipet.image;
 
 namespace digipet.world.pet.animation;
 
+#nullable enable
+
 public interface IAnimationData : IAnimationState {
-  public ISprite GetCurrentSprite();
-  ISprite IAnimationState.Sprite { get => GetCurrentSprite(); }
+  public ISprite? GetCurrentSprite();
+  ISprite? IAnimationState.Sprite { get => GetCurrentSprite(); }
   void Update(double delta);
 
   // reset the animation back to initial state

@@ -58,12 +58,14 @@ public class DrinkTask : IPetTask {
   }
 
   public int GetPriority() {
-    if (model.Water < THIRST_CRITICAL) {
+    if (source.Contents < 0.01 || model.Water >= THIRST_BEGIN) {
+      return -1;
+    } else if (model.Water < THIRST_CRITICAL) {
       return 100;
     } else if (model.Water < THIRST_BEGIN) {
       return 2;
-    } else {
-      return -1;
     }
+    
+    return -1;
   }
 }
