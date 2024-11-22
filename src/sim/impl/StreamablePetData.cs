@@ -2,7 +2,7 @@ using digipet.file.stream;
 using digipet.sim;
 
 
-public class PetData : IPetData, IStreamable<PetData> {
+public class PetData : IPetData, IStreamable {
   public double Food { get; }
   public double Water { get; }
   public double Fun { get; }
@@ -40,17 +40,15 @@ public class PetData : IPetData, IStreamable<PetData> {
     src.PetName
   ) {}
 
-  public static PetData FromStream(IInputStream stream) {
-    return new PetData(
-      stream.ReadDouble(),
-      stream.ReadDouble(),
-      stream.ReadDouble(),
-      stream.ReadDouble(),
-      stream.ReadDouble(),
-      stream.ReadInt64(),
-      stream.ReadPascalString()
-    );
-  }
+  public PetData(IInputStream stream) : this(
+    stream.ReadDouble(),
+    stream.ReadDouble(),
+    stream.ReadDouble(),
+    stream.ReadDouble(),
+    stream.ReadDouble(),
+    stream.ReadInt64(),
+    stream.ReadPascalString()
+  ) {}
 
   public void ToStream(IOutputStream stream) {
     stream.WriteDouble(Food);

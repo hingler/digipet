@@ -5,6 +5,8 @@ using digipet.world.pet.task;
 
 namespace digipet.world.pet.controller;
 
+#nullable enable
+
 public class SimplePetController : IPetController {
   private readonly AnimationManager animation_manager;
   private readonly PetTaskManager task_manager;
@@ -12,8 +14,8 @@ public class SimplePetController : IPetController {
 
   private IPetState state = new SimplePetObject();
 
-  private IPetTask currentTask = null;
-  private IAnimationData currentAnimation = null;
+  private IPetTask? currentTask = null;
+  private IAnimationData? currentAnimation = null;
 
   private readonly ILogger logger;
 

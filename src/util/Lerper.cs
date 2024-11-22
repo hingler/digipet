@@ -13,6 +13,7 @@ public class Lerper {
     double smoothing_factor
   ) {
     SmoothingFactor = smoothing_factor;
+    offset_ = 0.0f;
   }
 
   public void Tick(double delta) {

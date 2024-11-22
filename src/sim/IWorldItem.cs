@@ -1,8 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using digipet.image;
-
 namespace digipet.sim;
 
 #nullable enable
@@ -10,4 +5,11 @@ namespace digipet.sim;
 // no defn yet
 public interface IWorldItem {
   int RID { get; }
+  string Name { get; }
+  string Description { get; }
+  int StorePrice { get; }
+
+
 }
+
+// enough data for the store to receive it and get the drill

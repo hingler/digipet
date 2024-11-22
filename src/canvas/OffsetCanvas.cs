@@ -2,6 +2,7 @@ using System.Numerics;
 using digipet.canvas.font;
 using digipet.image;
 using digipet.util;
+using digipet.view;
 
 namespace digipet.canvas;
 
@@ -110,13 +111,18 @@ public class OffsetCanvas : ICanvas {
     }
   }
 
+  public Vector2 GetStringSize(Text text) => GetStringSize(text.Content, text.Font, text.Scale);
+  public Vector2 GetStringSize(string text, FontType typeface, float scale) => GetStringSize(text, typeface, scale, -1, -1);
+
   public Vector2 GetStringSize(
     string text,
     FontType typeface,
-    float scale
+    float scale,
+    float width_px,
+    int max_lines
   ) {
     // string size wrt parent canvas
-    Vector2 res = canvas.GetStringSize(text, typeface, scale);
+    Vector2 res = canvas.GetStringSize(text, typeface, scale, width_px, max_lines);
     return res / (size * this.scale);
   }
 

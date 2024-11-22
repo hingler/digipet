@@ -36,9 +36,13 @@ public class SubCanvasView : ViewComponent, IContainer {
     dep.GetRoot().Tick(delta);
   }
 
+  public override void Reflow(ICanvas canvas) {
+    base.Reflow(canvas);
+    dep.Size = canvas.GetSizePx();
+  }
+
   public override void Draw(ICanvas canvas) {
     // resize dep
-    dep.Size = canvas.GetSizePx();
     ISprite sprite = dep.GetCanvasAsSprite();
     canvas.Tex(sprite, Vector2.Zero, Vector2.One, false);
   }

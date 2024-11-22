@@ -3,7 +3,7 @@ using digipet.sim.water;
 
 namespace digipet.sim.water;
 
-public class WaterData : IWaterData, IStreamable<WaterData> {
+public class WaterData : IWaterData, IStreamable {
   public double Capacity { get; }
   public double Contents { get; }
 
@@ -14,11 +14,9 @@ public class WaterData : IWaterData, IStreamable<WaterData> {
     this.Contents = Contents;
   }
 
-  public static WaterData FromStream(IInputStream stream) {
-    return new WaterData(
-      stream.ReadDouble(),
-      stream.ReadDouble()
-    );
+  public WaterData(IInputStream stream) {
+    Capacity = stream.ReadDouble();
+    Contents = stream.ReadDouble();
   }
 
   public void ToStream(IOutputStream stream) {

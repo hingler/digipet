@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using digipet.canvas;
+using digipet.canvas.font;
 using digipet.component;
 using digipet.db;
 using digipet.file;
@@ -79,8 +80,16 @@ public class DigiEngine : IEngine, IInputListener {
     return platform_base.GetUserdataLoader();
   }
 
+  public IFileLoader GetDigipetAssetLoader() {
+    return platform_base.GetDigipetAssetLoader();
+  }
+
   public IDataStore GetSaveStore() {
     return platform_base.GetSaveStore();
+  }
+
+  public IFontHelper GetFontHelper() {
+    return platform_base.GetFontHelper();
   }
 
   public void TearDown() {

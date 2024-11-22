@@ -131,6 +131,10 @@ public abstract class Scene : IDigiComponent {
 
   public void Draw(ICanvas canvas) {
     for (int i = 0; i < stack.Count; i++) {
+      stack[i].ResizePass(canvas);
+    }
+
+    for (int i = 0; i < stack.Count; i++) {
       stack[i].PreDraw(canvas);
     }
   }

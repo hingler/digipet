@@ -14,12 +14,12 @@ namespace digipet.db;
 
 // - possibly: encrypt data based on type, st only the passed type works??
 //   - (down the line)
-public class StreamableDataStore : IStreamable<StreamableDataStore>, IDataStore {
-  private readonly Dictionary<string, IOutStreamable> store;
+public class StreamableDataStore : IStreamable, IDataStore {
+  private readonly Dictionary<string, IStreamable> store;
   private static readonly ILogger logger = LoggerSingleton.GetStaticLogger<StreamableDataStore>();
 
-  public static StreamableDataStore FromStream(IInputStream stream) {
-    Dictionary<string, IOutStreamable> data = [];
+  public StreamableDataStore(IInputStream stream) {
+    Dictionary<string, IStreamable> data = [];
     int item_count = stream.ReadInt32();
     logger.Log("found ", item_count, " items");
     for (int i = 0; i < item_count; i++) {
@@ -38,10 +38,10 @@ public class StreamableDataStore : IStreamable<StreamableDataStore>, IDataStore 
         continue;
       }
 
-      MethodInfo? invoke = t.GetMethod("FromStream");
-
-      if (invoke != null) {
-        IOutStreamable? output = (IOutStreamable?)invoke.Invoke(null, [ stream ]);
+      // still reflection but feels more idiomatic
+      ConstructorInfo? constructor = t.GetConstructor([ typeof(IInputStream) ]);
+      if (constructor != null) {
+        IStreamable? output = (IStreamable?)constructor.Invoke([ stream ]);
         if (output != null) {
           data[key] = output;
         } else {
@@ -52,17 +52,17 @@ public class StreamableDataStore : IStreamable<StreamableDataStore>, IDataStore 
       }
     }
 
-    return new StreamableDataStore(data);
+    store = data;
   }
 
   public StreamableDataStore() : this([]) {}
 
-  private StreamableDataStore(Dictionary<string, IOutStreamable> store) {
+  private StreamableDataStore(Dictionary<string, IStreamable> store) {
     this.store = store;
   }
 
   public void Store(string index, object data) {
-    if (data is IOutStreamable streamable) {
+    if (data is IStreamable streamable) {
       store[index] = streamable;
     } else {
       logger.Error("attempted to store non-streamable data type - ignoring...");
@@ -70,7 +70,7 @@ public class StreamableDataStore : IStreamable<StreamableDataStore>, IDataStore 
   }
 
   public T? Fetch<T>(string index) where T : class {
-    if (store.TryGetValue(index, out IOutStreamable? item)) {
+    if (store.TryGetValue(index, out IStreamable? item)) {
       return item as T;
     }
 
@@ -78,13 +78,13 @@ public class StreamableDataStore : IStreamable<StreamableDataStore>, IDataStore 
   }
 
   public bool TryFetch<T>(string index, out T? output) where T : class {
-    bool res = store.TryGetValue(index, out IOutStreamable? item);
+    bool res = store.TryGetValue(index, out IStreamable? item);
     output = item as T;
     return res;
   }
 
   public bool Contains<T>(string index) {
-    if (store.TryGetValue(index, out IOutStreamable? item)) {
+    if (store.TryGetValue(index, out IStreamable? item)) {
       return item is T;
     }
 
@@ -100,7 +100,7 @@ public class StreamableDataStore : IStreamable<StreamableDataStore>, IDataStore 
     logger.Log("writing ", store.Count, " items");
     stream.WriteInt32(store.Count);
 
-    foreach (KeyValuePair<string, IOutStreamable> pair in store) {
+    foreach (KeyValuePair<string, IStreamable> pair in store) {
       stream.WritePascalString(pair.Key);
       stream.WritePascalString(pair.Value.GetType().AssemblyQualifiedName);
       // write to a byte stream, then get the length of said stream, then prepend the length of the stream

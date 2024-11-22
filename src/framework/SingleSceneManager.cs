@@ -1,4 +1,5 @@
 using digipet.canvas;
+using digipet.canvas.font;
 using digipet.component;
 using digipet.db;
 using digipet.file;
@@ -57,15 +58,23 @@ public class SingleSceneManager : IEngine {
     return base_engine.GetUserdataLoader();
   }
 
+  public IFileLoader GetDigipetAssetLoader() {
+    return base_engine.GetDigipetAssetLoader();
+  }
+
   public ISimRepo<T> GetAssetRepo<T>() where T : IWorldItem {
-    return null;
+    return null!;
   }
 
   public IPhysWorld GetPhysWorld() {
-    return null;
+    return null!;
   }
 
   public IDataStore GetSaveStore() {
-    return null;
+    return null!;
+  }
+
+  public IFontHelper GetFontHelper() {
+    return null!;
   }
 }
