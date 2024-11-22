@@ -4,18 +4,19 @@ using digipet.util;
 
 namespace digipet.sim.edible;
 
+#nullable enable
 
 public class SimpleTasteModel : ITasteModel {
   private readonly Random random = new();
-  private readonly IDataStore tasteStore;
+  private readonly IDataStore? tasteStore;
 
-  public SimpleTasteModel(IDataStore store) {
+  public SimpleTasteModel(IDataStore? store) {
     tasteStore = store;
   }
   public double GetTaste(IEdiblePickup pickup) {
-    if (tasteStore.TryFetch(pickup.Name, out TasteData data)) {
+    if (tasteStore?.TryFetch(pickup.Name, out TasteData? data) ?? false) {
       this.GetLogger().Log("taste fetched!");
-      return data.Taste;
+      return data!.Taste;
     }
 
     double mean = pickup.Appeal;
@@ -23,7 +24,8 @@ public class SimpleTasteModel : ITasteModel {
 
     double taste = Math.Clamp(Gaussian.GetGaussian(random) * stdev + mean, -5.4, 5.4);
 
-    tasteStore.Store(pickup.Name, new TasteData(taste));
+    // if non-null
+    tasteStore?.Store(pickup.Name, new TasteData(taste));
 
     return taste;
   }

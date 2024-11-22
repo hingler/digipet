@@ -1,4 +1,5 @@
 using digipet.canvas;
+using digipet.canvas.font;
 using digipet.component;
 using digipet.db;
 using digipet.file;
@@ -31,7 +32,10 @@ public interface IEngineBase {
   IInputManager GetInputManager();
   IFileLoader GetResourceLoader();
   IFileLoader GetUserdataLoader();
+  IFileLoader GetDigipetAssetLoader();
   IDataStore GetSaveStore();
+
+  IFontHelper GetFontHelper();
 
   public virtual void TearDown() {}
 }

@@ -45,7 +45,8 @@ public class ViewComponent : IDigiComponent, IContainer {
 
   private CoordState coord_state = new();
 
-  private bool reflow_dirty_ = false;
+  private bool reflow_dirty_ = true;
+  private bool resize_dirty_ = true;
 
   private Vector2 anchor_;
 
@@ -55,6 +56,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     set {
       offset_ = value;
       coord_state.Offset = CoordMetric.Relative;
+      resize_dirty_ = true;
     }
   }
 
@@ -63,6 +65,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     set {
       offset_px_ = value;
       coord_state.Offset = CoordMetric.Absolute;
+      resize_dirty_ = true;
     }
   }
 
@@ -71,6 +74,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     set {
       offset_.X = value;
       coord_state.OffsetX = CoordMetric.Relative;
+      resize_dirty_ = true;
     }
   }
 
@@ -79,6 +83,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     set {
       offset_.Y = value;
       coord_state.OffsetY = CoordMetric.Relative;
+      resize_dirty_ = true;
     }
   }
 
@@ -87,6 +92,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     set {
       offset_px_.X = value;
       coord_state.OffsetX = CoordMetric.Absolute;
+      resize_dirty_ = true;
     }
   }
 
@@ -95,6 +101,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     set {
       offset_px_.Y = value;
       coord_state.OffsetY = CoordMetric.Absolute;
+      resize_dirty_ = true;
     }
   }
 
@@ -104,6 +111,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     set {
       size_ = value;
       coord_state.Size = CoordMetric.Relative;
+      resize_dirty_ = true;
       reflow_dirty_ = true;
     }
   }
@@ -113,6 +121,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     set {
       size_px_ = value;
       coord_state.Size = CoordMetric.Absolute;
+      resize_dirty_ = true;
       reflow_dirty_ = true;
     }
   }
@@ -122,6 +131,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     set {
       size_.X = value;
       coord_state.SizeX = CoordMetric.Relative;
+      resize_dirty_ = true;
       reflow_dirty_ = true;
     }
   }
@@ -131,6 +141,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     set {
       size_.Y = value;
       coord_state.SizeY = CoordMetric.Relative;
+      resize_dirty_ = true;
       reflow_dirty_ = true;
     }
   }
@@ -140,6 +151,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     set {
       size_px_.X = value;
       coord_state.SizeX = CoordMetric.Absolute;
+      resize_dirty_ = true;
       reflow_dirty_ = true;
     }
   }
@@ -149,6 +161,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     set {
       size_px_.Y = value;
       coord_state.SizeY = CoordMetric.Absolute;
+      resize_dirty_ = true;
       reflow_dirty_ = true;
     }
   }
@@ -260,14 +273,56 @@ public class ViewComponent : IDigiComponent, IContainer {
   }
   public virtual void Destroy() {}
 
-  public void PreDraw(ICanvas canvas) {
+  protected void QueueReflow() {
+    reflow_dirty_ = true;
+  }
 
+  public void ResizePass(ICanvas canvas) {
+    if (resize_dirty_) {
+      HandleResize(canvas);
+      resize_dirty_ = false;
+    }
+
+    IReadOnlyList<ViewComponent> children = GetChildren();
+    for (int i = 0; i < children.Count; i++) {
+      children[i].ResizePass(canvas);
+    }
+  }
+
+  public void PreDraw(ICanvas canvas) {
+    // don't like this
+    HandleResize(canvas);
+
+    Vector2 start = offset_ - (size_ * Anchor);
+    OffsetCanvas c = new(canvas, start, size_, 1.0f, Opacity, ZIndex);
+
+    if (resize_dirty_) {
+      HandleResize(canvas);
+      resize_dirty_ = false;
+    }
+
+    if (reflow_dirty_) {
+      Reflow(c);
+      reflow_dirty_ = false;
+    }
+
+    Draw(c);
+
+    IReadOnlyList<ViewComponent> children = GetChildren();
+    for (int i = 0; i < children.Count; i++) {
+      children[i].PreDraw(c);
+    }
+  }
+
+  protected void HandleResize(ICanvas canvas) {
     // not gonna worry about this anymore
     Vector2 offset_rel = offset_;
     Vector2 size_rel = size_;
 
     Vector2 offset_abs = canvas.PxToRelative(OffsetPx);
     Vector2 size_abs = canvas.PxToRelative(SizePx);
+
+    // both specified in rel coords
 
     Vector2 offset = new(
       coord_state.OffsetX == CoordMetric.Relative ? offset_rel.X : offset_abs.X,
@@ -279,20 +334,12 @@ public class ViewComponent : IDigiComponent, IContainer {
       coord_state.SizeY == CoordMetric.Relative ? size_rel.Y : size_abs.Y
     );
 
-    Vector2 start = offset - (size * Anchor);
-    OffsetCanvas c = new(canvas, start, size, 1.0f, Opacity, ZIndex);
+    offset_ = offset;
+    size_ = size;
 
-    if (reflow_dirty_) {
-      reflow_dirty_ = false;
-      Reflow(c);
-    }
-
-    Draw(c);
-
-    IReadOnlyList<ViewComponent> children = GetChildren();
-    for (int i = 0; i < children.Count; i++) {
-      children[i].PreDraw(c);
-    }
+    // don't like this
+    offset_px_ = canvas.GetSizePx() * offset_;
+    size_px_ = canvas.GetSizePx() * size_;
   }
 
   // called when the size of a given component changes

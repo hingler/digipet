@@ -29,7 +29,7 @@ public class SkyView : ViewComponent {
 
     foreach (SpriteView sprite in sky_sprites) {
       sprite.Anchor = new(0.0f, 1.0f);
-      sprite.tile = true;
+      sprite.Tile = true;
     }
   }
 

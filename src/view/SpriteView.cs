@@ -19,7 +19,7 @@ public class SpriteView : ViewComponent {
       SizePx = Dims;
     }
   }
-  public bool tile = false;
+  public bool Tile = false;
 
   public Vector2 Dims => sprite?.Dims ?? Vector2.Zero;
   public SpriteView() : this(null) {}
@@ -29,6 +29,6 @@ public class SpriteView : ViewComponent {
 
   public override void Draw(ICanvas canvas) {
     base.Draw(canvas);
-    canvas.Tex(sprite, Vector2.Zero, Vector2.One, tile);
+    canvas.Tex(sprite, Vector2.Zero, Vector2.One, Tile);
   }
 }

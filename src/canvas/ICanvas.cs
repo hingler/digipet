@@ -36,17 +36,11 @@ public interface ICanvas {
   ) => Tex(image, start, end, tile, Vector4.One);
   void Tex(ISprite image, Vector2 start, Vector2 end, bool tile, Vector4 modulate, int z_index = 0);
 
-  Vector2 GetStringSize(
-    string text,
-    FontType typeface,
-    float scale
-  );
-
-  Vector2 GetStringSize(Text text) {
-    return GetStringSize(text.Content, text.Font, text.Scale);
-  }
-
   // tba: drawing images?
+
+  public Vector2 GetStringSize(Text text) => GetStringSize(text.Content, text.Font, text.Scale);
+  public Vector2 GetStringSize(string text, FontType typeface, float scale) => GetStringSize(text, typeface, scale, -1, -1);
+  public Vector2 GetStringSize(string text, FontType typeface, float scale, float width_px, int max_lines);
 
   // called at the end of a "draw frame"
   void Flush();

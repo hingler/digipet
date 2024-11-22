@@ -8,7 +8,7 @@ namespace digipet.world.pet.animation;
 
 public class AnimationDataBuilder : IAnimationData {
   private IAnimationData? underlying_data;
-  private IList<Vector2> frame_offsets = [];
+  private readonly IList<Vector2> frame_offsets = [];
 
   public AnimationDataBuilder() {
     underlying_data = null;

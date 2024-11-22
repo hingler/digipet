@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using digipet.image;
 using digipet.pet;
+using digipet.util;
 using digipet.world.pet;
 using digipet.world.pet.animation;
 
@@ -58,10 +59,11 @@ public class AnimatedSpriteData : IAnimationData {
     if (time > Duration) {
       time %= Duration;
     }
+
+    sprite.Frame = Frame;
   }
 
   public ISprite GetCurrentSprite() {
-    sprite.Frame = Frame;
     return sprite;
   }
 

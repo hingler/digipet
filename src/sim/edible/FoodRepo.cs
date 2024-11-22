@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using digipet.file;
 using digipet.framework;
 using digipet.sim.db;
+using digipet.strings;
 
 namespace digipet.sim.edible;
 
@@ -10,11 +12,9 @@ namespace digipet.sim.edible;
 public class FoodRepo : ISimRepo<IEdiblePickup> {
   private readonly CSVRepo<IEdiblePickup> repo;
 
-  // mapping sprite paths??
-
   public FoodRepo(IEngine engine) {
     repo = new(
-      new FoodCSVConverter(),
+      new FoodCSVConverter(engine),
       "asset/food_table.csv", 
       engine.GetResourceLoader()
     );

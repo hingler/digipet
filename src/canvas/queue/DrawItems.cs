@@ -17,6 +17,7 @@ public struct TextItem : IDrawItem {
   public Vector2 origin;
   public string content;
   public float scale;
+  public float width_px;
   public FontType typeface;
   public HorizontalAlign alignment;
   public Vector4 color;

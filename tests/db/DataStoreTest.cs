@@ -7,12 +7,11 @@ using NUnit.Framework.Internal;
 
 namespace digipet.tests.db;
 
-public class Dumdum : IStreamable<Dumdum> {
-  public int d = -1;
-  public static Dumdum FromStream(IInputStream stream) {
-    Dumdum d = new();
-    d.d = stream.ReadInt32();
-    return d;
+public class Dumdum : IStreamable {
+  public int d = -1; 
+  public Dumdum() {}
+  public Dumdum(IInputStream stream) {
+    d = stream.ReadInt32();
   }
 
   public void ToStream(IOutputStream stream) {
@@ -69,7 +68,7 @@ public class DataStoreTest {
     store.ToStream(stream);
 
     stream.Seek(0);
-    StreamableDataStore s2 = StreamableDataStore.FromStream(stream);
+    StreamableDataStore s2 = new(stream);
 
 
 

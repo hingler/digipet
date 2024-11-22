@@ -3,10 +3,6 @@ using digipet.image;
 namespace digipet.sim.edible;
 
 public interface IEdiblePickup : IWorldItem {
-  public string Name { get; }
-  public string Description { get; }
-  // price to purchase
-  public int StorePrice { get; }
   // affects prob of appealing in store
   public int Rarity { get; }
 

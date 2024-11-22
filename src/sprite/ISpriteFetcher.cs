@@ -27,13 +27,19 @@ public enum SpriteID {
   WATER_BOWL,
   WATER_STREAM,
 
+
+  // offsets??
+  NPC_OWL,
+
   OFFSET_EMOTE = 4096,
 
   OFFSET_FIXTURE = 8192,
 
 
   // for larger datasets, let's just give it a large offset and catalogue things separately
-  OFFSET_FOOD = 16384
+  OFFSET_FOOD = 16384,
+
+  OFFSET_BG = 32768,
 }
 
 public interface ISpriteFetcher {

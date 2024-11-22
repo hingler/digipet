@@ -1,13 +1,8 @@
 namespace digipet.file.stream;
 
-// classes which can be read/written from/to streams
+public interface IStreamable {
 
-public interface IOutStreamable {
+  // creates an instance from the stream's contents
+  // (we do typecasting anyway so doesnt rly matter)
   void ToStream(IOutputStream stream);
-}
-
-public interface IStreamable<T> : IOutStreamable where T : IStreamable<T> {
-
-  // creates an instance of T from the stream's contents
-  static abstract T FromStream(IInputStream stream);
 }
