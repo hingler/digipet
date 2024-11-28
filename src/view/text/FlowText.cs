@@ -28,12 +28,17 @@ public class FlowText : ViewComponent {
     set => flow.Font = value;
   }
 
+  public DigiColor Color = DigiColor.BLACK;
+
+  public HorizontalAlign Alignment { get; set; }
+
   public float DisplayedLineOffset = 0.0f;
 
   public FlowText(IEngine engine) : this(new TextFlowHandler(engine)) {}
 
   public FlowText(ITextFlow flow) {
     this.flow = flow;
+    Alignment = HorizontalAlign.LEFT;
   }
 
   public override void Reflow(ICanvas canvas) {
@@ -41,13 +46,28 @@ public class FlowText : ViewComponent {
     flow.Bounds = SizePx;
   }
 
+  public float GetBaselinePixelX() {
+    return Alignment switch {
+      HorizontalAlign.CENTER => PixelSizeX / 2.0f,
+      HorizontalAlign.RIGHT => PixelSizeX - 0.1f,
+      _ => 0.1f,
+    };
+  }
+
   public override void Draw(ICanvas canvas) {
     base.Draw(canvas);
     IReadOnlyList<string> lines = flow.GetLines();
-    for (int i = 0; i < lines.Count; i++) {
-      Vector2 baseline_px = new(0.1f, flow.GetTextBaseline(i, DisplayedLineOffset));
+
+    int init_line = (int)Math.Floor(Math.Max(DisplayedLineOffset - 1, 0));
+
+    for (int i = init_line; i < lines.Count; i++) {
+      Vector2 baseline_px = new(
+        GetBaselinePixelX(), 
+        flow.GetTextBaseline(i, DisplayedLineOffset)
+      );
+      
       Vector2 baseline_canvas = canvas.PxToRelative(baseline_px);
-      canvas.Text(baseline_canvas, lines[i], 1.0f, Font, HorizontalAlign.LEFT, DigiColor.BLACK, 0);
+      canvas.Text(baseline_canvas, lines[i], 1.0f, Font, Alignment, Color, 0);
     }
   }
 }

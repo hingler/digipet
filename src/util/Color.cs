@@ -11,6 +11,8 @@ public struct DigiColor {
     A = a;
   }
 
+  public DigiColor(float shade) : this(shade, shade, shade, 1.0f) {}
+
   public readonly DigiColor WithOpacity(float opac) {
     return new DigiColor(R, G, B, A * opac);
   }

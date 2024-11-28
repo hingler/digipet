@@ -16,8 +16,12 @@ public class Lerper {
     offset_ = 0.0f;
   }
 
+  public static double Lerp(double t, double a, double b) {
+    return a * (1.0 - t) + b * t;
+  }
+
   public void Tick(double delta) {
     double dt = Math.Exp(delta * -Math.Max(SmoothingFactor, 0.000001));
-    offset_ = Target * (1.0 - dt) + offset_ * dt;
+    offset_ = Lerp(dt, Target, offset_);
   }
 }

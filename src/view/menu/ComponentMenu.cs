@@ -126,7 +126,7 @@ public class ComponentMenu : ViewComponent {
       Vector2 end = canvas.PxToRelative(canvas.GetSizePx().X - 1.5f * margin_, (float)line_start);
       
       if (start.Y > 0.0f && start.Y < 1.0f) {
-        canvas.Line(start, end, 1.0f, DigiColor.BLACK.WithOpacity(0.3f), 0);
+        canvas.Line(start, end, 1.0f, DigiColor.BLACK.WithOpacity(0.3f), z_index: 0);
       }
     }
   }

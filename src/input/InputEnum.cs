@@ -6,7 +6,13 @@ public enum InputType {
   UP,
   DOWN,
   CONFIRM,
-  BACK
+  BACK,
+
+  // does not map
+  UNBOUND,
+
+  // unknown
+  UNKNOWN
 }
 
 public enum InputState {

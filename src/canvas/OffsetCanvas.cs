@@ -83,7 +83,7 @@ public class OffsetCanvas : ICanvas {
   }
 
   public void Line(
-    Vector2 start, Vector2 end, float thickness, Vector4 col, int z_index
+    Vector2 start, Vector2 end, float thickness, Vector4 col, float dash, int z_index
   ) {
     if (mod_alpha.W > 0.001f) {
       canvas.Line(
@@ -91,6 +91,7 @@ public class OffsetCanvas : ICanvas {
         Project(end), 
         thickness, 
         col * mod_alpha,
+        dash,
         z_index + this.z_index
       );
     }
