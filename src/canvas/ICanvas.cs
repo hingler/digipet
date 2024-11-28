@@ -26,7 +26,14 @@ public interface ICanvas {
     int z_index = 0
   );
 
-  void Line(Vector2 start, Vector2 end, float thickness, Vector4 col, int z_index = 0);
+  void Line(
+    Vector2 start, 
+    Vector2 end, 
+    float thickness, 
+    Vector4 col, 
+    float dash = -1.0f,
+    int z_index = 0
+  );
 
   void Tex(
     ISprite image, 

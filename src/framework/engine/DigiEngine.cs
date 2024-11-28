@@ -102,6 +102,8 @@ public class DigiEngine : IEngine, IInputListener {
     GetActiveScene()?.PreInput(type, state);
   }
 
+  public void OnKey(IKeyEvent ev) { }
+
   public void Update(double delta) {
     GetActiveScene()?.Let(s => {
       if (!s.Initialized()) {

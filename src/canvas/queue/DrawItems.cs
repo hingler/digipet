@@ -27,6 +27,8 @@ public struct LineItem : IDrawItem {
   public Vector2 start, end;
   public float thickness;
   public Vector4 col;
+
+  public float dash;
 }
 
 public struct TexItem : IDrawItem {

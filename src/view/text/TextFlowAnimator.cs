@@ -33,6 +33,14 @@ public class TextFlowAnimator : ITextFlow {
     }
   }
 
+  public int LineSpacing {
+    get => flow_handler.LineSpacing;
+    set {
+      flow_handler.LineSpacing = value;
+      max_chars_ = GetCharCap();
+    }
+  }
+
   private double visible_chars = 0.0;
 
   private int line_offset_;
@@ -90,6 +98,21 @@ public class TextFlowAnimator : ITextFlow {
     }
 
     return line_output.AsReadOnly();
+  }
+
+  public IReadOnlyList<int> GetLineCharOffsets() {
+    IReadOnlyList<int> source = flow_handler.GetLineCharOffsets();
+    IList<int> res = [];
+    for (
+      int i = line_offset_; 
+      i < source.Count; 
+      i++
+    ) {
+      res.Add(source[i]);
+    }
+
+    // extra data doesn't matter to me
+    return res.AsReadOnly();
   }
 
   public string GetLinesAsString() {
