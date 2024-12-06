@@ -24,6 +24,9 @@ public class DigiEngine : IEngine, IInputListener {
   private readonly Stack<Scene> scene_stack = new();
   private readonly PhysicsObjectShow phys_world;
   private readonly Dictionary<Type, object> repos = [];
+  private readonly BabyTimer timer = new();
+
+  private bool debug = false;
 
   public DigiEngine(IEngineBase platform_base) {
     this.platform_base = platform_base;
@@ -35,6 +38,8 @@ public class DigiEngine : IEngine, IInputListener {
 
   private void InitDB() {
     repos[typeof(IEdiblePickup)] = new FoodRepo(this);
+
+    // (tba: handle finished scenes - thinking we can just crawl up and remove finished scenes)
   }
 
   private Scene? GetActiveScene() {
@@ -44,6 +49,8 @@ public class DigiEngine : IEngine, IInputListener {
 
   public void PushScene(Scene scene) {
     GetActiveScene()?.Deactivate();
+    // need to be able to popscene
+    // alt: if top scene is ever finished after a tick, pop it
     scene_stack.Push(scene);
   }
 
@@ -99,10 +106,13 @@ public class DigiEngine : IEngine, IInputListener {
   }
 
   public void OnInput(InputType type, InputState state) {
-    GetActiveScene()?.PreInput(type, state);
+    // GetActiveScene()?.PreInput(type, state);
+    // deprecate in favor of onkey
   }
 
-  public void OnKey(IKeyEvent ev) { }
+  public void OnKey(IKeyEvent ev) {
+    GetActiveScene()?.PreInput(ev);
+  }
 
   public void Update(double delta) {
     GetActiveScene()?.Let(s => {
@@ -113,13 +123,21 @@ public class DigiEngine : IEngine, IInputListener {
     });
 
     // update phys world here
-    phys_world.Update(delta);
 
+    timer.Start("update");
+    phys_world.Update(delta);
     GetActiveScene()?.SceneTick(delta);
+    timer.End("update", debug);
   }
 
   public void Draw(ICanvas canvas) {
+    timer.Start("draw");
+    timer.Start("draw_scene");
     GetActiveScene()?.Draw(canvas);
+    timer.End("draw_scene", debug);
+    timer.Start("draw_flush");
     canvas.Flush();
+    timer.End("draw_flush", debug);
+    timer.End("draw", debug);
   }
 }

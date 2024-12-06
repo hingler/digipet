@@ -4,7 +4,9 @@ namespace digipet.util;
 
 public class Lerper {
   private double offset_;
-  public double Cursor { get => offset_; }
+  public double Cursor { 
+    get => offset_; 
+  }
   public double Target;
   // (encode offset from menu top)
   private readonly double SmoothingFactor;
@@ -14,6 +16,10 @@ public class Lerper {
   ) {
     SmoothingFactor = smoothing_factor;
     offset_ = 0.0f;
+  }
+
+  public void Reset() {
+    offset_ = Target;
   }
 
   public static double Lerp(double t, double a, double b) {

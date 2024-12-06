@@ -178,9 +178,11 @@ public class ViewComponent : IDigiComponent, IContainer {
 
   public int ZIndex;
 
-  private readonly HashSet<ViewComponent> children = [];
+  private readonly IList<ViewComponent> children = [];
 
   private readonly TransitionQueue transitions = new();
+
+  private readonly HashSet<Action> pop_listeners = new();
 
   public ViewComponent() {
     _stack_child = null;
@@ -194,7 +196,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     ZIndex = 0;
   }
 
-  public virtual IReadOnlyList<ViewComponent> GetChildren() => [.. children];
+  public virtual IReadOnlyList<ViewComponent> GetChildren() => children.AsReadOnly();
 
   public virtual void AddView(ViewComponent v) {
     children.Add(v);
@@ -204,19 +206,21 @@ public class ViewComponent : IDigiComponent, IContainer {
     children.Remove(v);
   }
 
-  public bool PreInput(InputType input, InputState state) {
-    // container handles first
-    IReadOnlyList<ViewComponent> children = GetChildren();
+  public void AddPopListener(Action a) {
+    pop_listeners.Add(a);
+  }
+
+  public bool PreInput(IKeyEvent @event) {
     // children handle first (top down)
     for (int i = children.Count - 1; i >= 0; i--) {
       ViewComponent c = children[i];
-      if (c.PreInput(input, state)) {
+      if (c.PreInput(@event)) {
         return true;
       }
     }
 
     // parent handles last
-    if (HandleInput(input, state)) {
+    if (HandleInput(@event) || HandleInput(@event.Action, @event.State)) {
       return true;
     }
 
@@ -224,6 +228,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     return false;
   }
 
+  public virtual bool HandleInput(IKeyEvent @event) => false;
   public virtual bool HandleInput(InputType input, InputState state) => false;
 
   public void PreActivate() {
@@ -245,7 +250,8 @@ public class ViewComponent : IDigiComponent, IContainer {
   public virtual void PreTick(double delta) {
     transitions.Tick(delta);
     Tick(delta);
-    foreach (ViewComponent child in GetChildren()) {
+    IReadOnlyList<ViewComponent> children = [..GetChildren()];
+    foreach (ViewComponent child in children) {
       child.PreTick(delta);
       // check for child-disposes or self-disposes
       if (child.Dispose) {
@@ -265,7 +271,7 @@ public class ViewComponent : IDigiComponent, IContainer {
   public virtual void Deactivate() {}
 
   public void PreDestroy() {
-    foreach (ViewComponent c in GetChildren()) {
+    foreach (ViewComponent c in children) {
       c.PreDestroy();
     }
 
@@ -302,6 +308,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     }
 
     if (reflow_dirty_) {
+      // draws before children reflow??
       Reflow(c);
       reflow_dirty_ = false;
     }
@@ -357,6 +364,11 @@ public class ViewComponent : IDigiComponent, IContainer {
   // (could do the same thing on creation)
   protected void PopSelf() {
     _dispose = true;
+
+    // smth for queueing this instead of actually "removing"
+    foreach (Action a in pop_listeners) {
+      a();
+    }
   }
   
   public ViewComponent AcknowledgePush() {

@@ -61,21 +61,19 @@ public abstract class Scene : IDigiComponent {
     return stack.Count > 0 ? stack[stack.Count - 1] : null;
   }
 
-  public void PreInput(
-    InputType type,
-    InputState state
-  ) {
+  public void PreInput(IKeyEvent @event) {
     bool consumed = false;
     int cursor = stack.Count - 1;
     while (!consumed && cursor >= 0) {
-      consumed = consumed || stack[cursor--].PreInput(type, state);
+      consumed = consumed || stack[cursor--].PreInput(@event);
     }
 
     if (!consumed) {
-      HandleInput(type, state);
+      HandleInput(@event);
     }
   }
 
+  public virtual bool HandleInput(IKeyEvent @event) => false;
   public virtual bool HandleInput(InputType type, InputState state) => false;
 
   // called by the user to initialize this scene
@@ -121,7 +119,7 @@ public abstract class Scene : IDigiComponent {
     Tick(delta);
 
     // then call component tick
-    for (int i = 0; i < stack.Count; i++) {
+    for (int i = stack.Count - 1; i >= 0; i--) {
       stack[i].PreTick(delta);
     }
 

@@ -63,7 +63,7 @@ public class TextFlowHandler : ITextFlow {
   }
 
   public IReadOnlyList<string> GetLines() {
-    if (lines.Count <= 0) {
+    if (lines.Count <= 0 && Content.Length > 0) {
       ReflowLines();
     }
 
@@ -129,7 +129,10 @@ public class TextFlowHandler : ITextFlow {
   }
 
   private void ReflowLines(int init_line = 0) {
+    this.GetLogger().Log("reflow called on base handler");
     if ((bounds_ == Vector2.Zero) || (Content.Length <= 0)) {
+      this.lines = [];
+      this.line_starts = [];
       return;
     }
 
@@ -164,7 +167,7 @@ public class TextFlowHandler : ITextFlow {
       // - separate this part into something else
       // - clean this up
       // - later : 3
-    
+
       int line_end = next_break < 0 ? Content.Length : next_break;
 
       // handle case where we get -1?
@@ -173,8 +176,10 @@ public class TextFlowHandler : ITextFlow {
       string_dims = helper.GetStringSizePx(sub, Font, 1.0f);
 
       bool in_bounds = string_dims.X < bounds_.X;
-      // break if oob, or if we encounter newlines
-      bool should_break = has_newline || !in_bounds;
+      
+      // exception case: last word in a line doesn't break, when it could
+      // leave it for now
+      bool should_break = (has_newline || !in_bounds) && (next_break >= 0);
 
       if (should_break) {
         if (has_newline && in_bounds) {
@@ -182,9 +187,11 @@ public class TextFlowHandler : ITextFlow {
           current_break = next_break + (Environment.NewLine.Length - 1);
         }
 
-        // idea: store "current_break" so that we know which char each line starts at
-        // i think new line is getting trimmed??
-
+        if (current_break < line_start) {
+          // ie: single-word case
+          current_break = next_break;
+          // bug when it's the last word
+        }
 
         lines.Add(Content[line_start..current_break]);
         line_starts.Add(line_start);
@@ -194,7 +201,7 @@ public class TextFlowHandler : ITextFlow {
         // still good - advance another word
         current_break = next_break;
       }
-    } while (current_break != -1 && current_break < Content.Length);
+    } while (current_break >= 0 && current_break < Content.Length);
 
     if (current_break != line_start) {
       lines.Add(Content[line_start..]);

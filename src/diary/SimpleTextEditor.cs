@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using System.Text;
 using digipet.util;
 
@@ -6,7 +5,6 @@ namespace digipet.diary;
 
 public class SimpleTextEditor : ITextEditor {
   private readonly StringBuilder buffer;
-  private static readonly ILogger logger = LoggerSingleton.GetStaticLogger<SimpleTextEditor>();
 
   // tba: do some x2 checking here
 
@@ -47,4 +45,12 @@ public class SimpleTextEditor : ITextEditor {
       buffer.Remove(--Cursor, 1);
     }
   }
+
+  public void Clear() {
+    buffer.Clear();
+    cursor_ = 0;
+  }
+
+  public void Save() { /* no op */ }
+  public void Erase() { /* no op */ }
 }

@@ -37,4 +37,5 @@ public struct TexItem : IDrawItem {
   public Vector2 end;
   public bool tile;
   public Vector4 modulate;
+  public Vector2 offset;
 }

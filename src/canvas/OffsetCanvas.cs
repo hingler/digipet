@@ -98,7 +98,7 @@ public class OffsetCanvas : ICanvas {
   }
 
   public void Tex(
-    ISprite image, Vector2 start, Vector2 end, bool tile, Vector4 modulate, int z_index
+    ISprite image, Vector2 start, Vector2 end, bool tile, Vector4 modulate, Vector2 offset, int z_index
   ) {
     if (mod_alpha.W > 0.001f) {
       canvas.Tex(
@@ -107,6 +107,7 @@ public class OffsetCanvas : ICanvas {
         Project(end), 
         tile, 
         modulate * mod_alpha,
+        offset,
         z_index + this.z_index
       );
     }
