@@ -40,8 +40,16 @@ public interface ICanvas {
     Vector2 start, 
     Vector2 end, 
     bool tile
-  ) => Tex(image, start, end, tile, Vector4.One);
-  void Tex(ISprite image, Vector2 start, Vector2 end, bool tile, Vector4 modulate, int z_index = 0);
+  ) => Tex(image, start, end, tile, Vector4.One, Vector2.Zero);
+  void Tex(
+    ISprite image, 
+    Vector2 start, 
+    Vector2 end, 
+    bool tile, 
+    Vector4 modulate,
+    Vector2 offset, 
+    int z_index = 0
+  );
 
   // tba: drawing images?
 

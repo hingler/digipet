@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using System.Numerics;
 using digipet.canvas.font;
 using digipet.framework;
 using digipet.util;
@@ -5,8 +7,8 @@ using digipet.view.text;
 
 namespace digipet.diary;
 
-public class CursorDisplayManager {
-  private readonly SimpleTextEditor editor;
+public class CursorDisplayManager : ITextFlow {
+  private readonly ITextEditor editor;
   private readonly TextFlowHandler flow;
 
   private readonly IFontHelper helper;
@@ -21,15 +23,26 @@ public class CursorDisplayManager {
     set => flow.Font = value;
   }
 
-  public float LineOffset = 0.0f;
+  public Vector2 Bounds {
+    get => flow.Bounds;
+    set => flow.Bounds = value;
+  }
 
-  public string Content => editor.AsString();
+  public string Content {
+    get => editor.AsString();
+    set {
+      editor.Clear();
+      Put(value);
+    }
+  }
+
+  public float LineOffset = 0.0f;
   public int Length => editor.Length();
 
   public ITextFlow Flow => flow;
 
-  public CursorDisplayManager(IEngine engine) {
-    editor = new();
+  public CursorDisplayManager(IEngine engine, ITextEditor editor) {
+    this.editor = editor;
     helper = engine.GetFontHelper();
     flow = new TextFlowHandler(engine) {
       LineSpacing = 1
@@ -104,8 +117,6 @@ public class CursorDisplayManager {
       if ((i == offsets.Count) || (offsets[i] > cur)) {
         // if last char in this string is a newline, then jump to the next line
         string prev_line = flow.GetLines()[i - 1];
-        int line_break = prev_line.IndexOf(Environment.NewLine);
-        this.GetLogger().Log("cur into: ", cur - offsets[i - 1], " - line length: ", prev_line.Length, " - break: ", line_break);
         if (prev_line.EndsWith(Environment.NewLine) && ((cur - offsets[i - 1]) >= prev_line.Length)) {
           return i;
         }
@@ -115,6 +126,13 @@ public class CursorDisplayManager {
     }
     return offsets.Count - 1;
   }
+
+  public IReadOnlyList<string> GetLines() => flow.GetLines();
+  public float GetLineHeight() => flow.GetLineHeight();
+  public IReadOnlyList<int> GetLineCharOffsets() => flow.GetLineCharOffsets();
+  public float GetTextBaseline(int line_num, float line_offset) => flow.GetTextBaseline(line_num, line_offset);
+  public string GetLinesAsString() => flow.GetLinesAsString();
+  public int GetMaxLinesVisible() => flow.GetMaxLinesVisible();
 
   public int GetColumn() {
     IReadOnlyList<int> offsets = flow.GetLineCharOffsets();

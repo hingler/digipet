@@ -27,6 +27,8 @@ public enum SpriteID {
   WATER_BOWL,
   WATER_STREAM,
 
+  DIARY_COVER,
+
 
   // offsets??
   NPC_OWL,

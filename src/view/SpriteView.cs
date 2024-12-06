@@ -29,6 +29,8 @@ public class SpriteView : ViewComponent {
 
   public override void Draw(ICanvas canvas) {
     base.Draw(canvas);
-    canvas.Tex(sprite, Vector2.Zero, Vector2.One, Tile);
+    sprite?.Let(s => {
+      canvas.Tex(s, Vector2.Zero, Vector2.One, Tile);
+    });
   }
 }
