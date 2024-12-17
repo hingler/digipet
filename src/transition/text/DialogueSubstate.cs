@@ -20,5 +20,7 @@ public class DialogueSubstate : ITransition {
   }
 
   public bool Complete() => animator.Waiting();
+
+  public bool BlockInput => false;
 }
 

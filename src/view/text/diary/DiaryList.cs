@@ -44,6 +44,10 @@ public class DiaryList : ViewComponent {
       return true;
     }
 
+    if (!TransitionsComplete()) {
+      return true;
+    }
+
     if (state != InputState.RELEASE) {
       switch (input) {
         case InputType.LEFT:

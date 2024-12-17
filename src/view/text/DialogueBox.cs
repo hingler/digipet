@@ -1,3 +1,4 @@
+using digipet.canvas;
 using digipet.component;
 using digipet.framework;
 using digipet.view.text;
@@ -9,6 +10,7 @@ namespace digipet.transition.text;
 public class DialogueBox : ViewComponent {
   private readonly FlowText text;
   private readonly DialogueTransition transition;
+  private readonly SubCanvasView subcanvas;
 
   public string Content {
     get => transition.Content;
@@ -20,8 +22,10 @@ public class DialogueBox : ViewComponent {
   public DialogueBox(IEngine engine) {
     transition = new(engine);
     text = new(transition.GetAnimator());
+    subcanvas = new(engine);
 
-    AddView(text);
+    subcanvas.AddView(text);
+    AddView(subcanvas);
   }
 
   public void Advance() {

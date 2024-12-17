@@ -8,7 +8,7 @@ public class ClassAwareLogger : ILogger {
 
   public ClassAwareLogger(ILogger logger, Type classType) {
     this.logger = logger;
-    classIdentifier = classType.FullName;
+    classIdentifier = classType.FullName ?? "logger";
   }
 
   private static string GetTimecode() {

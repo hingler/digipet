@@ -11,7 +11,15 @@ public class PetData : IPetData, IStreamable {
   public long PetExp { get; }
   public string PetName { get; }
 
-  public PetData() {}
+  public PetData() {
+    Food = 0.5;
+    Water = 0.5;
+    Fun = 0.5;
+    Social = 0.5;
+    Energy = 0.5;
+    PetExp = 0;
+    PetName = "";
+  }
   public PetData(
     double food, 
     double water, 

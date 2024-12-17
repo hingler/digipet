@@ -6,7 +6,10 @@ using digipet.framework;
 using digipet.input;
 using digipet.sim.db;
 using digipet.sim.edible;
+using digipet.user;
+using digipet.user.inventory;
 using digipet.util;
+using digipet.util.text;
 using digipet.view.container;
 using digipet.view.menu;
 using digipet.world;
@@ -17,18 +20,19 @@ namespace digipet.view.pet;
 
 public class FoodMenu : ViewComponent {
   private readonly BorderContainer container = new();
-  private readonly TextMenu menu;
+  private readonly ComponentMenu menu;
   private readonly ILogger logger = LoggerSingleton.GetLogger();
   private readonly HashSet<Action> confirm_actions = new();
   private readonly ISimRepo<IEdiblePickup>? edibles;
+  private readonly IUserData userData;
   private readonly IPhysWorld physWorld;
   public override IReadOnlyList<ViewComponent> GetChildren() {
     return [ container ];
   }
 
-  public FoodMenu(IEngine engine) {
-    menu = new(engine, canvas.font.FontType.TINY);
-
+  public FoodMenu(IEngine engine, IUserData data) {
+    menu = new(engine);
+    userData = data;
     // fetch db here
     // build in object world
     // just make sure it spawns!
@@ -39,9 +43,20 @@ public class FoodMenu : ViewComponent {
     edibles = engine.GetAssetRepo<IEdiblePickup>();
     
     edibles?.Let(db => {
-      foreach (IEdiblePickup pickup in db.GetEntries()) 
-        menu.AddItem(pickup.Name, (int pick) => HandleFoodPickup(pickup.RID));
-      
+      foreach (IEdiblePickup pickup in db.GetEntries()) {
+        IInventoryItem inventory = userData.GetInventory().GetItem(pickup.RID);
+
+        if (inventory.Quantity > 0) {
+          InventoryView item_view = new(canvas.font.FontType.TINY) {
+            Name = pickup.Name.Truncate(18),
+            Datum = "x" + inventory.Quantity.ToString(),
+            PixelSizeY = 11.0f,
+            TextColor = DigiColor.BLACK
+          };
+
+          menu.AddItem(item_view, (int _) => HandleFoodPickup(pickup.RID));
+        }
+      }
     });
 
     container.AddView(menu);
@@ -52,11 +67,15 @@ public class FoodMenu : ViewComponent {
   public void HandleFoodPickup(int RID) {
     edibles?.Let(db => {
       IEdiblePickup selection = db.Fetch(RID);
-      physWorld.SpawnObject(selection);
-
       // connect to physworld logic :3
       if (selection != null) {
-        logger.Log("selected: ", selection.Name);
+        bool removed = userData.GetInventory().RemoveFromInventory(RID);
+        if (removed) {
+          physWorld.SpawnObject(selection);
+          logger.Log("selected: ", selection.Name);
+        } else {
+          logger.Error("selected item which is not avail in inventory!!");
+        }
       } else {
         logger.Error("selection could not be found??");
       }

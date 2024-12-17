@@ -21,4 +21,6 @@ public class PauseTransition : ITransition {
   public bool Complete() {
     return dt > duration;
   }
+
+  public bool BlockInput => false;
 }

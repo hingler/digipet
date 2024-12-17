@@ -9,4 +9,7 @@ public interface ITransition {
 
   // returns true if this transition is complete, false otherwise.
   bool Complete();
+
+  // indicates whether we should block user input while this runs
+  bool BlockInput { get; }
 }

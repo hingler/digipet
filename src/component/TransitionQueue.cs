@@ -23,6 +23,12 @@ public class TransitionQueue {
     );
   }
 
+  public bool BlockInput => transitions.TryPeek(out ITransition t) && t.BlockInput;
+
+  public void Clear() {
+    transitions.Clear();
+  }
+
   public void Tick(double delta) {
     while (transitions.TryPeek(out ITransition transition) && transition.Complete()) {
       transitions.Dequeue();

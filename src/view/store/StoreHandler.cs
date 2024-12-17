@@ -5,7 +5,10 @@ using digipet.framework;
 using digipet.image;
 using digipet.input;
 using digipet.sim;
+using digipet.sim.edible;
 using digipet.sprite.attrib;
+using digipet.transition.animator;
+using digipet.transition.state;
 using digipet.transition.text;
 using digipet.user;
 using digipet.util;
@@ -28,14 +31,27 @@ public class StoreHandler : ViewComponent {
   private readonly IUserData userData;
 
   private readonly SimpleTalkPortrait portrait;
+  private readonly SpriteView item_preview;
+  private readonly IEngine engine;
 
-  public StoreHandler(IEngine engine, IUserData userData) : this(engine, [], userData) {}
+  public string Content {
+    get => box.Content;
+    set => box.Content = value;
+  }
+
+  public StoreHandler(IEngine engine, IUserData userData) : this(
+    engine, 
+    engine.GetAssetRepo<IEdiblePickup>().GetEntries(), 
+    userData
+  ) {}
 
   public StoreHandler(
     IEngine engine,
     IReadOnlyCollection<IWorldItem> items,
     IUserData userData
   ) : base() {
+    this.engine = engine;
+
     testContainer = new() {
       MarginPx = 16
     };
@@ -44,6 +60,8 @@ public class StoreHandler : ViewComponent {
     menu = new(engine) {
       Margin = 3.0f
     };
+
+    item_preview = new();
 
     foreach (IWorldItem item in items) {
       InventoryView item_view = new(FontType.TINY) {
@@ -71,6 +89,7 @@ public class StoreHandler : ViewComponent {
     box = new(engine);
 
     CreateView(engine);
+    CreateItemPreview();
   }
 
   public override void Tick(double delta) {
@@ -78,11 +97,29 @@ public class StoreHandler : ViewComponent {
     portrait.Talk = !box.Complete;
   }
 
+  private void CreateItemPreview() {
+    BevelContainer item_bv = new() {
+      BevelSize = 1,
+      Depth = -0.5f,
+      SizePx = portrait.SizePx + new Vector2(4.0f),
+      Anchor = new(1.0f, 0.0f),
+      Offset = new(1.0f, 0.0f)
+    };
+
+    item_bv.AddView(new ColorRect(DigiColor.WHITE));
+
+    item_bv.AddView(item_preview);
+    item_preview.Anchor = new(0.5f);
+    item_preview.Offset = new(0.5f);
+
+    testContainer.AddView(item_bv);
+  }
+
   private void CreateView(IEngine engine) {
-    SpriteView bg = new(engine.GetSpriteFetcher().GetSprite(SpriteID.OFFSET_BG)) {
-      Tile = true,
+    ScrollingBG bg = new(engine.GetSpriteFetcher().GetSprite(SpriteID.OFFSET_BG + 1)) {
       Size = Vector2.One,
-      Offset = Vector2.Zero
+      Offset = Vector2.Zero,
+      ScrollSpeed = 0.4f
     };
 
     AddView(bg);
@@ -175,6 +212,7 @@ public class StoreHandler : ViewComponent {
         menu.IncrementSelector();
       } else if (input == InputType.CONFIRM) {
         menu.ConfirmSelector();
+        return true;
       }
     }
 
@@ -182,8 +220,27 @@ public class StoreHandler : ViewComponent {
 
     if (selected_prev != selected_current) {
       box.Content = store_items[selected_current].Description;
+
+      ISpriteFetcher fetcher = engine.GetSpriteFetcher();
+      IWorldItem item = store_items[selected_current];
+
+      item_preview.Sprite = item.SpriteOverride ?? fetcher.GetSprite(item.RID);
+
+      int sign = Math.Sign(selected_current - selected_prev);
+      float init_offset = sign * 0.5f + 0.5f;
+
+      TransitionStateBuilder bb = new();
+      bb.Animate(item_preview, "Y", init_offset, 0.5f, EasingFunctions.EaseOutQuart)
+        .Animate(item_preview, "Opacity", 0.0f, 1.0f, EasingFunctions.EaseOutQuart)
+        .WithDuration(0.25f);
+
+      item_preview.ClearTransitions();
+      item_preview.EnqueueTransition(bb.Build());
+
+      return true;
     }
 
-    return true;
+
+    return false;
   }
 }

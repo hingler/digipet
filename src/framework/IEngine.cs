@@ -38,4 +38,7 @@ public interface IEngineBase {
   IFontHelper GetFontHelper();
 
   public virtual void TearDown() {}
+
+  // closes the window
+  public virtual void CloseGame() {}
 }

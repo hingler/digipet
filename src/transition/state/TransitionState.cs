@@ -12,16 +12,21 @@ public class TransitionState : ITransition {
 
   private double dt = 0.0;
 
+  public bool BlockInput { get; set; }
+
   public TransitionState(
     IList<IAnimator> animators,
     double duration,
     double pause,
-    bool hold
+    bool hold,
+    bool block_input = false
   ) {
     this.animators = animators;
     this.duration = duration;
     this.pause = pause;
     this.hold = hold;
+
+    BlockInput = block_input;
   }
 
   // returns true if anim is completed

@@ -74,7 +74,7 @@ public class DialogueTransition : ITransition {
     int current_offset = animator.LineOffset;
 
     int first_line_not_visible = current_offset + lines_visible;
-    int offset_advance = Math.Min((int)Math.Ceiling(lines_visible / 2.0f), line_count - first_line_not_visible);
+    int offset_advance = Math.Min(Math.Max((int)Math.Floor(lines_visible / 2.0f), 1), line_count - first_line_not_visible);
 
     dialogue_scroll = new(current_offset, current_offset + offset_advance, 0.1, EasingFunctions.EaseInOutQuad);
   }
@@ -86,4 +86,6 @@ public class DialogueTransition : ITransition {
   }
 
   public bool Complete() => animator.Complete();
+
+  public bool BlockInput => false;
 }

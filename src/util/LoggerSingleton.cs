@@ -1,19 +1,14 @@
 namespace digipet.util;
 
 public static class LoggerSingleton {
-  private static readonly ConsoleLogger defaultLogger = new();
-  private static ILogger logger = null;
+  private static ILogger logger = new ConsoleLogger();
 
   public static void SetLogger(ILogger logger) {
     LoggerSingleton.logger = logger;
   }
 
   public static ILogger GetLogger() {
-    if (logger != null) {
-      return logger;
-    }
-
-    return defaultLogger;
+    return logger;
   }
 
   public static ILogger GetLogger(this object o) {

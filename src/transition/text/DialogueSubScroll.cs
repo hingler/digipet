@@ -46,4 +46,6 @@ public class DialogueSubScroll : ITransition {
   public bool Complete() {
     return dt > duration;
   }
+
+  public bool BlockInput => false;
 }

@@ -9,6 +9,7 @@ using digipet.sprite.attrib;
 using digipet.transition;
 using digipet.transition.animator;
 using digipet.transition.state;
+using digipet.user;
 using digipet.util;
 using digipet.view;
 using digipet.view.pet;
@@ -34,22 +35,35 @@ public class PetScene : Scene {
   private readonly ILogger logger;
 
   private readonly SimProvider provider;
+  private readonly IUserData userdata;
 
-  public PetScene(IEngine engine, ISpriteFetcher fetcher) : base(engine) {
+  public PetScene(
+    IEngine engine, 
+    ISpriteFetcher fetcher,
+    IUserData userdata
+  ) : base(engine) {
     root = new();
     this.fetcher = fetcher;
     physWorld = engine.GetPhysWorld();
     logger = this.GetLogger();
 
     provider = new(engine.GetSaveStore());
+
+    this.userdata = userdata;
   }
 
-  public override bool HandleInput(InputType type, InputState state) {
+  public override bool HandleInput(IKeyEvent @event) {
+    InputType type = @event.Action;
+    InputState state = @event.State;
+    logger.Log("input type: ", Enum.GetName(type), " - state: ", Enum.GetName(state));
     if (type == InputType.LEFT && state == InputState.PRESS) {
       CreateQuickMenu();
       return true;
     } else if (type == InputType.RIGHT && state == InputState.PRESS) {
       CreateStatList();
+      return true;
+    } else if (type == InputType.CONFIRM && state == InputState.PRESS) {
+      CreateCarouselMenu();
       return true;
     }
     
@@ -58,9 +72,9 @@ public class PetScene : Scene {
 
   private void CreateQuickMenu() {
     QuickMenu menu = new(
-      Engine, provider
+      Engine, provider, userdata
     ) {
-      SizeX = 0.38f,
+      SizeX = 0.33f,
       SizeY = 1.0f,
       Offset = new(0.0f, 0.0f),
     };
@@ -75,7 +89,7 @@ public class PetScene : Scene {
 
   private void CreateStatList() {
     PetStatList list = new(Engine.GetSpriteFetcher(), provider.GetPetModel()) {
-      SizeX = 0.38f,
+      SizeX = 0.33f,
       SizeY = 1.0f,
       Anchor = new(1.0f, 0.0f),
       Offset = new(1.0f, 0.0f)
@@ -87,6 +101,10 @@ public class PetScene : Scene {
     list.EnqueueTransition(bb.Build());
 
     PushToStack(list);
+  }
+
+  private void CreateCarouselMenu() {
+    PushToStack(new PetCarouselMenu(Engine, userdata));
   }
 
   public override void InitScene() {
@@ -106,9 +124,13 @@ public class PetScene : Scene {
       Size = Vector2.One
     });
 
-    EnqueueTransition(GetTransition());
-
     logger.Log("initialized pet scene!");
+  }
+
+  public override void Activate() {
+    base.Activate();
+    root.Y = 1.0f;
+    EnqueueTransition(GetTransition());
   }
 
   public override void Tick(double delta) {
@@ -171,7 +193,7 @@ public class PetScene : Scene {
     );
 
     controller.AddTask(new PassiveTask());
-    controller.AddTask(new MunchTask(Engine, provider));
+    controller.AddTask(new MunchTask(Engine, provider, userdata));
     controller.AddTask(new QuaffTask(provider.GetPetModel(), bowl, provider.GetWaterSource()));
 
     // task for drinking water

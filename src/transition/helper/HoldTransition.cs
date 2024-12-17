@@ -11,4 +11,5 @@ public class HoldTransition : ITransition {
   public void Tick(double delta) { /* no op */ }
   public void Advance() { advanced = true; }
   public bool Complete() => advanced;
+  public bool BlockInput { get; set; } = false;
 }
