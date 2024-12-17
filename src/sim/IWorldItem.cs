@@ -1,3 +1,5 @@
+using digipet.image;
+
 namespace digipet.sim;
 
 #nullable enable
@@ -8,6 +10,8 @@ public interface IWorldItem {
   string Name { get; }
   string Description { get; }
   int StorePrice { get; }
+
+  ISprite? SpriteOverride { get; }
 
 
 }

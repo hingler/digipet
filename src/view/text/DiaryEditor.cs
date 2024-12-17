@@ -34,8 +34,6 @@ public class DiaryEditor : ViewComponent {
     set => viewer.MarginPx = value;
   }
 
-  private readonly HashSet<Action> close_action;
-
   public DiaryEditor(IEngine engine) : this(engine, new SimpleTextEditor()) {}
 
   public DiaryEditor(IEngine engine, ITextEditor editor) {

@@ -9,6 +9,7 @@ using digipet.component;
 using digipet.db;
 using digipet.diary.store;
 using digipet.framework;
+using digipet.input;
 using digipet.sprite.attrib;
 using digipet.view.bg;
 using digipet.view.container;
@@ -47,5 +48,13 @@ public class DiaryScene : Scene {
     PushToStack(
       new DiaryMenu(Engine, repo)
     );
+  }
+
+  public override bool HandleInput(IKeyEvent @event) {
+    if (@event.Action == InputType.BACK && @event.State == InputState.PRESS) {
+      Finish();
+    }
+
+    return true;
   }
 }

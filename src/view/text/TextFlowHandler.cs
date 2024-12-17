@@ -179,10 +179,12 @@ public class TextFlowHandler : ITextFlow {
       
       // exception case: last word in a line doesn't break, when it could
       // leave it for now
-      bool should_break = (has_newline || !in_bounds) && (next_break >= 0);
+      bool should_break = (has_newline || !in_bounds);
+      // (next break >= 0) is the bug
+      // when next break is -1 and should_break is otherwise true
 
       if (should_break) {
-        if (has_newline && in_bounds) {
+        if (has_newline && in_bounds && (next_break >= 0)) {
           // break for newline - next word up to the new line is still in bounds
           current_break = next_break + (Environment.NewLine.Length - 1);
         }

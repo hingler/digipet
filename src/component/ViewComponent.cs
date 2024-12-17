@@ -185,7 +185,6 @@ public class ViewComponent : IDigiComponent, IContainer {
   private readonly HashSet<Action> pop_listeners = new();
 
   public ViewComponent() {
-    _stack_child = null;
     activated = false;
 
     Offset = Vector2.Zero;
@@ -232,15 +231,17 @@ public class ViewComponent : IDigiComponent, IContainer {
   public virtual bool HandleInput(InputType input, InputState state) => false;
 
   public void PreActivate() {
-    Debug.Assert(!activated, "attempted to activate active component!");
-    activated = true;
-    Activate();
+    if (!activated) {
+      activated = true;
+      Activate();
+    }
   }
 
   public void PreDeactivate() {
-    Debug.Assert(activated, "attgempted to deactivate inactive component!");
-    activated = false;
-    Deactivate();
+    if (activated) {
+      activated = false;
+      Deactivate();
+    }
   }
 
   // implemented by user
@@ -257,15 +258,8 @@ public class ViewComponent : IDigiComponent, IContainer {
       if (child.Dispose) {
         child.AcknowledgeDispose();
         RemoveView(child);
-      } else {
-        ViewComponent v = child.AcknowledgePush();
-        if (v != null) {
-          AddView(v);
-        }
       }
     }
-
-
   }
   public virtual void Tick(double delta) {}
   public virtual void Deactivate() {}
@@ -355,10 +349,6 @@ public class ViewComponent : IDigiComponent, IContainer {
   
   public virtual void Draw(ICanvas canvas) {}
 
-  protected void PushComponent(ViewComponent component) {
-    _stack_child = component;
-  }
-
   // idea: optional "state" provided here
   // think some sort of "key:value" object would be "fine"
   // (could do the same thing on creation)
@@ -369,12 +359,6 @@ public class ViewComponent : IDigiComponent, IContainer {
     foreach (Action a in pop_listeners) {
       a();
     }
-  }
-  
-  public ViewComponent AcknowledgePush() {
-    ViewComponent res = _stack_child;
-    _stack_child = null;
-    return res;
   }
 
   public bool AcknowledgeDispose() {
@@ -392,11 +376,14 @@ public class ViewComponent : IDigiComponent, IContainer {
     transitions.Advance();
   }
 
+  public void ClearTransitions() {
+    transitions.Clear();
+  }
+
   public bool TransitionsComplete() {
     return transitions.Complete();
   }
 
-  private ViewComponent _stack_child;
   private bool _dispose;
 
   public bool Dispose {

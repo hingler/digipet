@@ -43,7 +43,20 @@ public class DigiEngine : IEngine, IInputListener {
   }
 
   private Scene? GetActiveScene() {
-    scene_stack.TryPeek(out Scene? result);
+    Scene? result;
+    bool pop = false;
+
+    while (scene_stack.TryPeek(out result) && result != null && result.Finished) {
+      result?.PreDestroy();
+      scene_stack.Pop();
+      pop = true;
+    }
+
+    if (pop) {
+      // ie: if the result is being "reactivated"
+      result?.Activate();
+    }
+
     return result;
   }
 
@@ -105,6 +118,11 @@ public class DigiEngine : IEngine, IInputListener {
     platform_base.TearDown();
   }
 
+  public void CloseGame() {
+    GetActiveScene()?.PreDestroy();
+    platform_base.CloseGame();
+  }
+
   public void OnInput(InputType type, InputState state) {
     // GetActiveScene()?.PreInput(type, state);
     // deprecate in favor of onkey
@@ -128,6 +146,10 @@ public class DigiEngine : IEngine, IInputListener {
     phys_world.Update(delta);
     GetActiveScene()?.SceneTick(delta);
     timer.End("update", debug);
+
+    if (scene_stack.Count <= 0) {
+      CloseGame();
+    }
   }
 
   public void Draw(ICanvas canvas) {

@@ -35,4 +35,6 @@ public class TransitionSequence : ITransition {
   public bool Complete() {
     return states.Count == 0;
   }
+
+  public bool BlockInput => states.Peek()?.BlockInput ?? false;
 }

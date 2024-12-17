@@ -2,6 +2,8 @@ using digipet.image;
 
 namespace digipet.sim.edible;
 
+#nullable enable
+
 public class SimpleEdible : IEdiblePickup {
   public int RID { get; set; } = 0;
   public string Name { get; set; } = "UNKNOWN";
@@ -11,6 +13,8 @@ public class SimpleEdible : IEdiblePickup {
   public double Satiability { get; set; } = 0.5;
   public double Appeal { get; set; } = 0.0;
   public double Variance { get; set; } = 1.0;
+
+  public ISprite? SpriteOverride { get; set; } = null;
 
   // - sprite
   // - name of this item

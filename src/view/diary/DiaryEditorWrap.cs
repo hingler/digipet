@@ -36,6 +36,10 @@ public class DiaryEditorWrap : ViewComponent {
     file_menu.AddItem("Delete", OnDelete);
   }
   public override bool HandleInput(IKeyEvent @event) {
+    if (!TransitionsComplete()) {
+      return true;
+    }
+    
     if (@event.Action == InputType.BACK) {
       AddView(file_menu);
       return true;

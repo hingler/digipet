@@ -58,9 +58,7 @@ public class FlowText : ViewComponent {
     base.Draw(canvas);
     IReadOnlyList<string> lines = flow.GetLines();
 
-    int init_line = (int)Math.Floor(Math.Max(DisplayedLineOffset - 1, 0));
-
-    for (int i = init_line; i < lines.Count; i++) {
+    for (int i = 0; i < lines.Count; i++) {
       Vector2 baseline_px = new(
         GetBaselinePixelX(), 
         flow.GetTextBaseline(i, DisplayedLineOffset)

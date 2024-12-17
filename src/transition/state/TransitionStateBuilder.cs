@@ -15,6 +15,7 @@ public class TransitionStateBuilder {
   private double duration = 0.0;
 
   private double pause = 0.0;
+  private bool block = false;
   private bool wait = false;
   private ILogger logger = LoggerSingleton.GetLogger();
 
@@ -69,9 +70,14 @@ public class TransitionStateBuilder {
     return this;
   }
 
+  public TransitionStateBuilder AndBlockInput(bool block = true) {
+    this.block = block;
+    return this;
+  }
+
   public TransitionState Build() {
     return new(
-      animators, duration, pause, wait
+      animators, duration, pause, wait, block
     );
   }
 }

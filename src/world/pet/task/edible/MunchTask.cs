@@ -5,6 +5,8 @@ using digipet.framework;
 using digipet.sim;
 using digipet.sim.edible;
 using digipet.sim.stub;
+using digipet.user;
+using digipet.user.inventory;
 using digipet.util;
 using digipet.world.pet.task.tasks;
 
@@ -19,11 +21,13 @@ public class MunchTask : IPetTask {
   private IEdiblePickup? ediblePickup;
   private readonly IEngine engine;
   private readonly SimProvider provider;
+  private readonly IUserData userdata;
 
   public bool Interruptable => false;
-  public MunchTask(IEngine engine, SimProvider provider) {
+  public MunchTask(IEngine engine, SimProvider provider, IUserData userdata) {
     this.engine = engine;
     this.provider = provider;
+    this.userdata = userdata;
     world = engine.GetPhysWorld();
     currentTarget = null;
     task = null;
@@ -52,7 +56,7 @@ public class MunchTask : IPetTask {
     task_success.AddTask(new EatReactionTask(ep, provider.GetPetModel()));
 
     ChainedPetTask task_fail = new();
-    task_fail.AddTask(new RejectTask(engine, ob));
+    task_fail.AddTask(new RejectTask(engine, ob, userdata));
 
     // tba: poll model and check hunger
     chain.AddTask(new BranchTask(

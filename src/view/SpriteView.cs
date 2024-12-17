@@ -11,6 +11,9 @@ namespace digipet.view;
 public class SpriteView : ViewComponent {
   // dep
   public ISprite? sprite;
+  public float Scale = 1.0f;
+
+  private static readonly Vector2 HALF = new(0.5f);
 
   public ISprite? Sprite {
     get => sprite;
@@ -29,8 +32,10 @@ public class SpriteView : ViewComponent {
 
   public override void Draw(ICanvas canvas) {
     base.Draw(canvas);
+    Vector2 start = HALF - (Scale * HALF);
+    Vector2 end = HALF + (Scale * HALF);
     sprite?.Let(s => {
-      canvas.Tex(s, Vector2.Zero, Vector2.One, Tile);
+      canvas.Tex(s, start, end, Tile);
     });
   }
 }

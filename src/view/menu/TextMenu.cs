@@ -17,6 +17,7 @@ public class TextMenu : ViewComponent {
   private readonly SubCanvasView subCanvas;
   private readonly CompoundView text_content;
   private readonly IList<KeyValuePair<string, Action<int>?>> items = [];
+  private readonly IList<Text> text_nodes = [];
   private readonly Lerper lerper_offset;
   private readonly Lerper lerper_selector;
   private readonly FontType type;
@@ -64,11 +65,13 @@ public class TextMenu : ViewComponent {
       Font = type,
       Content = name,
       SizePx = new(192, 25),
-      OffsetPx = new(2 * MARGIN_PX, (float)offset),
       Color = Vector4.UnitW
     };
 
+    text_nodes.Add(text);
     text_content.AddView(text);
+
+    QueueReflow();
   }
 
   public void IncrementSelector() {
@@ -106,6 +109,21 @@ public class TextMenu : ViewComponent {
     lerper_selector.Tick(delta);
   }
 
+  public override void Reflow(ICanvas canvas) {
+    base.Reflow(canvas);
+
+    double net_height = GetTextOffsetPx(items.Count - 1) + MARGIN_PX;
+    double local_height = PixelSizeY;
+
+    double menu_shift = Math.Max((local_height - net_height) / 2.0, 0.0);
+
+    for (int i = 0; i < text_nodes.Count; i++) {
+      Text text = text_nodes[i];
+      double offset = GetTextOffsetPx(i);
+      text.OffsetPx = new(2 * MARGIN_PX, (float)(offset + menu_shift));
+    }
+  }
+
   public override void Draw(ICanvas canvas) {
     // do some layout here
     float menu_px = (float)lerper_offset.Cursor;
@@ -116,7 +134,11 @@ public class TextMenu : ViewComponent {
 
   // implementation
   private double GetSelectorOffset(double offset) {
-    return GetTextOffsetPx(offset) - (int)(GetTextHeightPx() / 2);
+    double net_height = GetTextOffsetPx(items.Count - 1) + MARGIN_PX;
+    double local_height = PixelSizeY;
+    double menu_shift = Math.Max((local_height - net_height) / 2.0, 0.0);
+
+    return GetTextOffsetPx(offset) - (int)(GetTextHeightPx() / 2) + menu_shift;
   }
 
   private double GetTextOffsetPx(double offset) {

@@ -20,4 +20,6 @@ public class CallbackTransition : ITransition {
 
   public void Advance() { /* no op */ }
   public bool Complete() => called;
+
+  public bool BlockInput { get; set; } = false;
 }

@@ -25,12 +25,23 @@ public class CarouselMenu : ViewComponent {
     }
   }
 
+  public double Cursor {
+    get => lerper.Cursor;
+    set {
+      lerper.Target = value;
+      lerper.Reset();
+      UpdateCaptions();
+    }
+  }
+
   private readonly Lerper lerper;
 
   public double Phi = Math.PI / 8.0;
 
   // assume 0.5, 0.5 is center
   public double Radius = 0.35;
+
+  public double ZoomFactor = 1.2;
 
   private static readonly double DELTA_RADIANS = Math.PI / 4.5;
   private static readonly int SPRITE_COUNT = 7;
@@ -72,6 +83,15 @@ public class CarouselMenu : ViewComponent {
     };
   }
 
+  public void Select() {
+    int item_count = items.Count;
+    int highlighted_index = (((int)lerper.Target % item_count) + item_count) % item_count;
+
+    if (items.Count > 0) {
+      items[highlighted_index].OnSelected();
+    }
+  }
+
   public void AddItem(ICarouselMenuItem item) {
     items.Add(item);
     UpdateCaptions();
@@ -93,10 +113,14 @@ public class CarouselMenu : ViewComponent {
       SpriteView sprite = positions[i].Item1;
       Vector3 pos = positions[i].Item2;
 
+      // z from 0 to 1
+      double z_norm = (pos.Z / Math.Max(2.0 * Radius, 0.001)) + 0.5;
+
       // largest z val last
       sprite.Offset = new Vector2(pos.X, pos.Y);
       sprite.ZIndex = i;
       sprite.Opacity = (float)Math.Clamp((pos.Z * 1.5) / Radius, 0.0, 1.0);
+      sprite.Scale = (float)Math.Clamp(z_norm * ZoomFactor + (1.0 - ZoomFactor), 0.1, 1.0);
     }
   }
 

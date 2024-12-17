@@ -51,9 +51,9 @@ public class PhysicsObjectShow : IPhysWorld {
     Vector2 velocity
   ) {
 
-    ObjPhysObject obj = new ObjPhysObject(
+    ObjPhysObject obj = new(
       position,
-      fetcher.GetSprite(pickup.RID),
+      pickup.SpriteOverride ?? fetcher.GetSprite(pickup.RID),
       pickup
     );
 

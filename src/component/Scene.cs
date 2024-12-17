@@ -2,12 +2,15 @@ using System.Collections.Generic;
 using digipet.framework;
 using digipet.input;
 using digipet.transition;
+using digipet.util;
 
 namespace digipet.component;
 
 public abstract class Scene : IDigiComponent {
   private readonly IList<ViewComponent> stack = [];
   private bool init_flag;
+
+  private readonly static ILogger logger = LoggerSingleton.GetStaticLogger<Scene>();
 
   private bool _finished;
   public bool Finished {
@@ -62,14 +65,25 @@ public abstract class Scene : IDigiComponent {
   }
 
   public void PreInput(IKeyEvent @event) {
+    if (transitions.BlockInput) {
+      // ongoing transition should block input events
+      logger.Log("blocked input event due to transition in progress");
+      return;
+    }
+
     bool consumed = false;
     int cursor = stack.Count - 1;
+    
     while (!consumed && cursor >= 0) {
       consumed = consumed || stack[cursor--].PreInput(@event);
     }
 
     if (!consumed) {
       HandleInput(@event);
+    }
+
+    if (!consumed) {
+      HandleInput(@event.Action, @event.State);
     }
   }
 
@@ -143,7 +157,9 @@ public abstract class Scene : IDigiComponent {
   }
 
   protected void Finish() {
-    // no cleanup
+    // on finish, do we call deactivate? or is that redundant
+    // (i think we ought to)
+    PreDeactivate();
     _finished = true;
   }
 
@@ -159,15 +175,8 @@ public abstract class Scene : IDigiComponent {
   public virtual void Destroy() {}
 
   private void CheckForStackChanges() {
-    ViewComponent top = GetTopComponent();
-    ViewComponent request = top?.AcknowledgePush() ?? null;
-    if (request != null) {
-      PushToStack(request);
-      
-    } else {
-      while (GetTopComponent()?.AcknowledgeDispose() ?? false) {
-        PopFromStack();
-      }
+    while (GetTopComponent()?.AcknowledgeDispose() ?? false) {
+      PopFromStack();
     }
   }
 }

@@ -2,6 +2,7 @@ using System.Xml;
 using digipet.framework;
 using digipet.pet;
 using digipet.sim;
+using digipet.user;
 using digipet.util;
 
 namespace digipet.world.pet.task.tasks;
@@ -17,13 +18,16 @@ public class RejectTask : IPetTask {
 
   private readonly IEngine engine;
   private readonly IPhysObject item;
+  private readonly IUserData userdata;
 
   public RejectTask(
     IEngine engine,
-    IPhysObject item
+    IPhysObject item,
+    IUserData userdata
   ) {
     this.engine = engine;
     this.item = item;
+    this.userdata = userdata;
   }
 
   public void BeginTask() {
@@ -36,6 +40,7 @@ public class RejectTask : IPetTask {
       
       if (nod_count >= NOD_COUNT) {
         engine.GetPhysWorld().RemovePhysObject(item);
+        userdata.GetInventory().AddToInventory(item.Pickup.RID);
       }
     }
 

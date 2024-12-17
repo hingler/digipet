@@ -40,16 +40,13 @@ public class SimpleTextMenuView : ViewComponent {
         base_menu.ConfirmSelector();
       } else if (input == InputType.BACK) {
         if (Closable) {
+          // consume and pop self
           PopSelf();
-        } else {
-          // allow close to bubble up - alt, fire an event on close
-          return false;
+          return true;
         }
       }
-
     }
 
-    // consume the event
-    return true;
+    return false;
   }
 }

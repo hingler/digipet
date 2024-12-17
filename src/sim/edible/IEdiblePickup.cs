@@ -2,6 +2,8 @@ using digipet.image;
 
 namespace digipet.sim.edible;
 
+#nullable enable
+
 public interface IEdiblePickup : IWorldItem {
   // affects prob of appealing in store
   public int Rarity { get; }

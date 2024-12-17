@@ -7,6 +7,7 @@ using digipet.sim;
 using digipet.sim.water;
 using digipet.transition.animator;
 using digipet.transition.state;
+using digipet.user;
 using digipet.util;
 using digipet.view.container;
 using digipet.view.menu;
@@ -23,13 +24,16 @@ public class QuickMenu : ViewComponent {
 
   private readonly IEngine engine;
   private readonly SimProvider provider;
+  private readonly IUserData userdata;
 
   public QuickMenu(
     IEngine engine,
-    SimProvider provider
+    SimProvider provider,
+    IUserData userdata
   ) {
     this.engine = engine;
     this.provider = provider;
+    this.userdata = userdata;
     menu = new(engine, canvas.font.FontType.TINY);
     for (int i = 0; i < 16; i++) {
       menu.AddItem(i.ToString(), (int g) => LoggerSingleton.GetLogger().Log("you fool"));
@@ -64,13 +68,14 @@ public class QuickMenu : ViewComponent {
 
 
   private void HandleFoodMenu() {
-    FoodMenu f = new(engine)
+    FoodMenu f = new(engine, userdata)
     {
         ZIndex = -1,
-        PixelSizeY = 96
+        PixelSizeY = 96,
+        SizeX = 2.0f
     };
 
-    f.AddConfirmListener(this.PopSelf);
+    f.AddConfirmListener(PopSelf);
 
     // hierarchical is starting to make sense
     TransitionStateBuilder bb = new();

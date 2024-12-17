@@ -9,6 +9,7 @@ using digipet.sprite.attrib;
 using digipet.transition;
 using digipet.transition.animator;
 using digipet.transition.state;
+using digipet.user;
 using digipet.view.sky;
 
 namespace digipet.scenes;
@@ -23,11 +24,13 @@ public class ReviewScene : Scene {
   private readonly SkyCounterMini sleep;
 
   private readonly IEngine engine;
+  private readonly IUserData userdata;
 
   public double step_count = 0.0;
-  public ReviewScene(IEngine engine, ISpriteFetcher fetcher) : base(engine) {
+  public ReviewScene(IEngine engine, ISpriteFetcher fetcher, IUserData userdata) : base(engine) {
     this.engine = engine;
     this.fetcher = fetcher;
+    this.userdata = userdata;
     sky = new(fetcher);
     stars = new(7);
 
@@ -153,7 +156,7 @@ public class ReviewScene : Scene {
 
   public void ThenPushPetScene(TransitionBuilder builder) {
     builder.ThenCall(() => {
-      engine.PushScene(new PetScene(engine, fetcher));
+      engine.PushScene(new PetScene(engine, fetcher,  userdata));
       Finish();
     });
   }

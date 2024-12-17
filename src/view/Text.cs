@@ -6,7 +6,7 @@ using digipet.util;
 namespace digipet.view;
 
 public class Text : ViewComponent {
-  public string Content;
+  public string Content = "";
   public float Scale = 1.0f;
   public HorizontalAlign Alignment = HorizontalAlign.LEFT;
   public FontType Font = FontType.TINY;
