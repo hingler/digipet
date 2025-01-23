@@ -14,7 +14,7 @@ public class MagicAbility : IAbility {
   public double DamageFactor = 0.5;
   public double KnockbackFactor = 0.1;
 
-  public double NetCooldown { get; set; } = 0.4;
+  public double NetCooldown { get; set; } = 0.1;
   
   public double CastRange {
     get => tester.MaxCastDistance;

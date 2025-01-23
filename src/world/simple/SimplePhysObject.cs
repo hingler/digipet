@@ -1,4 +1,3 @@
-using System.Dynamic;
 using System.Numerics;
 using digipet.image;
 using digipet.sim;
@@ -9,6 +8,8 @@ public class SimplePhysObject : IPhysObject {
   private ISprite sprite_;
   private readonly IWorldItem pickup_;
   private readonly Vector2 position_;
+
+  public bool FlipX { get; set; }
 
   public ISprite Sprite { get => sprite_; }
   public IWorldItem Pickup { get => pickup_; }
@@ -24,5 +25,8 @@ public class SimplePhysObject : IPhysObject {
     position_ = spawnPos;
   }
 
+  public void ApplyForce(Vector2 force, float delta) { /* no op */ }
+  public void ApplyImpulse(Vector2 force) { /* no op */ }
+  public void Halt() {}
 
 }

@@ -28,6 +28,15 @@ public class SimpleObjectShow : IPhysWorld {
     log = this.GetLogger();
   }
 
+  public IPhysObject SpawnObject(
+    IWorldItem pickup,
+    Vector2 position,
+    Vector2 velocity,
+    float bounciness,
+    float linearDamping,
+    float frictionDamping
+  ) => SpawnObject(pickup);
+
   public IPhysObject SpawnObject(IWorldItem pickup, Vector2 position, Vector2 velocity) => SpawnObject(pickup);
   public IPhysObject SpawnObject(IWorldItem pickup, Vector2 position) => SpawnObject(pickup);
 
@@ -44,7 +53,7 @@ public class SimpleObjectShow : IPhysWorld {
     return obj;
   }
 
-  public IReadOnlySet<IPhysObject> GetPhysObjects() {
+  public IEnumerable<IPhysObject> GetPhysObjects() {
     HashSet<IPhysObject> res = [];
     if (obj != null) {
       obj?.Let((o) => res.Add(o));

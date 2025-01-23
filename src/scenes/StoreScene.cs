@@ -25,7 +25,7 @@ public class StoreScene : Scene {
 
   public StoreScene(
     IEngine engine,
-    IReadOnlyCollection<IWorldItem> items,
+    IReadOnlyCollection<IPurchasable> items,
     IUserData userData
   ) : base(engine) {
     handler = new StoreHandler(engine, items, userData);

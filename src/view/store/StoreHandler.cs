@@ -26,7 +26,7 @@ public class StoreHandler : ViewComponent {
 
   private readonly DialogueBox box;
 
-  private readonly IList<IWorldItem> store_items = [];
+  private readonly IList<IPurchasable> store_items = [];
 
   private readonly IUserData userData;
 
@@ -47,7 +47,7 @@ public class StoreHandler : ViewComponent {
 
   public StoreHandler(
     IEngine engine,
-    IReadOnlyCollection<IWorldItem> items,
+    IReadOnlyCollection<IPurchasable> items,
     IUserData userData
   ) : base() {
     this.engine = engine;
@@ -63,7 +63,7 @@ public class StoreHandler : ViewComponent {
 
     item_preview = new();
 
-    foreach (IWorldItem item in items) {
+    foreach (IPurchasable item in items) {
       InventoryView item_view = new(FontType.TINY) {
         Name = item.Name,
         Datum = item.StorePrice.ToString() + "¢",
@@ -190,7 +190,7 @@ public class StoreHandler : ViewComponent {
     return box;
   }
 
-  public void AttemptToPurchase(IWorldItem item) {
+  public void AttemptToPurchase(IPurchasable item) {
     // no op currently
     if (userData.Charge(item.StorePrice)) {
       box.Content = "thanks for purchasing!!!";

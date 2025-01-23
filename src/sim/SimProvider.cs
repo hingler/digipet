@@ -17,6 +17,7 @@ public class SimProvider {
   private readonly IDataStore? simData;
 
   private static readonly string WATER_KEY = "waterdata";
+  private static readonly string PET_KEY = "petdata";
 
   public SimProvider() : this(null) {}
   public SimProvider(IDataStore? dataProvider) {
@@ -49,13 +50,22 @@ public class SimProvider {
   }
 
   public IPetModel GetPetModel() {
-    return petModelSingleton ??= new SimplePetModel(
-      GetHungerModel(), GetThirstModel()
-    );
+    if (petModelSingleton == null) {
+      IPetData data = simData?.Fetch<IPetData>(PET_KEY) ?? new PetDataParcel();
+      petModelSingleton = new SimplePetModel(
+        GetHungerModel(),
+        GetThirstModel(),
+        data
+      );
+    }
+    
+    return petModelSingleton;
   }
 
   public void SaveSimState() {
     this.GetLogger().Log("saving sim state!!!");
     simData?.Store(WATER_KEY, GetWaterSource().AsWaterData());
+    simData?.Store(PET_KEY, new PetDataParcel(petModelSingleton));
+
   }
 }

@@ -14,4 +14,11 @@ public interface IPhysObject : IPositionable {
 
   // pickup associated with this object
   public IWorldItem? Pickup { get; }
+
+  public bool FlipX { get; set; }
+
+  // how do we want to do force?
+  public void ApplyForce(Vector2 force, float delta);
+  public void ApplyImpulse(Vector2 impulse);
+  public void Halt();
 }

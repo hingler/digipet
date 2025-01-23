@@ -1,4 +1,5 @@
 using digipet.file.stream;
+using digipet.pet;
 using digipet.sim;
 
 
@@ -10,6 +11,7 @@ public class PetData : IPetData, IStreamable {
   public double Energy { get; }
   public long PetExp { get; }
   public string PetName { get; }
+  public IPetPersonality Personality { get; }
 
   public PetData() {
     Food = 0.5;
@@ -19,6 +21,7 @@ public class PetData : IPetData, IStreamable {
     Energy = 0.5;
     PetExp = 0;
     PetName = "";
+    Personality = new PetPersonalityData();
   }
   public PetData(
     double food, 
@@ -27,7 +30,8 @@ public class PetData : IPetData, IStreamable {
     double social, 
     double energy, 
     long petExp,
-    string petName
+    string petName,
+    IPetPersonality personality
   ) {
     Food = food;
     Water = water;
@@ -36,6 +40,7 @@ public class PetData : IPetData, IStreamable {
     Energy = energy;
     PetExp = petExp;
     PetName = petName;
+    Personality = personality;
   }
 
   public PetData(IPetData src) : this(
@@ -45,7 +50,8 @@ public class PetData : IPetData, IStreamable {
     src.Social, 
     src.Energy, 
     src.PetExp, 
-    src.PetName
+    src.PetName,
+    src.Personality
   ) {}
 
   public PetData(IInputStream stream) : this(
@@ -55,7 +61,8 @@ public class PetData : IPetData, IStreamable {
     stream.ReadDouble(),
     stream.ReadDouble(),
     stream.ReadInt64(),
-    stream.ReadPascalString()
+    stream.ReadPascalString(),
+    new PetPersonalityData(stream)
   ) {}
 
   public void ToStream(IOutputStream stream) {
@@ -66,5 +73,8 @@ public class PetData : IPetData, IStreamable {
     stream.WriteDouble(Energy);
     stream.WriteInt64(PetExp);
     stream.WritePascalString(PetName);
+    
+    PetPersonalityData data = new(Personality);
+    data.ToStream(stream);
   }
 }

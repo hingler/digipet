@@ -63,10 +63,20 @@ public class PhysicsObjectShow : IPhysWorld {
     return obj;
   }
 
+  // ignore phys params
+  public IPhysObject SpawnObject(
+    IWorldItem pickup,
+    Vector2 position,
+    Vector2 velocity,
+    float bounciness,
+    float linearDamping,
+    float frictionDamping
+  ) => SpawnObject(pickup, position, velocity);
+
   public void Update(double delta) {
     foreach (ObjPhysObject ob in objects.Cast<ObjPhysObject>()) {
 
-      if (ob.Position.Y > 0.02f || ob.Velocity.Length() > 0.02f) {
+      if (ob.Position.Y > 0.01f || ob.Velocity.Length() > 0.01f) {
         // ie: if above-ground, or still clearly moving
         // (alt: if on-ground, AND not clearly moving)
         ob.ApplyForce(GRAVITY, (float)delta);
@@ -78,7 +88,7 @@ public class PhysicsObjectShow : IPhysWorld {
 
       if (ob.Position.Y < 0.0f && ob.Velocity.Y < 0.0f) {
         ob.Position = new(ob.Position.X, -ob.Position.Y * BOUNCINESS);
-        ob.ApplyImpulse(new(-ob.Velocity.X * (1.0f - BOUNCINESS), ob.Velocity.Y * -(1.0f + BOUNCINESS)));
+        ob.ApplyImpulse(new(0.0f, ob.Velocity.Y * -(1.0f + BOUNCINESS)));
         
         if (ob.Position.Y < 0.02f && ob.Velocity.Length() < 0.015f) {
           ob.Halt();
@@ -97,12 +107,10 @@ public class PhysicsObjectShow : IPhysWorld {
         ob.Position = new(max - dx * BOUNCINESS, ob.Position.Y);
         ob.ApplyImpulse(new(ob.Velocity.X * -(1.0f + BOUNCINESS), -ob.Velocity.Y * (1.0f - BOUNCINESS)));
       }
-
-      
     }
   }
 
-  public IReadOnlySet<IPhysObject> GetPhysObjects() {
+  public IEnumerable<IPhysObject> GetPhysObjects() {
     return objects;
   }
 

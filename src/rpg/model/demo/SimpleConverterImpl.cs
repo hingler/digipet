@@ -1,3 +1,4 @@
+using System.Numerics;
 using digipet.rpg.context;
 using digipet.transition.animator;
 using digipet.util;
@@ -6,13 +7,14 @@ namespace digipet.rpg.model.demo;
 
 public class SimpleConverterImpl : IMaxHPCalculator, IPowerConverter, ISpeedCalculator {
   public long GetMaxHP(ICharStats stats) {
+    // ~ 1000x + exponential growth
     return (long)(Math.Pow(1.01, stats.Vitality / 15) * 348 + (1 + stats.Vitality / 100) * 652);
   }
 
   public double ToRawDamage(ICharStats stats, double damage_fac) {
     // force imparted - arb level
     // avg around "1.0" ? weight differently if needed
-    return (stats.Attack * 0.82 + stats.Vitality * 0.04 + stats.Wisdom * 0.14) * damage_fac;
+    return 1541 * (stats.Attack * 0.82 + stats.Vitality * 0.04 + stats.Wisdom * 0.14) * damage_fac;
   }
 
   public double ToNetDamage(ICharStats stats, double raw_damage) {
@@ -25,7 +27,17 @@ public class SimpleConverterImpl : IMaxHPCalculator, IPowerConverter, ISpeedCalc
 
   public double ToRawKnockback(ICharStats stats, double knockback_fac) {
     // force imparted - think blunt force vs slicing strength
-    return (stats.Attack * 0.5 + stats.Weight * 0.35 + stats.Vitality * 0.15) * knockback_fac;
+    // the idea should be that knockback catapults us a few meters away
+    // lets go with 10.0x
+
+    // weight it around 1x
+    return (stats.Attack * 0.75 + stats.Weight * 0.05 + stats.Vitality * 0.2) * knockback_fac;
+  }
+
+  public Vector2 KnockbackToDeltaV(ICharState state, double raw_knockback) {
+    double raw_dist = 5.0 * raw_knockback / state.Stats.Weight;
+    // raw_dist = Math.Clamp(raw_dist, -75, 75);
+    return new Vector2((float)raw_dist * (state.Team == UnitTeam.ALLY ? -1 : 1), 0);
   }
 
 
@@ -47,7 +59,7 @@ public class SimpleConverterImpl : IMaxHPCalculator, IPowerConverter, ISpeedCalc
       double speed_weight_fac = Math.Log(char_accel_ratio) / Math.Log(Math.Max(ACCEL_RATIO_CAP, 1.0001));
 
       // arb slowdown factor
-      return Math.Clamp(MAX_ACCEL - speed_weight_fac * 2.1, MIN_ACCEL, MAX_ACCEL);
+      return Math.Clamp(MAX_ACCEL - speed_weight_fac * 4.1, MIN_ACCEL, MAX_ACCEL);
     }
   }
 
@@ -73,6 +85,26 @@ public class SimpleConverterImpl : IMaxHPCalculator, IPowerConverter, ISpeedCalc
       return Math.Clamp(MAX_SPEED - speed_decrement, MIN_SPEED, MAX_SPEED);
     }
   }
+
+  // issue: knockback delta for collisions, vs. knockback delta for projectiles
+
+  // idea:
+  // - move collision logic into separate ctx passed to OnCollide
+  // - treat collisions as "net force" encounters
+  //   - ie: each opponent gets a chance to attack
+  //   - energy incoming (ie incoming velocity * weight) gets a slight weight
+  //   - knockback strength gets a major weight
+  //   - return both opponents to 0 vel, and distribute outgoing energy accordingly
+
+  // for normal hits: just apply some "velocity mod"
+
+  // (make this a TBA, or handle it next?)
+  // thinking "handle it next" bc it plays into how we end up developing the game
+  // from there:
+  // - add a couple more ability/behaviors
+  // - add some sprites
+  // - move on soon :3
+
 
   public double GetKnockbackDelta(ICharState state, double raw_knockback) {
     const double MIN_KNOCKBACK_FAC = 1.3;
@@ -103,7 +135,7 @@ public class SimpleConverterImpl : IMaxHPCalculator, IPowerConverter, ISpeedCalc
     double knockback_res = knockback_final - cur_speed;
 
     // multiply by our comp factor
-    knockback_res *= knockback_factor;
+    knockback_res *= 1.0;
     return knockback_res + cur_speed;
   }
 }

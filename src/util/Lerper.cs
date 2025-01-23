@@ -27,7 +27,11 @@ public class Lerper {
   }
 
   public void Tick(double delta) {
-    double dt = Math.Exp(delta * -Math.Max(SmoothingFactor, 0.000001));
-    offset_ = Lerp(dt, Target, offset_);
+    offset_ = LerpValue(delta, offset_, SmoothingFactor, Target);
+  }
+
+  public static double LerpValue(double delta, double input, double smoothing, double target) {
+    double dt = Math.Exp(delta * -Math.Max(smoothing, 0.000001));
+    return Lerp(dt, target, input);
   }
 }

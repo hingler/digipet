@@ -9,7 +9,10 @@ public class SimpleHungerModel : IHungerModel {
   
   private double fullness_;
   private readonly ITasteModel tasteModel;
-  public double Fullness => fullness_;
+  public double Fullness {
+    get => fullness_;
+    set => fullness_ = value;
+  }
 
   public SimpleHungerModel(
     double init,

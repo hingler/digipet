@@ -1,3 +1,4 @@
+using digipet.pet;
 using digipet.sim.edible;
 using digipet.sim.water;
 
@@ -18,6 +19,8 @@ public class PetModelStub : IPetModel
   public long PetExp => 128;
 
   public string PetName => "DINGUS";
+
+  public IPetPersonality Personality => new PetPersonalityData();
 
   public bool CanEat(IEdiblePickup food_item) {
     return true;

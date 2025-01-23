@@ -13,8 +13,8 @@ public struct DigiColor {
 
   public DigiColor(float shade) : this(shade, shade, shade, 1.0f) {}
 
-  public readonly DigiColor WithOpacity(float opac) {
-    return new DigiColor(R, G, B, A * opac);
+  public readonly DigiColor WithOpacity(double opac) {
+    return new DigiColor(R, G, B, A * (float)opac);
   }
 
   public static implicit operator Vector4(DigiColor c) {

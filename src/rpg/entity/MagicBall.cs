@@ -67,7 +67,7 @@ public class MagicBall : ICombatEntity {
 
   private void HandleAttack() {
     if (Active) {
-      context.Attack(0.5, 0.1, target);
+      context.Attack(0.5, 0.25, target);
       Deactivate();
     }
   }

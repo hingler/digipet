@@ -22,7 +22,7 @@ namespace digipet.framework.engine;
 public class DigiEngine : IEngine, IInputListener {
   private readonly IEngineBase platform_base;
   private readonly Stack<Scene> scene_stack = new();
-  private readonly PhysicsObjectShow phys_world;
+  private readonly DampedObjectShow phys_world;
   private readonly Dictionary<Type, object> repos = [];
   private readonly BabyTimer timer = new();
 
@@ -30,7 +30,7 @@ public class DigiEngine : IEngine, IInputListener {
 
   public DigiEngine(IEngineBase platform_base) {
     this.platform_base = platform_base;
-    phys_world = new PhysicsObjectShow(this);
+    phys_world = new DampedObjectShow(this);
     platform_base.GetInputManager().Register(this);
 
     InitDB();
@@ -143,7 +143,7 @@ public class DigiEngine : IEngine, IInputListener {
     // update phys world here
 
     timer.Start("update");
-    phys_world.Update(delta);
+    phys_world.Update((float)delta);
     GetActiveScene()?.SceneTick(delta);
     timer.End("update", debug);
 

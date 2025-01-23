@@ -5,7 +5,7 @@ namespace digipet.rpg.context;
 public interface IDetailedCharState : ICharState {
 
   // calculations
-  void OnHit(double raw_damage, double raw_knockback);
+  void OnHit(double raw_damage);
 
   // calculation opportunity - or just accept raw
   void OnHeal(double raw_heal);

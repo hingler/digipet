@@ -7,6 +7,9 @@ public class SimpleThirstModel : IThirstModel {
   private readonly IWaterSource source;
   public double Quenchiness {
     get => water_content;
+    set {
+      water_content = value;
+    }
   }
 
   private static readonly int DECAY_TIME = 60 * 60 * 15;

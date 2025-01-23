@@ -14,7 +14,14 @@ public class ObjPhysObject : IPhysObject {
   public ISprite Sprite { get => sprite_; }
   public IWorldItem Pickup { get => pickup_; }
   public Vector2 Position { get; set; }
-  public Vector2 Velocity { get => velocity_; }
+  public Vector2 Velocity { get => velocity_; set => velocity_ = value; }
+
+  public bool FlipX { get; set; }
+
+  public float Bounciness = 0.7f;
+  public float LinearDamping = 0.2f;
+
+  public float FrictionDamping = 3.0f;
 
   public ObjPhysObject(
     Vector2 spawnPos,

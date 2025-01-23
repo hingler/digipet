@@ -1,3 +1,4 @@
+using System.Data;
 using System.Numerics;
 using digipet.rpg.context;
 using digipet.rpg.context.simple;
@@ -156,6 +157,11 @@ public class CombatManager : ICombatHook {
     // keep it positive until the very end
     double new_velocity = Math.Clamp(velocity_tick, -speed_cap, speed_cap);
 
+    if (Math.Abs(velocity_tick) > speed_cap) {
+      double dt = Math.Exp(delta * -3.0);
+      new_velocity = new_velocity * (1.0 - dt) + velocity_tick * dt;
+    }
+
     cs.Velocity = new((float)new_velocity, 0.0f);
 
     cs.Position += cs.Velocity * (float)delta;
@@ -186,8 +192,17 @@ public class CombatManager : ICombatHook {
   }
 
   private void HandleCollision(SimpleCharState csa, SimpleCharState csb, Vector2 intersect_vector) {
-    SimpleCharContext context_a = new(this, csa);
-    SimpleCharContext context_b = new(this, csb);
+    CollisionCombatHook hook = new(converter, converter, this);
+
+    SimpleCharContext context_a = new(hook, csa);
+    SimpleCharContext context_b = new(hook, csb);
+
+    // hook 
+
+    // swap out the handles here with our collision hook
+    // call "oncollide" on each
+    // store the hits, tweak velocities ourselves
+    // then: broadcast "onhit"
 
     // slide so that they're no longer colliding
 
@@ -203,10 +218,59 @@ public class CombatManager : ICombatHook {
     csa.BehaviorModel.OnCollide(csb, context_a);
     csb.BehaviorModel.OnCollide(csa, context_b);
 
-    // how do we want to handle velocity on collide?
-    // collisions are elastic
-    // - assume a default knockback based on speed
-    // - based on net knockback
+    AttackData data_a = new();
+    AttackData data_b = new();
+
+    foreach (var a in hook.GetAttacks()) {
+      IDetailedCharState actor = a.Item1;
+      AttackData spec = a.Item3;
+
+      List<SimpleCharState> targets = GetTargets(actor, a.Item2);
+      foreach (SimpleCharState target in targets) {
+        if (target == csa) {
+          data_a.RawDamage += spec.RawDamage;
+          data_a.RawKnockback += spec.RawKnockback;
+        } else if (target == csb) {  // target == csb
+          data_b.RawDamage += spec.RawDamage;
+          data_b.RawKnockback += spec.RawKnockback;
+        } else {
+          HandleSingleAttack(target, spec.RawDamage, spec.RawKnockback);
+        }
+      }
+    }
+
+    // whats next?
+
+    // - start filling out gameplay features - this logic seems OK
+    // do some refactoring?
+    // doodle out some class specs?
+    // - ie: make up some classes to brawl for us
+    // damage numbers
+    // health bars
+    // win/loss conditions
+
+    double momentum_a = GetMomentumKnockback(csa) * 0.14;
+    double momentum_b = GetMomentumKnockback(csb) * 0.14;
+
+
+    // momentum imparted - momentum initial
+    data_a.RawKnockback = Math.Max(data_a.RawKnockback + momentum_b - momentum_a, 0.1);
+    data_b.RawKnockback += Math.Max(data_b.RawKnockback + momentum_a - momentum_b, 0.1);
+
+    // impl some logic st knockback is lessened as we move from one side to the other
+
+
+    csa.Velocity = Vector2.Zero;
+    csb.Velocity = Vector2.Zero;
+
+    logger.Log("net knockback: ", data_a.RawKnockback, ", ", data_b.RawKnockback);
+
+    HandleSingleAttack(csa, data_a.RawDamage, data_a.RawKnockback);
+    HandleSingleAttack(csb, data_b.RawDamage, data_b.RawKnockback);
+  }
+
+  private double GetMomentumKnockback(SimpleCharState c) {
+    return c.Stats.Weight * c.Velocity.X * (c.Team == UnitTeam.ALLY ? 1 : -1);
   }
 
   public void CreateEntity(ICombatEntity entity) {
@@ -231,18 +295,23 @@ public class CombatManager : ICombatHook {
   public void EnqueueAttack(IDetailedCharState actor, double damage_fac, double knockback_fac, ICharState? target = null) {
     List<SimpleCharState> targets = GetTargets(actor, target);
 
-    // btwn 92% and 108% dmg
-    double stochastic_fac = 0.92 + 0.16 * r.NextDouble();
-
-    double raw_damage = converter.ToRawDamage(actor.Stats, damage_fac) * stochastic_fac;
-    double raw_knockback = converter.ToRawKnockback(actor.Stats, knockback_fac) * stochastic_fac;
+    double raw_damage = converter.ToRawDamage(actor.Stats, damage_fac);
+    double raw_knockback = converter.ToRawKnockback(actor.Stats, knockback_fac);
 
     logger.Log("attack on: ", targets);
 
     foreach (SimpleCharState state in targets) {
-      state.OnHit(raw_damage, raw_knockback);
+      // separate out knockback
+      HandleSingleAttack(state, raw_damage, raw_knockback);
     }
   }
+
+  private void HandleSingleAttack(SimpleCharState target, double raw_damage, double raw_knockback) {
+    target.OnHit(raw_damage);
+    target.Velocity += converter.KnockbackToDeltaV(target, raw_knockback);
+  }
+
+  
 
   public void EnqueueBuff(IDetailedCharState actor, ICharBuff buff, ICharState? target = null) {
     List<SimpleCharState> buff_targets = GetTargets(actor, target);
@@ -258,6 +327,10 @@ public class CombatManager : ICombatHook {
     foreach (SimpleCharState state in targets) {
       state.OnBuff(buff);
     }
+  }
+
+  public IEnumerable<IDetailedCharState> GetAllCharacters() {
+    return [..allies, ..enemies];
   }
 
   private List<SimpleCharState> GetEnemies_internal(ICharState self) {

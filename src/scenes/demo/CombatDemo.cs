@@ -9,6 +9,7 @@ using digipet.rpg.unit.ability;
 using digipet.rpg.unit.ability.impl;
 using digipet.view.gpr;
 using digipet.view.rpg;
+using digipet.view.rpg.damage;
 
 namespace digipet.scenes.demo;
 
@@ -16,6 +17,7 @@ public class CombatDemo : Scene {
   private readonly CombatManager manager;
   private readonly RPGEntityWrap viewer;
   private readonly RPGGrid grid;
+  private readonly RPGDamageView damage_view;
   private readonly RPGEntityScaler scaler;
 
   public CombatDemo(IEngine engine) : base(engine) {
@@ -29,9 +31,9 @@ public class CombatDemo : Scene {
 
     for (int i = 0; i < 1; i++) {
       SimpleCharStats stats_temp = GetPlaceholderStat();
-      stats_temp.Weight = 2400;
-      stats_temp.Speed = 1655;
-      stats_temp.Attack = 1250;
+      stats_temp.Weight = 1500;
+      stats_temp.Speed = 2400;
+      stats_temp.Attack = 1800;
       CharInfo info = new() {
         Stats = stats_temp,
         CharSprite = engine.GetSpriteFetcher().GetSprite(sprite.attrib.SpriteID.STAT_FOOD),
@@ -40,12 +42,26 @@ public class CombatDemo : Scene {
 
       stats_temp.Abilities.Add(new MagicAbility(engine) {});
 
+      SimpleCharStats stats_tank = GetPlaceholderStat();
+      stats_tank.Weight = 3500;
+      stats_tank.Speed = 1400;
+      stats_tank.Attack = 2250;
+
+      CharInfo info_tank = new() {
+        Stats = stats_tank,
+        CharSprite = engine.GetSpriteFetcher().GetSprite(sprite.attrib.SpriteID.STAT_FOOD),
+        BehaviorModel = new GreedyChargeModel()
+      };
+
       info_ally.Add(info);
+      info_ally.Add(info_tank);
 
       SimpleCharStats stats_enemy = GetPlaceholderStat();
-      stats_enemy.Speed = 825;
+      stats_enemy.Speed = 2500;
+      stats_enemy.Attack = 3550;
+      stats_enemy.Weight = 1800;
       stats_enemy.Defense = 1300;
-      stats_enemy.Weight = 825;
+      stats_enemy.Weight = 2100;
 
       info_enemy.Add(new() {
         Stats = stats_enemy,
@@ -59,12 +75,14 @@ public class CombatDemo : Scene {
     };
     viewer = new(manager);
     grid = new();
+    damage_view = new(manager);
 
     RPGDisplayDelegate d = new();
     d.SizePx = new(192.0f);
 
     d.AddDisplay(viewer);
     d.AddDisplay(grid);
+    d.AddDisplay(damage_view);
 
     scaler = new(manager, d);
   } 
@@ -72,6 +90,7 @@ public class CombatDemo : Scene {
   public override void InitScene() {
     PushToStack(viewer);
     PushToStack(grid);
+    PushToStack(damage_view);
   }
 
   public override void Tick(double delta) {

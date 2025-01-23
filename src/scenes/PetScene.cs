@@ -4,6 +4,7 @@ using digipet.framework;
 using digipet.image;
 using digipet.input;
 using digipet.sim;
+using digipet.sim.toy.handlers;
 using digipet.sprite;
 using digipet.sprite.attrib;
 using digipet.transition;
@@ -37,6 +38,8 @@ public class PetScene : Scene {
   private readonly SimProvider provider;
   private readonly IUserData userdata;
 
+  private readonly ToyCar toycar;
+
   public PetScene(
     IEngine engine, 
     ISpriteFetcher fetcher,
@@ -50,6 +53,8 @@ public class PetScene : Scene {
     provider = new(engine.GetSaveStore());
 
     this.userdata = userdata;
+
+    toycar = new(engine);
   }
 
   public override bool HandleInput(IKeyEvent @event) {
@@ -88,7 +93,7 @@ public class PetScene : Scene {
   }
 
   private void CreateStatList() {
-    PetStatList list = new(Engine.GetSpriteFetcher(), provider.GetPetModel()) {
+    PetStatList list = new(Engine, provider.GetPetModel()) {
       SizeX = 0.33f,
       SizeY = 1.0f,
       Anchor = new(1.0f, 0.0f),
@@ -125,6 +130,8 @@ public class PetScene : Scene {
     });
 
     logger.Log("initialized pet scene!");
+
+    toycar.Active = true;
   }
 
   public override void Activate() {
@@ -135,6 +142,7 @@ public class PetScene : Scene {
 
   public override void Tick(double delta) {
     // do nothing
+    toycar.Tick(delta);
   }
 
   public override void Destroy() {

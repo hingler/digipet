@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using digipet.component;
+using digipet.file;
+using digipet.framework;
 using digipet.image;
 using digipet.input;
 using digipet.sim;
@@ -20,17 +22,23 @@ public class PetStatList : ViewComponent {
 
   private readonly BorderContainer container = new();
 
+  private static readonly string SPRITE_PATH = "sprites/attrib/";
+
   public PetStatList(
-    ISpriteFetcher sprite_fetcher,
+    IEngine engine,
     IPetModel model
   ) {
     this.model = model;
+    ISpriteFetcher sprite_fetcher = engine.GetSpriteFetcher();
 
-    stats.Add(CreateStats(sprite_fetcher, SpriteID.STAT_FOOD));
-    stats.Add(CreateStats(sprite_fetcher, SpriteID.STAT_WATER));
-    stats.Add(CreateStats(sprite_fetcher, SpriteID.STAT_FUN));
-    stats.Add(CreateStats(sprite_fetcher, SpriteID.STAT_SOCIAL));
-    stats.Add(CreateStats(sprite_fetcher, SpriteID.STAT_ENERGY));
+    IFileLoader loader = engine.GetDigipetAssetLoader();
+
+
+    stats.Add(CreateStats(sprite_fetcher, loader.LoadSprite(SPRITE_PATH + "attrib_food.png")));
+    stats.Add(CreateStats(sprite_fetcher, loader.LoadSprite(SPRITE_PATH + "attrib_water.png")));
+    stats.Add(CreateStats(sprite_fetcher, loader.LoadSprite(SPRITE_PATH + "attrib_fun.png")));
+    stats.Add(CreateStats(sprite_fetcher, loader.LoadSprite(SPRITE_PATH + "attrib_social.png")));
+    stats.Add(CreateStats(sprite_fetcher, loader.LoadSprite(SPRITE_PATH + "attrib_energy.png")));
 
     MarginContainer container_margin = new() {
       MarginPx = 3
@@ -66,9 +74,7 @@ public class PetStatList : ViewComponent {
     return true;
   }
 
-  private static PetStat CreateStats(ISpriteFetcher fetcher, SpriteID id) {
-    ISprite sprite = fetcher.GetSprite(id);
-
+  private static PetStat CreateStats(ISpriteFetcher fetcher, ISprite sprite) {
     PetStat stat = new(sprite) {
       Size = new Vector2(1.0f, 0.2f),
       Anchor = Vector2.Zero

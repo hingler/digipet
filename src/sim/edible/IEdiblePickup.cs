@@ -4,7 +4,7 @@ namespace digipet.sim.edible;
 
 #nullable enable
 
-public interface IEdiblePickup : IWorldItem {
+public interface IEdiblePickup : IWorldItem, IPurchasable {
   // affects prob of appealing in store
   public int Rarity { get; }
 

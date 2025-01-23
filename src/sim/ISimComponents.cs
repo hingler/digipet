@@ -10,7 +10,7 @@ public interface ISimComponent {
 }
 
 public interface IHungerModel : ISimComponent {
-  double Fullness { get; }
+  double Fullness { get; set; }
 
   // returns true if the food can be eaten
   public bool CanEat(IEdiblePickup food);
@@ -20,7 +20,7 @@ public interface IHungerModel : ISimComponent {
 }
 
 public interface IThirstModel : ISimComponent {
-  double Quenchiness { get; }
+  double Quenchiness { get; set; }
 
   public double Drink(double units, IWaterSource source);
 }

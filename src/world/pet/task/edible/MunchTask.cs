@@ -86,7 +86,7 @@ public class MunchTask : IPetTask {
       return 100;
     }
 
-    IReadOnlyCollection<IPhysObject> objects = world.GetPhysObjects();
+    IEnumerable<IPhysObject> objects = world.GetPhysObjects();
     // complete - try to re-enqueue
     foreach (IPhysObject ob in objects) {
       if (ob.Pickup is IEdiblePickup ep) {

@@ -69,7 +69,7 @@ public class AnimatedTextScene : Scene {
     anime.Anchor = new(0.0f, 0.0f);
     PushToStack(anime);
 
-    PetStatList l = new(fetcher, model);
+    PetStatList l = new(Engine, model);
     l.Offset = new(0.0f, 0.0f);
     l.Size = new(0.38f, 1.0f);
 

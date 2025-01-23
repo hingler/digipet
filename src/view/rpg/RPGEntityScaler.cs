@@ -1,5 +1,6 @@
 
 using digipet.rpg;
+using digipet.rpg.context;
 using digipet.util;
 
 namespace digipet.view.rpg;
@@ -29,7 +30,7 @@ public class RPGEntityScaler {
     float min = 2000f;
     float max = -2000f;
 
-    foreach (ICombatEntity entity in manager.GetEntities()) {
+    foreach (IDetailedCharState entity in manager.GetAllCharacters()) {
       min = Math.Min(entity.Position.X, min);
       max = Math.Max(entity.Position.X, max);
     }

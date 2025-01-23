@@ -24,6 +24,8 @@ public class SpriteView : ViewComponent {
   }
   public bool Tile = false;
 
+  public bool FlipX = false;
+
   public Vector2 Dims => sprite?.Dims ?? Vector2.Zero;
   public SpriteView() : this(null) {}
   public SpriteView(ISprite? sprite) {
@@ -33,7 +35,13 @@ public class SpriteView : ViewComponent {
   public override void Draw(ICanvas canvas) {
     base.Draw(canvas);
     Vector2 start = HALF - (Scale * HALF);
-    Vector2 end = HALF + (Scale * HALF);
+    Vector2 end;
+
+    if (FlipX) {
+      end = start + new Vector2(-Scale, Scale);
+    } else {
+      end = HALF + (Scale * HALF);
+    }
     sprite?.Let(s => {
       canvas.Tex(s, start, end, Tile);
     });

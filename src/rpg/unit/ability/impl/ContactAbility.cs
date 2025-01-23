@@ -16,18 +16,24 @@ public class ContactAbility : IAbility {
 
   public double NetCooldown { get; set; } = 0.001;
 
+  private readonly Random rand;
+
   private readonly MinDistanceTester tester;
 
   public ContactAbility() {
     tester = new() {
-      MaxCastDistance = 0.01
+      MaxCastDistance = 0.1
     };
+
+    rand = new();
   }
 
   public virtual bool Cast(ICharContext context, ICharState? opp = null) {
     if (tester.CanCast(context, opp)) {
       ICharState opponent = opp!;
-      context.Attack(DamageFactor, KnockbackFactor, opponent);
+
+      double power_mod = 0.88 + rand.NextDouble() * 0.24;
+      context.Attack(DamageFactor * power_mod, KnockbackFactor * power_mod, opponent);
       return true;
     }
 

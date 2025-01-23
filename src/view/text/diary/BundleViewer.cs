@@ -64,7 +64,7 @@ public class BundleViewer : ViewComponent {
   }
 
   public override bool HandleInput(IKeyEvent @event) {
-    if (base.HandleInput(@event)) {
+    if (base.HandleInput(@event) || @event == null) {
       return true;
     }
 

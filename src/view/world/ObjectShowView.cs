@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using System.Numerics;
 using digipet.component;
-using digipet.framework;
 using digipet.util;
 using digipet.world;
 
@@ -23,7 +21,7 @@ public class ObjectShowView : ViewComponent {
   }
 
   public override void Draw(ICanvas canvas) {
-    IReadOnlySet<IPhysObject> objects = objectShow.GetPhysObjects();
+    IEnumerable<IPhysObject> objects = objectShow.GetPhysObjects();
     foreach (IPhysObject o in objects) {
       if (!sprites.TryGetValue(o, out SpriteView sprite)) {
         sprite = new(
@@ -43,6 +41,7 @@ public class ObjectShowView : ViewComponent {
       sprite.Offset = VIEW_OFFSET;
       sprite.X = VIEW_OFFSET.X + o.Position.X;
       sprite.Y = objectShow.FloorHeight - o.Position.Y;
+      sprite.FlipX = o.FlipX;
     }
 
     foreach (IPhysObject o in sprites.Keys) {

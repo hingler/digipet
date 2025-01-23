@@ -82,15 +82,10 @@ public class SimpleCharState : IDetailedCharState {
   }
 
   // alt: return net damage?
-  public void OnHit(double raw_damage, double raw_knockback) {
+  // don't broadcast knockback - let the manager take care of it (ie: we shouldn't have to know it)
+  public void OnHit(double raw_damage) {
     double net_damage = power_conv.ToNetDamage(Stats, raw_damage);
     CurrentHP -= (long)net_damage;
-
-    // handle knockback
-    double knockback_delta = speed_calc.GetKnockbackDelta(this, raw_knockback) * (Team == UnitTeam.ALLY ? -1 : 1);
-    Vector2 new_vel = new(Velocity.X + (float)knockback_delta, 0.0f);
-    logger.Log("team: ", Enum.GetName(Team), " - knockback delta: ", knockback_delta, " - mew velocity: ", new_vel);
-    Velocity = new_vel;
   }
 
   // alt: return net heal?
