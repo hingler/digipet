@@ -2,6 +2,7 @@ using System.Diagnostics;
 using digipet.util;
 using digipet.world.pet.animation;
 using digipet.world.pet.task;
+using digipet.world.pet.task.builder;
 
 namespace digipet.world.pet.controller;
 
@@ -32,7 +33,14 @@ public class SimplePetController : IPetController {
   }
 
   public void AddTask(IPetTask task) {
-    provider.AddTask(task);
+    // retool
+    // - builder for pet tasks (references priority)
+    // - pet task itself (exactly the same thing - build and call "begin")
+    provider.AddTask(new TaskBuilderWrap(task));
+  }
+
+  public void AddTaskFactory(IPetTaskFactory fac) {
+    provider.AddTask(fac);
   }
 
   public void Update(double delta) {

@@ -7,6 +7,8 @@ using digipet.util;
 
 namespace digipet.view.rpg.damage;
 
+#nullable enable
+
 public class RPGDamageView : ViewComponent, IRPGDisplay {
   private readonly LinkedList<RPGDamageNumber> numbers;
 
@@ -49,7 +51,7 @@ public class RPGDamageView : ViewComponent, IRPGDisplay {
   }
 
   private void UpdateNumbers(double delta) {
-    LinkedListNode<RPGDamageNumber> node = numbers.First;
+    LinkedListNode<RPGDamageNumber>? node = numbers.First;
     while (node != null) {
       RPGDamageNumber number = node.Value;
       float ascent = (float)(2.0 * delta);
@@ -63,9 +65,9 @@ public class RPGDamageView : ViewComponent, IRPGDisplay {
 
       node.Value = number;
 
-      LinkedListNode<RPGDamageNumber> next = node.Next;
+      LinkedListNode<RPGDamageNumber>? next = node?.Next;
 
-      if (number.Lifetime <= 0.0) {
+      if (number.Lifetime <= 0.0 && node != null) {
         numbers.Remove(node);
       }
 

@@ -42,6 +42,7 @@ public enum SpriteID {
   OFFSET_FOOD = 16384,
 
   OFFSET_BG = 32768,
+  OFFSET_TOY = 131072
 }
 
 public interface ISpriteFetcher {

@@ -19,6 +19,7 @@ public interface IEngine : IEngineBase {
   void PushScene(Scene scene);
 
   // returns an asset repo for the specified asset type
+  // oh -- put the toys here lol
   ISimRepo<T>? GetAssetRepo<T>() where T : IWorldItem;
 
   // returns ref to underlying 

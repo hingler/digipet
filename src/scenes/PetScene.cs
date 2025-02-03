@@ -4,6 +4,8 @@ using digipet.framework;
 using digipet.image;
 using digipet.input;
 using digipet.sim;
+using digipet.sim.toy;
+using digipet.sim.toy.factories;
 using digipet.sim.toy.handlers;
 using digipet.sprite;
 using digipet.sprite.attrib;
@@ -21,6 +23,7 @@ using digipet.world.pet;
 using digipet.world.pet.animation.handlers;
 using digipet.world.pet.task.edible;
 using digipet.world.pet.task.tasks;
+using digipet.world.pet.task.toy;
 using digipet.world.pet.task.water;
 
 namespace digipet.scenes;
@@ -37,8 +40,9 @@ public class PetScene : Scene {
 
   private readonly SimProvider provider;
   private readonly IUserData userdata;
+  private readonly IToyManager toy_manager;
 
-  private readonly ToyCar toycar;
+  private BaseToyHandler? toycar = null;
 
   public PetScene(
     IEngine engine, 
@@ -50,11 +54,11 @@ public class PetScene : Scene {
     physWorld = engine.GetPhysWorld();
     logger = this.GetLogger();
 
-    provider = new(engine.GetSaveStore());
+    provider = new(engine);
 
     this.userdata = userdata;
 
-    toycar = new(engine);
+    toy_manager = new SimpleToyManager(engine);
   }
 
   public override bool HandleInput(IKeyEvent @event) {
@@ -77,7 +81,7 @@ public class PetScene : Scene {
 
   private void CreateQuickMenu() {
     QuickMenu menu = new(
-      Engine, provider, userdata
+      Engine, provider, toy_manager, userdata
     ) {
       SizeX = 0.33f,
       SizeY = 1.0f,
@@ -130,8 +134,6 @@ public class PetScene : Scene {
     });
 
     logger.Log("initialized pet scene!");
-
-    toycar.Active = true;
   }
 
   public override void Activate() {
@@ -142,7 +144,11 @@ public class PetScene : Scene {
 
   public override void Tick(double delta) {
     // do nothing
-    toycar.Tick(delta);
+  }
+
+  public override void PhysicsTick(double delta) {
+    base.PhysicsTick(delta);
+    toy_manager.Tick(delta);
   }
 
   public override void Destroy() {
@@ -203,6 +209,8 @@ public class PetScene : Scene {
     controller.AddTask(new PassiveTask());
     controller.AddTask(new MunchTask(Engine, provider, userdata));
     controller.AddTask(new QuaffTask(provider.GetPetModel(), bowl, provider.GetWaterSource()));
+    
+    controller.AddTaskFactory(new ToyInteractBuilder(Engine, provider));
 
     // task for drinking water
     // p much same as the munch task but with different steps 

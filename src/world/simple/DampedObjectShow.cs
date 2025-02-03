@@ -11,13 +11,9 @@ public class DampedObjectShow : IPhysWorld {
 
   private readonly HashSet<ObjPhysObject> objects = [];
 
-  private readonly ILogger logger = LoggerSingleton.GetStaticLogger<DampedObjectShow>();
-
   private readonly IEngine engine;
 
-  private static readonly float MAX_X = 0.45f;
-
-  public Vector2 Gravity = new(0.0f, -2.1f);
+  public Vector2 Gravity { get; } = new(0.0f, -2.1f);
   public float DefaultBounciness = 0.65f;
   public float DefaultLinearDamping = 0.2f;
   public float DefaultFrictionDamping = 3.0f;

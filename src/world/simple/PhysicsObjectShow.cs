@@ -22,6 +22,8 @@ public class PhysicsObjectShow : IPhysWorld {
   private static readonly float BOUNCINESS = 0.5f;
   private static readonly float MAX_X = 0.45f;
 
+  public Vector2 Gravity => GRAVITY;
+
   private readonly Random random = new();
 
   public PhysicsObjectShow(IEngine engine) {

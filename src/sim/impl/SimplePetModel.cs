@@ -6,7 +6,7 @@ using digipet.util;
 
 namespace digipet.sim.impl;
 
-public class SimplePetModel : IPetModel {
+public class SimplePetModel : IPetModel, ISimComponent {
   // food
   private readonly IHungerModel hungerModel;
   private readonly IThirstModel thirstModel;
@@ -39,6 +39,9 @@ public class SimplePetModel : IPetModel {
     hungerModel.Fullness = petData.Food;
     thirstModel.Quenchiness = petData.Water;
 
+    // fun model
+    // - poll active toys and attempt to fetch some "fun" value from
+
     Fun = petData.Fun;
     Social = petData.Social;
     Energy = petData.Energy;
@@ -48,6 +51,11 @@ public class SimplePetModel : IPetModel {
     Personality = petData.Personality;
 
     logger = this.GetLogger();
+  }
+
+  public void Tick(int tick_seconds) {
+    hungerModel.Tick(tick_seconds);
+    thirstModel.Tick(tick_seconds);
   }
 
   public bool CanEat(IEdiblePickup pickup) {
