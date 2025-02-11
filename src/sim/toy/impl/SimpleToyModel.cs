@@ -81,6 +81,29 @@ public class SimpleToyModel : IToyModel {
     return toys;
   }
 
+  public double ConsumeInterest(int ticks) {
+    double net_interest = 0.0;
+    foreach (IToyActivator toy in GetActiveToys()) {
+      ToyInterest interest = FetchInterestData(toy);
+      double tick_consume = ticks * (1.0 / interest.ConsumeRate);
+      double toy_consume = Math.Min(
+        tick_consume, 
+        interest.CurrentEnjoyment
+      );
+
+      if (toy_consume <= 0.0) {
+        // sick of this; add a decrement
+        net_interest -= tick_consume / 6;
+      } else {
+        // still interested - tack on interest, and deduct from enjoy
+        net_interest += toy_consume;
+        interest.CurrentEnjoyment -= toy_consume;
+      }
+    }
+
+    return net_interest;
+  }
+
 
   public double ConsumeInterest(IToy toy, double amt) {
     ToyInterest interest = FetchInterestData(toy);
@@ -103,9 +126,10 @@ public class SimpleToyModel : IToyModel {
   private ToyInterest FetchInterestData(IToy toy) {
     if (!toys.TryGetValue(toy.RID, out ToyInterest res)) {
       res = new ToyInterest() {
-        BaseEnjoyment = 0.8,
+        BaseEnjoyment = toy.MaxInterest,
         RegenRate = 3600,
-        CurrentEnjoyment = 0.8
+        ConsumeRate = toy.ConsumeTime,
+        CurrentEnjoyment = toy.MaxInterest
       };
 
       toys[toy.RID] = res;

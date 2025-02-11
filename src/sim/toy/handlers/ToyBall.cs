@@ -36,7 +36,7 @@ public class ToyBall : BaseToyHandler {
     float rand_theta = random.NextSingle() * MathF.PI;
 
     Vector2 rand_dir = new(MathF.Cos(rand_theta), MathF.Sin(rand_theta));
-    ball.ApplyImpulse(rand_dir * 1.9f);
+    ball.ApplyImpulse(rand_dir * (1.4f + random.NextSingle() * 2.0f));
   }
 
   protected override void Deactivate() {

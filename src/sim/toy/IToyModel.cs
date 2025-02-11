@@ -13,6 +13,8 @@ public interface IToyModel : ISimComponent {
   double GetRawInterest(IToy toy);
   bool IsActive(IToy toy);
 
+  double ConsumeInterest(int ticks);
+
   // give interest only, and let toy model figure out what to consume from
   double ConsumeInterest(IToy toy, double amt);
   IEnumerable<IToyActivator> GetSpawnedToys();

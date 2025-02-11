@@ -5,8 +5,6 @@ using digipet.image;
 using digipet.input;
 using digipet.sim;
 using digipet.sim.toy;
-using digipet.sim.toy.factories;
-using digipet.sim.toy.handlers;
 using digipet.sprite;
 using digipet.sprite.attrib;
 using digipet.transition;
@@ -40,9 +38,7 @@ public class PetScene : Scene {
 
   private readonly SimProvider provider;
   private readonly IUserData userdata;
-  private readonly IToyManager toy_manager;
-
-  private BaseToyHandler? toycar = null;
+  private readonly SimpleToyManager toy_manager;
 
   public PetScene(
     IEngine engine, 
@@ -57,7 +53,6 @@ public class PetScene : Scene {
     provider = new(engine);
 
     this.userdata = userdata;
-
     toy_manager = new SimpleToyManager(engine);
   }
 
@@ -144,6 +139,7 @@ public class PetScene : Scene {
 
   public override void Tick(double delta) {
     // do nothing
+    provider.Tick(delta);
   }
 
   public override void PhysicsTick(double delta) {

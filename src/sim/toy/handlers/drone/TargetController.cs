@@ -9,6 +9,8 @@ public class TargetController {
   private float target_y;
   private double hold_delta;
 
+  private static readonly ILogger logger = LoggerSingleton.GetStaticLogger<TargetController>();
+
   public float DistanceThreshold = 0.05f;
   public float TargetHeight = 0.3f;
   public float HoldDurationMedian = 2.0f;
@@ -21,6 +23,8 @@ public class TargetController {
     target_x = init_x;
     target_y = TargetHeight;
     hold_delta = 0.0f;
+
+    logger.Log("init x: ", init_x);
   }
 
   public void Tick(double delta, IPositionable drone) {
@@ -36,13 +40,15 @@ public class TargetController {
       // reshuffle target
 
       // prefer edges
-      float random_sample = random.NextSingle() * 2.0f - 1.0f;
+      float random_sample = random.NextSingle() * 1.0f;
+      logger.Log("random sample before sign: ", random_sample);
       random_sample = MathF.Sign(random_sample) * MathF.Pow(random_sample, 0.25f);
 
       // zig zag back and forth
-      if (Math.Sign(target_x) == Math.Sign(random_sample)) {
+      if (target_x > 0.0f) {
         random_sample = -random_sample;
       }
+
 
       target_x = random_sample * 0.4f;
       target_y = random.NextSingle() * 0.2f + TargetHeight;

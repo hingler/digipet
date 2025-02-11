@@ -65,12 +65,11 @@ public class ToyInteractBuilder : IPetTaskFactory {
   public int GetTogglePriorityForToy(IToy toy) {
     int activate_priority = (int)(toy_model.GetRawInterest(toy) * 100);
     if (toy_model.IsActive(toy)) {
-      return 25 - activate_priority;
+      // turn off if below 0.05
+      return (5 - activate_priority) * 3;
     } else {
-      // negative when prio drops below 
-      return activate_priority - 35;
+      // turn on if abvove 0.2
+      return activate_priority - 20;
     }
   }
-
-
 }

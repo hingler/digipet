@@ -107,7 +107,7 @@ public class DampedObjectShow : IPhysWorld {
 
         // true if we want to bounce off the wall, else false
         Vector2 has_rebound = has_collide * new Vector2(
-          MathF.Abs(ob.Velocity.X) > 0.25f ? 1 : 0,
+          MathF.Abs(ob.Velocity.X) > 0.01f ? 1 : 0,
           MathF.Abs(ob.Velocity.Y) > 0.25f ? 1 : 0
         );
 

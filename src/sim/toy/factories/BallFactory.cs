@@ -13,6 +13,9 @@ public class BallFactory : IToyFactory {
   public string Description => "It's spherical.";
   public int StorePrice => 800;
 
+  public double MaxInterest => 0.4;
+  public double ConsumeTime => 125;
+
   public ISprite? SpriteOverride { get; }
 
   public BallFactory(IEngine engine) {

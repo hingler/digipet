@@ -85,6 +85,16 @@ public class CursorDisplayManager : ITextFlow {
 
   public void CursorLeft() => --editor.Cursor;
   public void CursorRight() => ++editor.Cursor;
+  
+  public void SeekToNextWord() {
+    WordResult res = editor.GetNextWord();
+    editor.Cursor = res.EndIndex;
+  }
+
+  public void SeekToPreviousWord() {
+    WordResult res = editor.GetPreviousWord();
+    editor.Cursor = res.StartIndex;
+  }
 
   public float GetCursorX() {
     int column = GetColumn();

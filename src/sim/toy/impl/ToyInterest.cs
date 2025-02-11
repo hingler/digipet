@@ -6,8 +6,9 @@ public class ToyInterest : IStreamable {
   // initial enjoyment
   public double BaseEnjoyment;
 
-  // number of ticks to 0
+  // number of ticks to max
   public double RegenRate;
+  public double ConsumeRate;
 
   // current enjoyment value
   public double CurrentEnjoyment;
@@ -17,12 +18,14 @@ public class ToyInterest : IStreamable {
   public ToyInterest(IInputStream stream) {
     BaseEnjoyment = stream.ReadDouble();
     RegenRate = stream.ReadDouble();
+    ConsumeRate = stream.ReadDouble();
     CurrentEnjoyment = stream.ReadDouble();
   }
 
   public void ToStream(IOutputStream stream) {
     stream.WriteDouble(BaseEnjoyment);
     stream.WriteDouble(RegenRate);
+    stream.WriteDouble(ConsumeRate);
     stream.WriteDouble(CurrentEnjoyment);
   }
 }

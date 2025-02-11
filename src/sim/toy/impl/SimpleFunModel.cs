@@ -17,24 +17,7 @@ public class SimpleFunModel : IFunModel {
 
   public void Tick(int tick_seconds) {
     Fun -= (double)tick_seconds / DECAY_RATE;
-
-    double consume_capacity = GetConsumeCapacity(tick_seconds);
-    List<IToy> toys = [.. toy_model.GetActiveToys()];
-    if (toys.Count > 0) {
-      double consume_i = consume_capacity / toys.Count;
-
-      double consume_acc = 0.0;
-      foreach (IToy toy in toys) {
-        double net_consume = toy_model.ConsumeInterest(toy, consume_i);
-        if (net_consume <= 0.0) {
-          consume_acc -= consume_i / 6;
-        } else {
-          consume_acc += net_consume;
-        }
-      }
-
-      Fun += consume_acc;
-    }
+    Fun += toy_model.ConsumeInterest(tick_seconds);
   }
 
   private double GetConsumeCapacity(int tick_seconds) {

@@ -4,8 +4,7 @@ using digipet.sim.water;
 
 namespace digipet.sim.stub;
 
-public class PetModelStub : IPetModel
-{
+public class PetModelStub : IPetModel {
   public double Food => 0.75;
 
   public double Water => 0.5;
@@ -21,6 +20,10 @@ public class PetModelStub : IPetModel
   public string PetName => "DINGUS";
 
   public IPetPersonality Personality => new PetPersonalityData();
+
+  public void Tick(int tick_seconds) {
+    // no op
+  }
 
   public bool CanEat(IEdiblePickup food_item) {
     return true;

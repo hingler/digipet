@@ -13,6 +13,9 @@ public class CarFactory : IToyFactory {
   public string Description => "Perfect for smashing into your wall.";
   public int StorePrice => 1500;
 
+  public double MaxInterest => 0.45;
+  public double ConsumeTime => 100;
+
   public ISprite? SpriteOverride { get; }
 
   public CarFactory(IEngine engine) {

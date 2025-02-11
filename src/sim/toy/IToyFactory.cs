@@ -8,7 +8,10 @@ namespace digipet.sim.toy;
 // return handler and activator?
 
 public interface IToy : IPurchasable {
-  
+  double MaxInterest { get; }
+
+  // num seconds to deplete interest
+  double ConsumeTime { get; }
 }
 
 public interface IToyFactory : IToy {

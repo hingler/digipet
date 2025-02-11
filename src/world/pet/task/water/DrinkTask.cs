@@ -22,7 +22,7 @@ public class DrinkTask : IPetTask {
 
   public bool Interruptable => false;
 
-  private SimpleTicker ticker;
+  private readonly SimpleTicker ticker;
 
   public DrinkTask(IPetModel model, IWaterSource source) {
     this.model = model;

@@ -26,11 +26,13 @@ public class SimProvider {
   private static readonly string WATER_KEY = "waterdata";
   private static readonly string PET_KEY = "petdata";
   private static readonly string TOYS_KEY = "toydata";
-
+  private readonly SimpleTicker ticker;
 
   public SimProvider(IEngine engine) {
     simData = engine.GetSaveStore()?.GetSubspace("sim") ?? null;
     this.engine = engine;
+
+    ticker = new(1.0);
   }
 
   public IWaterSource GetWaterSource() {
@@ -77,11 +79,24 @@ public class SimProvider {
       petModelSingleton = new SimplePetModel(
         GetHungerModel(),
         GetThirstModel(),
+        GetFunModel(),
         data
       );
     }
     
     return petModelSingleton;
+  }
+
+  public void Tick(double delta_sec) {
+    ticker.Update(delta_sec);
+    if (ticker.Updates > 0) {
+      Tick(ticker.Updates);
+      ticker.Updates = 0;
+    }
+  }
+
+  private void Tick(int tick_seconds) {
+    GetPetModel().Tick(tick_seconds);
   }
 
   public void SaveSimState() {

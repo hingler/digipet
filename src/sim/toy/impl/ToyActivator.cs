@@ -15,6 +15,10 @@ public class BaseToyActivator : IToyActivator {
   public string Name => base_item.Name;
   public string Description => base_item.Description;
   public int StorePrice => base_item.StorePrice;
+
+  public double MaxInterest => base_item.MaxInterest;
+  public double ConsumeTime => base_item.ConsumeTime;
+  
   public ISprite SpriteOverride { get; set; }
 
   // expose world item attribs??

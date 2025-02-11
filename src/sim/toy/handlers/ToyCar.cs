@@ -8,6 +8,7 @@ namespace digipet.sim.toy.handlers;
 public class ToyCar : BaseToyHandler {
   private readonly IEngine engine;
   private readonly IPhysObject car;
+  private readonly Random random;
 
   // poll for activator
 
@@ -22,6 +23,8 @@ public class ToyCar : BaseToyHandler {
     };
     
     car = engine.GetPhysWorld().SpawnObject(base_item, Vector2.Zero, Vector2.Zero, 0.85f, 0.2f, 1.0f);
+
+    random = new();
   }
 
   public override void Tick(double delta) {
@@ -33,7 +36,7 @@ public class ToyCar : BaseToyHandler {
   }
 
   protected override void Activate() {
-    car.ApplyImpulse(Vector2.UnitX * 2.5f);
+    car.ApplyImpulse(Vector2.UnitX * (1.95f + random.NextSingle() * 1.1f));
   }
 
   protected override void Deactivate() {

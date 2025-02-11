@@ -13,6 +13,9 @@ public class DroneFactory : IToyFactory {
   public string Description => "Up to 5 miles of range!";
   public int StorePrice => 3200;
 
+  public double MaxInterest => 0.8;
+  public double ConsumeTime => 240;
+
   public ISprite? SpriteOverride { get; }
 
   public DroneFactory(IEngine engine) {
