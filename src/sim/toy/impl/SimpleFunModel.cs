@@ -19,13 +19,4 @@ public class SimpleFunModel : IFunModel {
     Fun -= (double)tick_seconds / DECAY_RATE;
     Fun += toy_model.ConsumeInterest(tick_seconds);
   }
-
-  private double GetConsumeCapacity(int tick_seconds) {
-    double min_capacity = 0.005;
-    double extra_capacity = Math.Max((Fun - 0.3) / 50, 0);
-
-    double net_consume = (min_capacity + extra_capacity) * tick_seconds;
-
-    return Math.Min(1.0 - Fun, net_consume);
-  }
 }

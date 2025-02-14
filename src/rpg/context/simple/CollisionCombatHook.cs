@@ -26,7 +26,7 @@ public class CollisionCombatHook : ICombatHook {
     this.hook_delegate = hook_delegate;
   }
 
-  public void CreateEntity(ICombatEntity entity) {
+  public void CreateEntity(IWorldEntity entity) {
     hook_delegate.CreateEntity(entity);
   }
 

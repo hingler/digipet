@@ -33,7 +33,7 @@ public class CombatManager : ICombatHook {
   private readonly List<SimpleCharState> allies;
   private readonly List<SimpleCharState> enemies;
 
-  private readonly HashSet<ICombatEntity> combat_entities;
+  private readonly HashSet<IWorldEntity> combat_entities;
 
   private readonly SimpleConverterImpl converter;
 
@@ -91,7 +91,7 @@ public class CombatManager : ICombatHook {
     }
   }
 
-  public IEnumerable<ICombatEntity> GetEntities() {
+  public IEnumerable<IWorldEntity> GetEntities() {
     return combat_entities;
   }
 
@@ -128,7 +128,7 @@ public class CombatManager : ICombatHook {
 
   private void UpdateEntities(double delta) {
 
-    foreach (ICombatEntity entity in combat_entities) {
+    foreach (IWorldEntity entity in combat_entities) {
       entity.Tick(delta);
     }
     
@@ -273,7 +273,7 @@ public class CombatManager : ICombatHook {
     return c.Stats.Weight * c.Velocity.X * (c.Team == UnitTeam.ALLY ? 1 : -1);
   }
 
-  public void CreateEntity(ICombatEntity entity) {
+  public void CreateEntity(IWorldEntity entity) {
     combat_entities.Add(entity);
   }
 

@@ -45,7 +45,7 @@ public class SimpleCharContext : ICharContext {
     hook.EnqueueTeamBuff(self_detailed, buff, team);
   }
 
-  public void CreateEntity(ICombatEntity entity) {
+  public void CreateEntity(IWorldEntity entity) {
     hook.CreateEntity(entity);
   }
 }

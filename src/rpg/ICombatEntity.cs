@@ -6,7 +6,7 @@ namespace digipet.rpg;
 #nullable enable
 
 // time goes
-public interface ICombatEntity {
+public interface IWorldEntity {
   public void Tick(double delta);
 
   bool Active { get; }
