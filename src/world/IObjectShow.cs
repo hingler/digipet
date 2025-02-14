@@ -13,6 +13,8 @@ public interface IPhysWorld {
 
   public float FloorHeight { get; }
 
+  public Vector2 Gravity { get; }
+
   public IPhysObject SpawnObject(
     IWorldItem pickup
   );

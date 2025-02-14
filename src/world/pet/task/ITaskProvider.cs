@@ -4,7 +4,7 @@ namespace digipet.world.pet.task;
 
 public interface ITaskProvider {
   // returns an unordered list of all available tasks atm
-  public IReadOnlyList<IPetTask> GetTasks();
+  public IReadOnlyList<IPetTaskFactory> GetTasks();
 }
 
 // what tasks do i want rn?

@@ -11,13 +11,9 @@ public class DampedObjectShow : IPhysWorld {
 
   private readonly HashSet<ObjPhysObject> objects = [];
 
-  private readonly ILogger logger = LoggerSingleton.GetStaticLogger<DampedObjectShow>();
-
   private readonly IEngine engine;
 
-  private static readonly float MAX_X = 0.45f;
-
-  public Vector2 Gravity = new(0.0f, -2.1f);
+  public Vector2 Gravity { get; } = new(0.0f, -2.1f);
   public float DefaultBounciness = 0.65f;
   public float DefaultLinearDamping = 0.2f;
   public float DefaultFrictionDamping = 3.0f;
@@ -111,7 +107,7 @@ public class DampedObjectShow : IPhysWorld {
 
         // true if we want to bounce off the wall, else false
         Vector2 has_rebound = has_collide * new Vector2(
-          MathF.Abs(ob.Velocity.X) > 0.25f ? 1 : 0,
+          MathF.Abs(ob.Velocity.X) > 0.01f ? 1 : 0,
           MathF.Abs(ob.Velocity.Y) > 0.25f ? 1 : 0
         );
 

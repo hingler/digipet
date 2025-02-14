@@ -15,6 +15,8 @@ public class RepoEditor : ITextEditor {
     underlying = new();
   }
 
+  public WordResult GetNextWord() => underlying.GetNextWord();
+  public WordResult GetPreviousWord() => underlying.GetPreviousWord();
   public string AsString() => underlying.AsString();
   public void Put(char c) => underlying.Put(c);
   public void Put(string s) => underlying.Put(s);

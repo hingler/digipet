@@ -261,7 +261,20 @@ public class ViewComponent : IDigiComponent, IContainer {
       }
     }
   }
+
+  public virtual void PrePhysicsTick(double delta) {
+    PhysicsTick(delta);
+    IReadOnlyList<ViewComponent> children = [..GetChildren()];
+
+    foreach (ViewComponent child in children) {
+      child.PrePhysicsTick(delta);
+      // skip dispose pass for physics
+    }
+  }
+
+
   public virtual void Tick(double delta) {}
+  public virtual void PhysicsTick(double delta) {}
   public virtual void Deactivate() {}
 
   public void PreDestroy() {

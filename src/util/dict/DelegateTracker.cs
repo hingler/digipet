@@ -9,7 +9,7 @@ public static class DelegateTracker {
   } 
 
   public delegate T Factory<T, U>(U template);
-  public static void AddAll<T, U>(this Dictionary<T, U> dest, IEnumerable<T> new_keys, Factory<U, T> factory_func) {
+  public static void AddAll<T, U>(this Dictionary<T, U> dest, IEnumerable<T> new_keys, Factory<U, T> factory_func) where T : notnull {
     foreach (T key in new_keys) {
       U map = factory_func(key);
       dest.Add(key, map);

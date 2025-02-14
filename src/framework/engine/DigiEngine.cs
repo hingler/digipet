@@ -9,6 +9,8 @@ using digipet.input;
 using digipet.sim;
 using digipet.sim.db;
 using digipet.sim.edible;
+using digipet.sim.toy;
+using digipet.sim.toy.impl;
 using digipet.sprite.attrib;
 using digipet.util;
 using digipet.world;
@@ -38,6 +40,7 @@ public class DigiEngine : IEngine, IInputListener {
 
   private void InitDB() {
     repos[typeof(IEdiblePickup)] = new FoodRepo(this);
+    repos[typeof(IToyFactory)] = new SimpleToyRepo(this);
 
     // (tba: handle finished scenes - thinking we can just crawl up and remove finished scenes)
   }
@@ -143,13 +146,19 @@ public class DigiEngine : IEngine, IInputListener {
     // update phys world here
 
     timer.Start("update");
-    phys_world.Update((float)delta);
     GetActiveScene()?.SceneTick(delta);
     timer.End("update", debug);
 
     if (scene_stack.Count <= 0) {
       CloseGame();
     }
+  }
+
+  public void PhysUpdate(double delta) {
+    timer.Start("update_phys");
+    GetActiveScene()?.ScenePhysicsTick(delta);
+    phys_world.Update((float)delta);
+    timer.End("update_phys", debug);
   }
 
   public void Draw(ICanvas canvas) {

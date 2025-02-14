@@ -93,8 +93,7 @@ public class DiaryEditor : ViewComponent {
 
     cursor_start = canvas.PxToRelative(cursor_start);
     cursor_end = canvas.PxToRelative(cursor_end);
-
-    canvas.Line(cursor_start, cursor_end, 1.0f, new DigiColor(0.5f));
+    canvas.Line(cursor_start, cursor_end, 1.0f, new DigiColor(0.5f), z_index: 10);
   }
 
   public override bool HandleInput(IKeyEvent key) {
@@ -119,10 +118,18 @@ public class DiaryEditor : ViewComponent {
       } else {
         switch (key.Action) {
           case InputType.LEFT:
-            manager.CursorLeft();
+            if (key.Flags.HasFlag(KeyFlags.ALT)) {
+              manager.SeekToPreviousWord();
+            } else {
+              manager.CursorLeft();
+            }
             break;
           case InputType.RIGHT:
-            manager.CursorRight();
+            if (key.Flags.HasFlag(KeyFlags.ALT)) {
+              manager.SeekToNextWord();
+            } else {
+              manager.CursorRight();
+            }
             break;
           case InputType.UP:
             manager.CursorUp();

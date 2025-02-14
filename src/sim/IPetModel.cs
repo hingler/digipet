@@ -79,7 +79,7 @@ public struct PetDataParcel : IPetData, IStreamable {
 
 // this works for now
 // thinking: we'll come up with some better way to pass in items, rather than modifying stats ourselves
-public interface IPetModel : IPetData {
+public interface IPetModel : IPetData, ISimComponent {
 
   bool CanEat(IEdiblePickup food_item);
   // eats the food item and returns a desirability score

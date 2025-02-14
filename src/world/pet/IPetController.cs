@@ -9,6 +9,8 @@ namespace digipet.world.pet;
 public interface IPetController {
   void AddAnimationHandler(PetAnimation animation, IAnimationHandler handler);
   void AddTask(IPetTask task);
+
+  void AddTaskFactory(IPetTaskFactory factory);
   // update call
   void Update(double delta);
 

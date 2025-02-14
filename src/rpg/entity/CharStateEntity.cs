@@ -7,7 +7,7 @@ namespace digipet.rpg.entity;
 
 #nullable enable
 
-public class CharStateEntity : ICombatEntity {
+public class CharStateEntity : IWorldEntity {
   private readonly SimpleCharState character;
   public bool Active => character.CurrentHP > 0;
 

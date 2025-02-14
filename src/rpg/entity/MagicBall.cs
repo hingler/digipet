@@ -6,7 +6,7 @@ using digipet.rpg.context;
 
 namespace digipet.rpg.entity;
 
-public class MagicBall : ICombatEntity {
+public class MagicBall : IWorldEntity {
   private readonly double lifetime;
   private readonly double velocity;
 

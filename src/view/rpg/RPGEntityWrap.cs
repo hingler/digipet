@@ -11,7 +11,7 @@ public class RPGEntityWrap : ViewComponent, IRPGDisplay {
   private readonly CombatManager manager;
 
   // tba: want to have some sort of "global scale"
-  private readonly Dictionary<ICombatEntity, SpriteView> sprites;
+  private readonly Dictionary<IWorldEntity, SpriteView> sprites;
   private static readonly ILogger logger = LoggerSingleton.GetStaticLogger<RPGEntityWrap>();
   public Vector2 WorldOrigin { get; set; } = Vector2.Zero;
   public float WorldScale { get; set; } = 0.1f;
@@ -25,24 +25,24 @@ public class RPGEntityWrap : ViewComponent, IRPGDisplay {
   public override void Tick(double delta) {
     // don't handle ticking manager
 
-    IEnumerable<ICombatEntity> entities = manager.GetEntities();
+    IEnumerable<IWorldEntity> entities = manager.GetEntities();
     
     // keys which no longer map to an active entity
-    IEnumerable<ICombatEntity> inactives = sprites.Keys.Except(entities);
+    IEnumerable<IWorldEntity> inactives = sprites.Keys.Except(entities);
 
     // entities which have not been mapped to a sprite view
-    IEnumerable<ICombatEntity> new_elems = entities.Except(sprites.Keys);
+    IEnumerable<IWorldEntity> new_elems = entities.Except(sprites.Keys);
 
     sprites.RemoveAll(inactives, RemoveView);
     sprites.AddAll(new_elems, CreateNewSprite);
 
-    foreach (KeyValuePair<ICombatEntity, SpriteView> kv in sprites) {
+    foreach (KeyValuePair<IWorldEntity, SpriteView> kv in sprites) {
       UpdateSprite(kv);
     }
   }
 
-  private void UpdateSprite(KeyValuePair<ICombatEntity, SpriteView> sprite_map) {
-    ICombatEntity k = sprite_map.Key;
+  private void UpdateSprite(KeyValuePair<IWorldEntity, SpriteView> sprite_map) {
+    IWorldEntity k = sprite_map.Key;
     SpriteView v = sprite_map.Value;
 
     Vector2 origin_px = SizePx / 2;
@@ -60,7 +60,7 @@ public class RPGEntityWrap : ViewComponent, IRPGDisplay {
     v.SizePx = sprite_size_px;
   }
 
-  private SpriteView CreateNewSprite(ICombatEntity entity) {
+  private SpriteView CreateNewSprite(IWorldEntity entity) {
     SpriteView sprite = new() {
       Sprite = entity.Sprite,
       Anchor = new(0.5f)

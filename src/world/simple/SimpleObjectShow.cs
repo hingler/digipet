@@ -19,6 +19,8 @@ public class SimpleObjectShow : IPhysWorld {
   private readonly ISpriteFetcher fetcher;
   private readonly ILogger log;
 
+  public Vector2 Gravity => Vector2.Zero;
+
   public float FloorHeight { get => 0.8f; }
   
   public SimpleObjectShow(IEngine engine) {

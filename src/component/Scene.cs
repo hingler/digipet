@@ -105,6 +105,7 @@ public abstract class Scene : IDigiComponent {
   // overridables
   public virtual void Activate() {}
   public virtual void Tick(double delta) {}
+  public virtual void PhysicsTick(double delta) {}
   public virtual void Deactivate() {}
 
   public void EnqueueTransition(ITransition transition) {
@@ -138,6 +139,13 @@ public abstract class Scene : IDigiComponent {
     }
 
     CheckForStackChanges();
+  }
+
+  public void ScenePhysicsTick(double delta) {
+    PhysicsTick(delta);
+    for (int i = stack.Count - 1; i >= 0; i--) {
+      stack[i].PrePhysicsTick(delta);
+    }
   }
 
 

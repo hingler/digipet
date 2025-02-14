@@ -24,5 +24,5 @@ public interface ICharContext {
   public void Buff(ICharBuff buff, UnitTeam team);
 
   // spawns a new entity which will be tracked by the engine.
-  public void CreateEntity(ICombatEntity entity);
+  public void CreateEntity(IWorldEntity entity);
 }
