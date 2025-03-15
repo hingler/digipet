@@ -1,7 +1,7 @@
 namespace digipet.util.dict;
 
 public static class DelegateTracker {
-  public static void RemoveAll<T, U>(this Dictionary<T, U> source, IEnumerable<T> removes, Action<U> cleanup_func) {
+  public static void RemoveAll<T, U>(this Dictionary<T, U> source, IEnumerable<T> removes, Action<U> cleanup_func) where T : notnull {
     foreach (T key in removes) {
       cleanup_func(source[key]);
       source.Remove(key);

@@ -116,6 +116,8 @@ public class PhysicsObjectShow : IPhysWorld {
     return objects;
   }
 
+  public IReadOnlyList<CollisionData> GetCollisions(IPhysObject ob) => [];
+
   public void RemovePhysObject(IPhysObject obj) {
     if (obj is ObjPhysObject obp) {
       objects.Remove(obp);

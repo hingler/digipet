@@ -15,7 +15,7 @@ public class OffsetCanvas : ICanvas {
   private readonly ICanvas canvas;
 
   private readonly Vector4 mod_alpha;
-  private readonly int z_index;
+  private readonly float z_index;
 
   public OffsetCanvas(
     ICanvas base_canvas, 
@@ -23,7 +23,7 @@ public class OffsetCanvas : ICanvas {
     Vector2 size, 
     float scale,
     float alpha,
-    int z_index
+    float z_index
   ) {
     this.offset = offset;
     this.scale = scale;
@@ -46,7 +46,7 @@ public class OffsetCanvas : ICanvas {
     Vector2 end,
     int border_radius,
     Vector4 col, 
-    int z_index
+    float z_index
   ) {
 
     if (mod_alpha.W > 0.001f) {
@@ -67,7 +67,7 @@ public class OffsetCanvas : ICanvas {
     FontType typeface,
     HorizontalAlign alignment,
     Vector4 color, 
-    int z_index
+    float z_index
   ) {
     if (mod_alpha.W > 0.001f) {
       canvas.Text(
@@ -83,7 +83,7 @@ public class OffsetCanvas : ICanvas {
   }
 
   public void Line(
-    Vector2 start, Vector2 end, float thickness, Vector4 col, float dash, int z_index
+    Vector2 start, Vector2 end, float thickness, Vector4 col, float dash, float z_index
   ) {
     if (mod_alpha.W > 0.001f) {
       canvas.Line(
@@ -98,7 +98,7 @@ public class OffsetCanvas : ICanvas {
   }
 
   public void Tex(
-    ISprite image, Vector2 start, Vector2 end, bool tile, Vector4 modulate, Vector2 offset, int z_index
+    ISprite image, Vector2 start, Vector2 end, bool tile, Vector4 modulate, Vector2 offset, Vector2 scale, float z_index
   ) {
     if (mod_alpha.W > 0.001f) {
       canvas.Tex(
@@ -108,6 +108,7 @@ public class OffsetCanvas : ICanvas {
         tile, 
         modulate * mod_alpha,
         offset,
+        scale * this.scale,
         z_index + this.z_index
       );
     }

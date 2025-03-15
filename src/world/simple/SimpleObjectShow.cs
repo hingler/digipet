@@ -64,6 +64,8 @@ public class SimpleObjectShow : IPhysWorld {
     return res;
   }
 
+  public IReadOnlyList<CollisionData> GetCollisions(IPhysObject ob) => [];
+
   public IPhysObject? FetchByPriority() {
     return obj;
   }

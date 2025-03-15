@@ -1,8 +1,9 @@
-using System.Collections.Generic;
 using digipet.framework;
 using digipet.input;
 using digipet.transition;
 using digipet.util;
+
+#nullable enable
 
 namespace digipet.component;
 
@@ -48,8 +49,8 @@ public abstract class Scene : IDigiComponent {
   protected void PopFromStack() {
     if (stack.Count > 0) {
       if (init_flag) {
-        GetTopComponent().PreDeactivate();
-        GetTopComponent().PreDestroy();
+        GetTopComponent()?.PreDeactivate();
+        GetTopComponent()?.PreDestroy();
       }
 
       stack.RemoveAt(stack.Count - 1);
@@ -60,7 +61,7 @@ public abstract class Scene : IDigiComponent {
     }
   }
 
-  public ViewComponent GetTopComponent() {
+  public ViewComponent? GetTopComponent() {
     return stack.Count > 0 ? stack[stack.Count - 1] : null;
   }
 

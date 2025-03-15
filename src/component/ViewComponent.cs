@@ -176,7 +176,7 @@ public class ViewComponent : IDigiComponent, IContainer {
 
   public float Opacity;
 
-  public int ZIndex;
+  public float ZIndex;
 
   private readonly IList<ViewComponent> children = [];
 

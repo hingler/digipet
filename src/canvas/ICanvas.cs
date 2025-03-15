@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Reflection;
 using digipet.canvas.font;
 using digipet.image;
 using digipet.view;
@@ -13,7 +14,13 @@ public enum HorizontalAlign {
 
 public interface ICanvas {
   // draw a colored rect onto the screen
-  void Rect(Vector2 start, Vector2 end, int border_radius, Vector4 col, int z_index = 0);
+  void Rect(
+    Vector2 start, 
+    Vector2 end, 
+    int border_radius, 
+    Vector4 col, 
+    float z_index = 0
+);
 
   // draw text onto the screen
   void Text(
@@ -23,7 +30,7 @@ public interface ICanvas {
     FontType typeface,
     HorizontalAlign alignment,
     Vector4 color,
-    int z_index = 0
+    float z_index = 0
   );
 
   void Line(
@@ -32,7 +39,7 @@ public interface ICanvas {
     float thickness, 
     Vector4 col, 
     float dash = -1.0f,
-    int z_index = 0
+    float z_index = 0
   );
 
   void Tex(
@@ -47,8 +54,19 @@ public interface ICanvas {
     Vector2 end, 
     bool tile, 
     Vector4 modulate,
-    Vector2 offset, 
-    int z_index = 0
+    Vector2 offset,
+    float z_index = 0
+  ) => Tex(image, start, end, tile, modulate, offset, Vector2.One, z_index);
+
+  void Tex(
+    ISprite image, 
+    Vector2 start, 
+    Vector2 end, 
+    bool tile, 
+    Vector4 modulate,
+    Vector2 offset,
+    Vector2 scale,
+    float z_index = 0
   );
 
   // tba: drawing images?

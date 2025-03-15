@@ -1,13 +1,47 @@
 using System;
+using System.Numerics;
 
 namespace digipet.util;
 
-public class Lerper {
+public interface ILerper<T> {
+  public T Cursor { get; }
+  public T Target { get; set; }
+
+  public void Reset();
+  public void Tick(double delta);
+}
+
+public class Vec2Lerper(double smoothing_factor) : ILerper<Vector2> {
+  private readonly Lerper lerp_x = new(smoothing_factor);
+  private readonly Lerper lerp_y = new(smoothing_factor);
+
+  public Vector2 Target {
+    get => new((float)lerp_x.Target, (float)lerp_y.Target);
+    set {
+      lerp_x.Target = value.X;
+      lerp_y.Target = value.Y;
+    }
+  }
+
+  public Vector2 Cursor => new((float)lerp_x.Cursor, (float)lerp_y.Cursor);
+
+  public void Reset() {
+    lerp_x.Reset();
+    lerp_y.Reset();
+  }
+
+  public void Tick(double delta) {
+    lerp_x.Tick(delta);
+    lerp_y.Tick(delta);
+  }
+}
+
+public class Lerper : ILerper<double> {
   private double offset_;
   public double Cursor { 
     get => offset_; 
   }
-  public double Target;
+  public double Target { get; set; }
   // (encode offset from menu top)
   private readonly double SmoothingFactor;
 

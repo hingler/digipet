@@ -36,6 +36,8 @@ public class RPGDamageView : ViewComponent, IRPGDisplay {
     }
   }
 
+  public ViewComponent GetRootView() => this;
+
   public override void Tick(double delta) {
     base.Tick(delta);
 
@@ -79,7 +81,7 @@ public class RPGDamageView : ViewComponent, IRPGDisplay {
     base.Draw(canvas);
 
     foreach (RPGDamageNumber number in numbers) {
-      Vector2 screenspace = this.Project(number.Position) / SizePx;
+      Vector2 screenspace = this.ProjectAbsolute(number.Position) / SizePx;
       // use text nodes
       // obfuscate align, compute width 1x in item
       canvas.Text(

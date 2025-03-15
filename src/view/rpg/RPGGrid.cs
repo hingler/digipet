@@ -12,6 +12,8 @@ public class RPGGrid : ViewComponent, IRPGDisplay {
 
   public RPGGrid() {}
 
+  public ViewComponent GetRootView() => this;
+
   public override void Draw(ICanvas canvas) {
     base.Draw(canvas);
     

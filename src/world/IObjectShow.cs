@@ -44,6 +44,8 @@ public interface IPhysWorld {
 
   public IEnumerable<IPhysObject> GetPhysObjects();
 
+  public IReadOnlyList<CollisionData> GetCollisions(IPhysObject ob);
+
   // spawns phys object somewhere in the room
   // public void SpawnObject(
   //   IPhysObject obj,

@@ -4,7 +4,6 @@ public interface IKeyEvent {
   string KeyChar { get; }
   InputState State { get; }
   InputType Action { get; }
-
   KeyFlags Flags { get; }
 }
 

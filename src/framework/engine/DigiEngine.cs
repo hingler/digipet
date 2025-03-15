@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using digipet.canvas;
 using digipet.canvas.font;
 using digipet.component;
 using digipet.db;
 using digipet.file;
 using digipet.input;
+using digipet.scenes;
 using digipet.sim;
 using digipet.sim.db;
 using digipet.sim.edible;
@@ -33,9 +35,31 @@ public class DigiEngine : IEngine, IInputListener {
   public DigiEngine(IEngineBase platform_base) {
     this.platform_base = platform_base;
     phys_world = new DampedObjectShow(this);
+    CreateBoundaryHandlers();
     platform_base.GetInputManager().Register(this);
 
     InitDB();
+  }
+
+  private void CreateBoundaryHandlers() {
+    WallBoundaryHandler left = new() {
+      WorldNormal = Vector2.UnitX,
+      WorldOrigin = new(-0.5f, 0.0f)
+    };
+
+    WallBoundaryHandler right = new() {
+      WorldNormal = -Vector2.UnitX,
+      WorldOrigin = new(0.5f, 0.0f)
+    };
+
+    WallBoundaryHandler floor = new() {
+      WorldNormal = Vector2.UnitY,
+      WorldOrigin = new(0.0f, 0.0f)
+    };
+
+    phys_world.AddBoundaryHandler(left);
+    phys_world.AddBoundaryHandler(right);
+    phys_world.AddBoundaryHandler(floor);
   }
 
   private void InitDB() {
@@ -78,6 +102,8 @@ public class DigiEngine : IEngine, IInputListener {
 
     return null;
   }
+
+  public Vector2 GetScreenRes() => platform_base.GetScreenRes();
 
   public IPhysWorld GetPhysWorld() {
     return phys_world;

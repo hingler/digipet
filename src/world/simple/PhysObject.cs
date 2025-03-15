@@ -11,10 +11,14 @@ public class ObjPhysObject : IPhysObject {
 
   private Vector2 velocity_;
 
+  public bool Active => true;
   public ISprite Sprite { get => sprite_; }
   public IWorldItem Pickup { get => pickup_; }
   public Vector2 Position { get; set; }
   public Vector2 Velocity { get => velocity_; set => velocity_ = value; }
+
+  // fix later
+  public Vector2 WorldDims { get; set; } = Vector2.One * 0.1f;
 
   public bool FlipX { get; set; }
 
@@ -33,12 +37,21 @@ public class ObjPhysObject : IPhysObject {
     Position = spawnPos;
   }
 
+  public void Tick(double delta) {}
+  public void SetWorldDims(Vector2 dims) {
+    WorldDims = dims;
+  }
+
   public void ApplyForce(Vector2 force, float delta) {
     velocity_ += force * delta;
   }
 
   public void ApplyImpulse(Vector2 impulse) {
     velocity_ += impulse;
+  }
+
+  public void SetVelocity(Vector2 velocity) {
+    velocity_ = velocity;
   }
 
   public void Halt() {

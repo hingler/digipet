@@ -34,16 +34,21 @@ public class SpriteView : ViewComponent {
 
   public override void Draw(ICanvas canvas) {
     base.Draw(canvas);
-    Vector2 start = HALF - (Scale * HALF);
+    // thinking: interpret scale as an explicit transform - still draw w/in bounds
+    Vector2 start = Vector2.Zero;
     Vector2 end;
 
+    // modulate
+
     if (FlipX) {
-      end = start + new Vector2(-Scale, Scale);
+      end = new Vector2(-1.0f, 1.0f);
     } else {
-      end = HALF + (Scale * HALF);
+      end = Vector2.One;
     }
+
+    // interpreting this??
     sprite?.Let(s => {
-      canvas.Tex(s, start, end, Tile);
+      canvas.Tex(s, start, end, Tile, Vector4.One, Vector2.Zero, Vector2.One * Scale);
     });
   }
 }

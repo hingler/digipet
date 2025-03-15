@@ -4,7 +4,7 @@ namespace digipet.canvas.queue;
 
 public struct DrawRequest {
   public DrawType Type;
-  public int ZIndex;
+  public float ZIndex;
   public int Count;
 }
 

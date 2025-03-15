@@ -1,3 +1,4 @@
+using System.Numerics;
 using digipet.canvas;
 using digipet.canvas.font;
 using digipet.component;
@@ -37,6 +38,8 @@ public interface IEngineBase {
   IDataStore GetSaveStore();
 
   IFontHelper GetFontHelper();
+
+  Vector2 GetScreenRes();
 
   public virtual void TearDown() {}
 

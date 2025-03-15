@@ -3,24 +3,27 @@ using digipet.component;
 using digipet.rpg;
 using digipet.util;
 using digipet.util.dict;
+using digipet.world;
 
 namespace digipet.view.rpg;
 
 // oh - split this into multiple visualizers??
-public class RPGEntityWrap : ViewComponent, IRPGDisplay {
-  private readonly CombatManager manager;
+public class WorldEntityWrap : ViewComponent, IRPGDisplay {
+  private readonly IWorldManager manager;
 
   // tba: want to have some sort of "global scale"
   private readonly Dictionary<IWorldEntity, SpriteView> sprites;
-  private static readonly ILogger logger = LoggerSingleton.GetStaticLogger<RPGEntityWrap>();
+  private static readonly ILogger logger = LoggerSingleton.GetStaticLogger<WorldEntityWrap>();
   public Vector2 WorldOrigin { get; set; } = Vector2.Zero;
   public float WorldScale { get; set; } = 0.1f;
-  public RPGEntityWrap(
-    CombatManager manager
+  public WorldEntityWrap(
+    IWorldManager manager
   ) {
     this.manager = manager;
     sprites = [];
   }
+
+  public ViewComponent GetRootView() => this;
 
   public override void Tick(double delta) {
     // don't handle ticking manager

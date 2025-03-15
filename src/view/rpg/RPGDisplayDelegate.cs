@@ -1,8 +1,9 @@
 using System.Numerics;
+using digipet.framework;
 
 namespace digipet.view.rpg;
 
-public class RPGDisplayDelegate : IRPGDisplay {
+public class RPGDisplayDelegate {
   private readonly List<IRPGDisplay> displays = [];
   private Vector2 size_px_;
   private float world_scale_;
@@ -38,9 +39,12 @@ public class RPGDisplayDelegate : IRPGDisplay {
     }
   }
 
-  public RPGDisplayDelegate() {
+  public RPGDisplayDelegate(IEngine engine) {
     WorldOrigin = Vector2.Zero;
     WorldScale = 0.1f;
+
+    // is this a reasonable default??
+    size_px_ = engine.GetScreenRes();
   }
 
   public void AddDisplay(IRPGDisplay display) {

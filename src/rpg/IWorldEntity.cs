@@ -1,16 +1,16 @@
 using System.Numerics;
 using digipet.image;
+using digipet.util;
 
 namespace digipet.rpg;
 
 #nullable enable
 
 // time goes
-public interface IWorldEntity {
+public interface IWorldEntity : IPositionable {
   public void Tick(double delta);
 
   bool Active { get; }
-  Vector2 Position { get; }
   ISprite? Sprite { get; }
 
   Vector2 WorldDims { get; }

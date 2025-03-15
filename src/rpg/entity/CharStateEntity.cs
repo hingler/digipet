@@ -11,8 +11,9 @@ public class CharStateEntity : IWorldEntity {
   private readonly SimpleCharState character;
   public bool Active => character.CurrentHP > 0;
 
-  // tba: cache on tick??
+  // tba: cache on tick?? 
   public Vector2 Position => new(character.Position.X, character.Position.Y + sprite_height / 2);
+  public Vector2 Velocity => character.Velocity;
   public ISprite Sprite { get; }
 
   // create a scene to design little nodes for this

@@ -19,6 +19,7 @@ public class MagicBall : IWorldEntity {
 
   private Vector2 position_;
   public Vector2 Position => position_;
+  public Vector2 Velocity => Vector2.Normalize(target.Position - Position) * (float)velocity;
 
   public ISprite Sprite { get; }
   public Vector2 WorldDims => new(0.5f, 0.5f);

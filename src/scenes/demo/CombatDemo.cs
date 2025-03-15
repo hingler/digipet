@@ -3,9 +3,7 @@ using digipet.framework;
 using digipet.rpg;
 using digipet.rpg.context.simple;
 using digipet.rpg.model.behavior;
-using digipet.rpg.model.demo;
 using digipet.rpg.unit;
-using digipet.rpg.unit.ability;
 using digipet.rpg.unit.ability.impl;
 using digipet.view.gpr;
 using digipet.view.rpg;
@@ -15,10 +13,11 @@ namespace digipet.scenes.demo;
 
 public class CombatDemo : Scene {
   private readonly CombatManager manager;
-  private readonly RPGEntityWrap viewer;
+  private readonly WorldEntityWrap viewer;
   private readonly RPGGrid grid;
   private readonly RPGDamageView damage_view;
   private readonly RPGEntityScaler scaler;
+  private readonly RPGDelegateView del;
 
   public CombatDemo(IEngine engine) : base(engine) {
     // initialize manager with some default data
@@ -77,20 +76,17 @@ public class CombatDemo : Scene {
     grid = new();
     damage_view = new(manager);
 
-    RPGDisplayDelegate d = new();
-    d.SizePx = new(192.0f);
+    del = new(engine);
 
-    d.AddDisplay(viewer);
-    d.AddDisplay(grid);
-    d.AddDisplay(damage_view);
+    del.AddDisplay(viewer);
+    del.AddDisplay(grid);
+    del.AddDisplay(damage_view);
 
-    scaler = new(manager, d);
+    scaler = new(manager, del);
   } 
 
   public override void InitScene() {
-    PushToStack(viewer);
-    PushToStack(grid);
-    PushToStack(damage_view);
+    PushToStack(del);
   }
 
   public override void Tick(double delta) {

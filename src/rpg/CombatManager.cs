@@ -1,4 +1,3 @@
-using System.Data;
 using System.Numerics;
 using digipet.rpg.context;
 using digipet.rpg.context.simple;
@@ -7,12 +6,13 @@ using digipet.rpg.model.demo;
 using digipet.rpg.unit;
 using digipet.rpg.util;
 using digipet.util;
+using digipet.world;
 
 namespace digipet.rpg;
 
 #nullable enable
 
-public class CombatManager : ICombatHook {
+public class CombatManager : ICombatHook, IWorldManager {
   // BM's send events thru context and up here
   // crunch from "ability" -> "raw dmg / raw knockback"
   // crunch from "raw dmg / raw knockback" to "net dmg / delta-v"
