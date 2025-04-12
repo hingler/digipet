@@ -1,18 +1,21 @@
 using System.Numerics;
 using digipet.component;
 using digipet.framework;
+using digipet.image;
 using digipet.input;
 using digipet.rpg.overworld;
 using digipet.util;
 using digipet.view.rpg;
-
+using digipet.view.rpg.overworld;
+using digipet.view.world;
 using graphui.node;
 
 namespace digipet.scenes.demo;
 
 public class OverworldDemo : Scene {
-  private readonly OverworldManager manager;
-  private readonly RPGDelegateView rpg_view;
+  private readonly OverworldView manager;
+  private readonly SpriteAnimator animator;
+  private readonly ISpriteSequence sequence;
   private static readonly ILogger logger = LoggerSingleton.GetStaticLogger<OverworldDemo>();
 
   public OverworldDemo(
@@ -48,25 +51,53 @@ public class OverworldDemo : Scene {
       .SetInitialNode(a);
 
     logger.Log("post-builder");
-    manager = new(builder, Engine);
-    logger.Log("manager created");
-    rpg_view = new(Engine);
+    
+    OverworldMap map_data = new();
 
+    map_data.world_name = "thej";
+    map_data.graph_nav = builder.Build();
+    map_data.backgrounds = [];
+
+    List<string> paths = [];
+
+    string path_prefix = "sprites/rpg/bg/watersequence/";
+    for (int i = 0; i < 8; i++) {
+      paths.Add(path_prefix + i + ".png");
+    }
+
+    // animated sprite sequence
+    // workaround for no tiling on animated sprites
+
+    sequence = engine.GetDigipetAssetLoader().ToSpriteSequence(paths);
+
+    animator = new(sequence, 0.5);
+    // quick sprite animator?
+    ParallaxBGView v = new() {
+      Sprite = sequence,
+      BGOffset = Vector2.Zero,
+      SpriteScale = 0.1f,
+      ZDist = 2.0f,
+      TileX = true,
+      TileY = true,
+      Offset = Vector2.Zero,
+      Size = Vector2.One,
+      LockX = false,
+      LockY = false
+    };
+
+    v.Size = Vector2.One;
+
+    map_data.backgrounds.Add(v);
+
+    manager = new(map_data, engine);
+    logger.Log("manager created");
     logger.Log("constructor called");
   }
 
   public override void InitScene() {
     logger.Log("initializing scene");
-    rpg_view.AddView(
-      new WorldEntityWrap(manager)
-    );
 
-    PushToStack(rpg_view);
-
-    rpg_view.WorldScale = 0.1f;
-    manager.SetSpriteScale(Vector2.One * 0.1f);
-
-    rpg_view.SizePx = new Vector2(192.0f);
+    PushToStack(manager);
   }
 
   public override bool HandleInput(IKeyEvent @event) {
@@ -74,15 +105,18 @@ public class OverworldDemo : Scene {
 
     Direction dir = InputToUIDirection.Convert(@event);
     if (dir != Direction.NONE) {
-      return manager.ProvideInput(dir);
+      logger.Log("direction received: ", dir);
+      return manager.OnInput(dir);
     }
 
     return false;
   }
 
   public override void Tick(double delta) {
-    manager.Tick(delta);
-    rpg_view.WorldOrigin = manager.GetSelectorPosition();
+    // manager.Tick(delta);
+    if (animator.Tick(delta)) {
+
+    }
   }
 
 }

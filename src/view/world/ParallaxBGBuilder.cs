@@ -11,6 +11,29 @@ public class ParallaxBGBuilder {
 
   public List<IPseudoDepthDisplay> displays;
 
+  private bool lock_x = false;
+  private bool lock_y = true;
+
+  public bool LockX {
+    get => lock_x;
+    set {
+      lock_x = value;
+      foreach (IPseudoDepthDisplay d in displays) {
+        d.LockX = lock_x;
+      }
+    }
+  }
+
+  public bool LockY {
+    get => lock_y;
+    set {
+      lock_y = value;
+      foreach (IPseudoDepthDisplay d in displays) {
+        d.LockY = lock_y;
+      }
+    }
+  }
+
   public ParallaxBGBuilder() {
     displays = [];
   }
@@ -27,8 +50,11 @@ public class ParallaxBGBuilder {
       BGOffset = offset,
       SpriteScale = scale,
       ZDist = z_dist,
-      Tile = tile,
-      Offset = Vector2.Zero
+      TileX = tile,
+      TileY = false,
+      Offset = Vector2.Zero,
+      LockX = lock_x,
+      LockY = lock_y
     };
 
     displays.Add(view);

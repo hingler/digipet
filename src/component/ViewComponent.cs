@@ -248,7 +248,7 @@ public class ViewComponent : IDigiComponent, IContainer {
   public virtual void Create() {}
   public virtual void Activate() {}
 
-  public virtual void PreTick(double delta) {
+  public void PreTick(double delta) {
     transitions.Tick(delta);
     Tick(delta);
     IReadOnlyList<ViewComponent> children = [..GetChildren()];
@@ -262,7 +262,7 @@ public class ViewComponent : IDigiComponent, IContainer {
     }
   }
 
-  public virtual void PrePhysicsTick(double delta) {
+  public void PrePhysicsTick(double delta) {
     PhysicsTick(delta);
     IReadOnlyList<ViewComponent> children = [..GetChildren()];
 

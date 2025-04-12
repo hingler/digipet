@@ -14,6 +14,8 @@ public interface IRPGDisplay {
 public interface IPseudoDepthDisplay : IRPGDisplay {
   public float ZDist { get; }
   public float SpriteScale { get; }
+  public bool LockX { get; set; }
+  public bool LockY { get; set; }
 }
 
 public static class RPGExtension {

@@ -14,7 +14,7 @@ public class CharStateEntity : IWorldEntity {
   // tba: cache on tick?? 
   public Vector2 Position => new(character.Position.X, character.Position.Y + sprite_height / 2);
   public Vector2 Velocity => character.Velocity;
-  public ISprite Sprite { get; }
+  public ISprite? Sprite { get; }
 
   // create a scene to design little nodes for this
   public Vector2 WorldDims {
@@ -23,12 +23,12 @@ public class CharStateEntity : IWorldEntity {
 
   private readonly float sprite_height;
 
-  public CharStateEntity(SimpleCharState character, ISprite sprite) {
+  public CharStateEntity(SimpleCharState character, ISprite? sprite) {
     Sprite = sprite;
     this.character = character;
 
-    float pix_ratio = character.Width / sprite.Dims.X;
-    float height = pix_ratio * sprite.Dims.Y;
+    float pix_ratio = character.Width / (sprite?.Dims.X ?? 1);
+    float height = pix_ratio * (sprite?.Dims.Y ?? 1);
 
     sprite_height = height;
   }

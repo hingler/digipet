@@ -2,15 +2,9 @@ using digipet.rpg.unit;
 
 namespace digipet.rpg.context;
 
-public interface ICharStats {
-  public long Attack { get; }
-  public long Wisdom { get; }
-  public long Defense { get; }
-  public long Weight { get; }
-  public long Vitality { get; }
-  public long Speed { get; }
+public interface ICharStats : ICharStatsBase {
 
-  // width of this char in units
+  // width of this char in units (should this be in stats??)
   public float Width { get; }
 
   IReadOnlyList<IAbility> GetAbilities();

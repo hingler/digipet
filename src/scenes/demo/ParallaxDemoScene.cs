@@ -48,13 +48,7 @@ public class ParallaxDemoScene(IEngine engine) : Scene(engine) {
       new DigiColor(0.64f, 0.72f, 0.8f, 1.0f), 100.0f
     );
     
-    ParallaxDemo demo = new(Engine, builder) {
-      SizeY = 1.0f,
-      Y = 0.0f
-    };
-
-    demo.SizeY = 1.0f;
-    demo.Y = 0.0f;
+    ParallaxDemo demo = new(Engine, builder);
 
     PushToStack(demo);
   }

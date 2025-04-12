@@ -16,6 +16,23 @@ public class SimpleCharStats : ICharStats {
 
   public IReadOnlyList<IAbility> GetAbilities() => Abilities.AsReadOnly();
 
+  public SimpleCharStats() {}
+
+  public SimpleCharStats(
+    ICharStatsBase b,
+    float Width,
+    IEnumerable<IAbility> Abilities
+  ) {
+    Attack = b.Attack;
+    Wisdom = b.Wisdom;
+    Defense = b.Defense;
+    Weight = b.Weight;
+    Vitality = b.Vitality;
+    Speed = b.Speed;
+    this.Width = Width;
+    this.Abilities = [ ..Abilities ];
+  }
+
   public void Scale(ICharStats fac) {
     Attack *= fac.Attack;
     Wisdom *= fac.Wisdom;

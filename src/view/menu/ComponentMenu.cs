@@ -29,7 +29,14 @@ public class ComponentMenu : ViewComponent {
     }
   }
 
+  public bool Active {
+    get => selector_sprite.Opacity > 0.5f;
+    set => selector_sprite.Opacity = value ? 1.0f : 0.0f;
+  }
+
   private int item_offset;
+
+  public int Count => items.Count;
 
   public ComponentMenu(
     IEngine engine
@@ -120,13 +127,15 @@ public class ComponentMenu : ViewComponent {
   public override void Draw(ICanvas canvas) {
     base.Draw(canvas);
 
-    for (int i = 1; i < items.Count; i++) {
-      double line_start = GetOffsetPx(i) - Math.Round(margin_ / 2) - lerper_offset.Cursor;
-      Vector2 start = canvas.PxToRelative(3.5f * margin_, (float)line_start);
-      Vector2 end = canvas.PxToRelative(canvas.GetSizePx().X - 1.5f * margin_, (float)line_start);
-      
-      if (start.Y > 0.0f && start.Y < 1.0f) {
-        canvas.Line(start, end, 1.0f, DigiColor.BLACK.WithOpacity(0.3f), z_index: 0);
+    if (Margin > 4.0f) {
+      for (int i = 1; i < items.Count; i++) {
+        double line_start = GetOffsetPx(i) - Math.Round(margin_ / 2) - lerper_offset.Cursor;
+        Vector2 start = canvas.PxToRelative(3.5f * margin_, (float)line_start);
+        Vector2 end = canvas.PxToRelative(canvas.GetSizePx().X - 1.5f * margin_, (float)line_start);
+        
+        if (start.Y > 0.0f && start.Y < 1.0f) {
+          canvas.Line(start, end, 1.0f, DigiColor.BLACK.WithOpacity(0.3f), z_index: 0);
+        }
       }
     }
   }

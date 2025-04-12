@@ -1,4 +1,5 @@
 using System.Numerics;
+using digipet.component;
 using digipet.framework;
 
 namespace digipet.view.rpg;

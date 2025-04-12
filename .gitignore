@@ -3,3 +3,4 @@ obj
 *.sln
 .vscode
 .DS_Store
+*.import

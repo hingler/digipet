@@ -18,6 +18,9 @@ public class StaticBGView : ViewComponent, IPseudoDepthDisplay {
     }
   }
 
+  public bool LockX { get; set; }
+  public bool LockY { get; set; }
+
   public Vector2 WorldOrigin { get; set; }
   public float WorldScale { get; set; }
   public ISprite? Sprite {

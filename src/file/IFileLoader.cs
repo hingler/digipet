@@ -13,5 +13,7 @@ public interface IFileLoader {
   IFileHandle Load(string path, FileFlags flags);
   ISprite LoadSprite(string path);
   IAnimatedSprite LoadAnimatedSprite(string path);
+  ISpriteSequence ToSpriteSequence(params ISprite[] sprites);
+  ISpriteSequence ToSpriteSequence(List<string> paths);
   bool Exists(string path);
 }

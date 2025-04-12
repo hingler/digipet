@@ -27,6 +27,9 @@ public class ParallaxBGView : ViewComponent, IPseudoDepthDisplay {
     }
   }
 
+  public bool LockX { get; set; } = false;
+  public bool LockY { get; set; } = true;
+
   public Vector2 WorldOrigin { get; set; }
 
   float world_scale_ = 1.0f;
@@ -58,13 +61,28 @@ public class ParallaxBGView : ViewComponent, IPseudoDepthDisplay {
 
   private static readonly ILogger logger = LoggerSingleton.GetStaticLogger<ParallaxBGView>();
 
-  public bool Tile {
-    get => view.Tile;
+  private bool tile_x = false;
+  private bool tile_y = false;
+
+  public bool TileX {
+    get => tile_x;
     set {
-      view.Tile = value;
+      tile_x = value;
+      view.Tile = true;
       ResizeSprite();
     }
   }
+
+  public bool TileY {
+    get => tile_y;
+    set {
+      tile_y = value;
+      view.Tile = true;
+      ResizeSprite();
+    }
+  }
+
+
 
   private readonly SpriteView view;
 
@@ -72,7 +90,7 @@ public class ParallaxBGView : ViewComponent, IPseudoDepthDisplay {
     view = new() {
       Anchor = new(0.5f, 0.5f),
       Offset = new(0.5f, 0.5f),
-      Tile = false
+      Tile = true
     };
 
     // how do we deal with spriteview being a certain size?
@@ -85,16 +103,10 @@ public class ParallaxBGView : ViewComponent, IPseudoDepthDisplay {
 
   private void ResizeSprite() {
     float scale_fac = (SpriteScale / WorldScale);
-    if (Tile) {
-      // full width, maintain Y
-      view.SizePx = new(
-        this.SizePx.X * 2,
-        (Sprite?.Dims.Y ?? 1) * scale_fac
-      );
-    } else {
-      // restrict to sprite dims
-      view.SizePx = Sprite?.Dims * scale_fac ?? Vector2.One;
-    }
+
+    float size_x = TileX ? SizePx.X * 2 : (Sprite?.Dims.X ?? 1) * scale_fac;
+    float size_y = TileY ? SizePx.Y * 2 : (Sprite?.Dims.Y ?? 1) * scale_fac;
+    view.SizePx = new(size_x, size_y);
   }
 
   public override void Reflow(ICanvas canvas) {
@@ -105,13 +117,13 @@ public class ParallaxBGView : ViewComponent, IPseudoDepthDisplay {
   public override void Draw(ICanvas canvas) {
     base.Draw(canvas);
     // gets position in XY world space
-    Vector2 zdist_x = new(ZDist, 1.0f);
-    Vector2 shift = BGOffset / zdist_x;
+    Vector2 zdist = new(LockX ? 1.0f : ZDist, LockY ? 1.0f : ZDist);
+    Vector2 shift = BGOffset / zdist;
 
     float world_tile_width = SpriteScale * Sprite?.Dims.X ?? 1.0f;
 
     // this is where the center of our sprite should be in absolute XY space
-    Vector2 origin_dist = WorldOrigin - (WorldOrigin / zdist_x) + shift;
+    Vector2 origin_dist = WorldOrigin - (WorldOrigin / zdist) + shift;
 
     // dist from parallax'd origin to world origin
     Vector2 world_delta = origin_dist - WorldOrigin;

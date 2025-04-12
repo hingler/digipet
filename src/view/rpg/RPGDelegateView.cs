@@ -35,6 +35,7 @@ public class RPGDelegateView(IEngine engine) : ViewComponent(), IRPGDisplay {
   public void AddDisplay(IRPGDisplay display) {
     ViewComponent root = display.GetRootView();
     base.AddView(root);
+
     root.Size = Vector2.One;
     root.Anchor = Vector2.Zero;
     root.Offset = Vector2.Zero;

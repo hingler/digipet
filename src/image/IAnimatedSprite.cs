@@ -1,16 +1,19 @@
+using digipet.sprite;
+
 namespace digipet.image;
 
-public interface IAnimatedSprite : ISprite {
-  // return currently displayed frame
+public interface IAnimatable {
   int Frame { get; set; }
+  int GetFrameCount();
+}
 
+public interface IAnimatedSprite : ISprite, IAnimatable {
   int HFrames { get; set; }
   int VFrames { get; set; }
-
-  // get total frame count
-  int GetFrameCount();
 
   void Increment() {
     Frame = (Frame + 1) % GetFrameCount();
   }
 }
+
+public interface ISpriteSequence : ISprite, IAnimatable {}
