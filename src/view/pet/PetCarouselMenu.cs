@@ -1,6 +1,7 @@
 using digipet.component;
 using digipet.framework;
 using digipet.input;
+using digipet.sim;
 using digipet.user;
 using digipet.util;
 using digipet.view.bg;
@@ -13,13 +14,17 @@ public class PetCarouselMenu : ViewComponent {
 
   private readonly CarouselMenu menu;
 
-  public PetCarouselMenu(IEngine engine, IUserData data) {
+  public PetCarouselMenu(
+    IEngine engine, 
+    IUserData data,
+    SimProvider provider
+  ) {
     AddView(new ColorRect(DigiColor.WHITE.WithOpacity(0.75f)));
     menu = new(engine);
     AddView(menu);
 
     menu.AddItem(new ShopItem(engine, data));   
-    menu.AddItem(new DiaryItem(engine, data)); 
+    menu.AddItem(new DiaryItem(engine, data, provider)); 
 
     // so that we spin back to item 0 on open
     menu.Cursor = 5;

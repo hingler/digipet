@@ -12,7 +12,7 @@ public class SimpleThirstModel : IThirstModel {
     }
   }
 
-  private static readonly int DECAY_TIME = 60 * 60 * 15;
+  private static readonly int DECAY_TIME = 60 * 60 * 18;
   private static readonly int MIN_IDLE = 60 * 60 * 1;
   // units of water constituting max quenched
   private static readonly double WATER_CAPACITY = 2.5;

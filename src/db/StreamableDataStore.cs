@@ -61,6 +61,22 @@ public class StreamableDataStore : IStreamable, IDataStore {
     this.store = store;
   }
 
+  public void StoreLong(string index, long data) {
+    StreamableLong stream_long = new(data);
+    Store(index, stream_long);
+  }
+
+  public bool TryFetchLong(string index, out long data) {
+    bool fetch_success = TryFetch(index, out StreamableLong? output);
+    if (fetch_success) {
+      data = output!.data; 
+    } else {
+      data = -1;
+    }
+
+    return fetch_success;
+  }
+
   public void Store(string index, object data) {
     if (data is IStreamable streamable) {
       store[index] = streamable;

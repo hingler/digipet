@@ -8,7 +8,7 @@ using digipet.view.text;
 namespace digipet.diary;
 
 public class CursorDisplayManager : ITextFlow {
-  private readonly ITextEditor editor;
+  public readonly ITextEditor Editor;
   private readonly TextFlowHandler flow;
 
   private readonly IFontHelper helper;
@@ -29,20 +29,20 @@ public class CursorDisplayManager : ITextFlow {
   }
 
   public string Content {
-    get => editor.AsString();
+    get => Editor.AsString();
     set {
-      editor.Clear();
+      Editor.Clear();
       Put(value);
     }
   }
 
   public float LineOffset = 0.0f;
-  public int Length => editor.Length();
+  public int Length => Editor.Length();
 
   public ITextFlow Flow => flow;
 
   public CursorDisplayManager(IEngine engine, ITextEditor editor) {
-    this.editor = editor;
+    this.Editor = editor;
     helper = engine.GetFontHelper();
     flow = new TextFlowHandler(engine) {
       LineSpacing = 1
@@ -50,50 +50,50 @@ public class CursorDisplayManager : ITextFlow {
   }
 
   public void Put(string s) {
-    editor.Put(s);
-    flow.Content = editor.AsString();
+    Editor.Put(s);
+    flow.Content = Editor.AsString();
   }
 
   public void Delete() {
-    editor.Delete();
-    flow.Content = editor.AsString();
+    Editor.Delete();
+    flow.Content = Editor.AsString();
   }
 
   public void CursorUp() {
     if (GetLine() <= 0) {
-      editor.Cursor = 0;
+      Editor.Cursor = 0;
     } else {
       int line = GetLine();
       int column = GetColumnForLine(line - 1);
       int offset = flow.GetLineCharOffsets()[line - 1];
 
-      editor.Cursor = offset + column;
+      Editor.Cursor = offset + column;
     }
   }
 
   public void CursorDown() {
     if (GetLine() >= (flow.GetLines().Count - 1)) {
-      editor.Cursor = editor.Length();
+      Editor.Cursor = Editor.Length();
     } else {
       int line = GetLine();
       int column = GetColumnForLine(line + 1);
       int offset = flow.GetLineCharOffsets()[line + 1];
 
-      editor.Cursor = offset + column;
+      Editor.Cursor = offset + column;
     }
   }
 
-  public void CursorLeft() => --editor.Cursor;
-  public void CursorRight() => ++editor.Cursor;
+  public void CursorLeft() => --Editor.Cursor;
+  public void CursorRight() => ++Editor.Cursor;
   
   public void SeekToNextWord() {
-    WordResult res = editor.GetNextWord();
-    editor.Cursor = res.EndIndex;
+    WordResult res = Editor.GetNextWord();
+    Editor.Cursor = res.EndIndex;
   }
 
   public void SeekToPreviousWord() {
-    WordResult res = editor.GetPreviousWord();
-    editor.Cursor = res.StartIndex;
+    WordResult res = Editor.GetPreviousWord();
+    Editor.Cursor = res.StartIndex;
   }
 
   public float GetCursorX() {
@@ -117,7 +117,7 @@ public class CursorDisplayManager : ITextFlow {
   }
 
   public int GetLine() {
-    int cur = editor.Cursor;
+    int cur = Editor.Cursor;
     if (cur <= 0) {
       return 0;
     }
@@ -147,7 +147,7 @@ public class CursorDisplayManager : ITextFlow {
   public int GetColumn() {
     IReadOnlyList<int> offsets = flow.GetLineCharOffsets();
     int line = GetLine();
-    if (editor.Cursor == 0 || flow.GetLines().Count <= 0 || line >= offsets.Count) {
+    if (Editor.Cursor == 0 || flow.GetLines().Count <= 0 || line >= offsets.Count) {
       return 0;
     }
 
@@ -156,7 +156,7 @@ public class CursorDisplayManager : ITextFlow {
 
     string line_text = flow.GetLines()[line];
 
-    return Math.Clamp(editor.Cursor - offset, 0, line_text.Length);
+    return Math.Clamp(Editor.Cursor - offset, 0, line_text.Length);
   }
 
   private int GetColumnForLine(int desired_line) {

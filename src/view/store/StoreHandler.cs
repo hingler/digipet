@@ -39,6 +39,8 @@ public class StoreHandler : ViewComponent {
     set => box.Content = value;
   }
 
+  public bool HandlerIsActive = true;
+
   public StoreHandler(IEngine engine, IUserData userData) : this(
     engine, 
     engine.GetAssetRepo<IEdiblePickup>().GetEntries(), 
@@ -202,6 +204,11 @@ public class StoreHandler : ViewComponent {
 
   public override bool HandleInput(InputType input, InputState state) {
     base.HandleInput(input, state);
+
+    if (!HandlerIsActive) {
+      // ignore input
+      return false;
+    }
 
     int selected_prev = menu.GetSelected();
 

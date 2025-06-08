@@ -2,10 +2,15 @@ using System.Numerics;
 using digipet.canvas.font;
 using digipet.component;
 using digipet.diary;
+using digipet.diary.handlers;
+using digipet.diary.handlers.save;
 using digipet.framework;
 using digipet.input;
+using digipet.sprite;
 using digipet.util;
 using digipet.view.text.diary;
+using digipet.world.pet;
+using digipet.world.pet.animation.handlers;
 
 namespace digipet.view.text;
 
@@ -16,6 +21,8 @@ public class DiaryEditor : ViewComponent {
   private readonly DiaryFooter footer;
 
   private readonly DiaryViewer viewer;
+  private readonly List<IDiaryMetaListener> listeners;
+  public bool Active = true;
 
   public FontType Font {
     get => viewer.Font;
@@ -34,6 +41,8 @@ public class DiaryEditor : ViewComponent {
     set => viewer.MarginPx = value;
   }
 
+  public ITextEditor Editor => manager.Editor;
+
   public DiaryEditor(IEngine engine) : this(engine, new SimpleTextEditor()) {}
 
   public DiaryEditor(IEngine engine, ITextEditor editor) {
@@ -50,15 +59,54 @@ public class DiaryEditor : ViewComponent {
 
     AddView(viewer);
 
+    // tba: stick pet view in here
+    // add some logic to get input callbacks
+    SimplePetSprite pet = new(engine) {
+      Anchor = new(0.5f, 0.8f),
+      X = 0.9f,
+      Y = 0.9f,
+      ZIndex = 5,
+      Scale = 1.0f
+    };
+
+    IPetController controller = pet.GetController();
+    controller.AddAnimationHandler(PetAnimation.IDLE, new IdleHandler(engine));
+    controller.AddAnimationHandler(PetAnimation.SLEEP, new SleepHandler(engine));
+    DiaryIdleTask di = new();
+    DiarySleepTask ds = new();
+    DiarySaveTask save = new(engine, new(0.9f, 0.8f), this);
+
+    listeners = [ di, ds, save ];
+
+    controller.AddTask(di);
+    controller.AddTask(ds);
+    controller.AddTask(save);
+    
+    AddView(pet);
+    // - idle state
+
     footer = new(engine) {
       Content = "Ln 1 Col 1",
-      Alignment = HorizontalAlign.RIGHT,
+      Alignment = HorizontalAlign.LEFT,
       PixelSizeY = 16.0f,
-      SizeX = 0.9f
+      SizeX = 0.8f,
+      X = 0.1f
     };
 
     AddView(footer);
     offset_lerp.Target = 0;
+  }
+
+  public void OnSaveBegin() {
+    foreach (IDiaryMetaListener l in listeners) {
+      l.OnSaveBegin();
+    }
+  }
+
+  public void OnSaveComplete() {
+    foreach (IDiaryMetaListener l in listeners) {
+      l.OnSaveComplete();
+    }
   }
 
   public override void Tick(double delta) {
@@ -105,6 +153,8 @@ public class DiaryEditor : ViewComponent {
     // if string: type
     if (key.State == InputState.RELEASE) {
       return true;
+    } else if (!Active) {
+      return false;
     }
 
     // tba: handle modifiers
@@ -144,6 +194,7 @@ public class DiaryEditor : ViewComponent {
       }
 
     } else {
+      listeners.ForEach(l => l.OnCharInput());
       manager.Put(key.KeyChar);
     }
 

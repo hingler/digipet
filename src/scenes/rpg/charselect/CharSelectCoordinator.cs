@@ -35,21 +35,30 @@ public class CharSelectCoordinator {
   public void Select() {
     if (SrcData != null || SrcIndex >= 0) {
       // we've selected something prior - second click
-      ICharData dst_data = party_model.SwapIn(SrcData, party_model.GetSelectedIndex());
-      if (SrcIndex >= 0) {
-        // swap dst data back to src, if the src index is valid
-        party_model.SwapIn(dst_data, SrcIndex);
-      }
-
-      SrcIndex = -1;
-      SrcData = null;
-      party_model.Lock = false;
+      PerformSwap();
     } else {
-      SrcData = ui_graph.GetActiveData()?.GetSelectedCharData() ?? null;
-      SrcIndex = ui_graph.GetActiveData()?.GetSelectedIndex() ?? -1;
-      party_model.Lock = true;
-      // step into party model and lock st we can't get out until we select
-      ui_graph.ForceStep(Direction.UP);
+      PrepareSwap();
     }
+  }
+
+  private void PrepareSwap() {
+    SrcData = ui_graph.GetActiveData()?.GetSelectedCharData() ?? null;
+    SrcIndex = ui_graph.GetActiveData()?.GetSelectedIndex() ?? -1;
+    ui_graph.GetActiveData()?.MarkSourceIndex();
+    party_model.Lock = true;
+    // step into party model and lock st we can't get out until we select
+    ui_graph.ForceStep(Direction.UP);
+  }
+
+  private void PerformSwap() {
+    ICharData dst_data = party_model.SwapIn(SrcData, party_model.GetSelectedIndex());
+    if (SrcIndex >= 0) {
+      // swap dst data back to src, if the src index is valid
+      party_model.SwapIn(dst_data, SrcIndex);
+    }
+
+    SrcIndex = -1;
+    SrcData = null;
+    party_model.Lock = false;
   }
 }

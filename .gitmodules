@@ -1,0 +1,6 @@
+[submodule "beat-maker"]
+	path = beat-maker
+	url = git@github.com:hingler/beat-maker.git
+[submodule "graph-ui"]
+	path = graph-ui
+	url = git@github.com:hingler/graph-ui.git

@@ -19,6 +19,7 @@ public class PartyView : ViewComponent {
   private readonly List<SpriteView> char_views;
 
   private readonly SpriteView menu_sprite;
+  private readonly SpriteView selected_sprite;
   private readonly Lerper index_lerper;
   
   private static readonly int CHAR_COUNT = 5;
@@ -82,10 +83,18 @@ public class PartyView : ViewComponent {
     menu_sprite = new() {
       Sprite = engine.GetDigipetAssetLoader().LoadSprite("sprites/menu/menu_selector_v.png"),
       Anchor = new(0.5f, 0.0f),
-      PixelY = 4.0f
+      PixelY = 16.0f
+    };
+
+    selected_sprite = new() {
+      Sprite = engine.GetDigipetAssetLoader().LoadSprite("sprites/menu/menu_source_v.png"),
+      Anchor = new(0.5f, 0.0f),
+      PixelY = 16.0f,
+      Opacity = 0.0f
     };
 
     AddView(menu_sprite);
+    AddView(selected_sprite);
 
     index_lerper = new(10.0f) {
       Target = 0f
@@ -126,15 +135,25 @@ public class PartyView : ViewComponent {
     menu_sprite.PixelX = GetMenuOffset();
   }
 
-  private float GetMenuOffset() {
-    double index = index_lerper.Cursor;
+  private float GetMenuOffset() => GetMenuOffset(index_lerper.Cursor);
 
+  private float GetMenuOffset(double index) {
     float index_f = GetStageOffset((int)Math.Floor(index));
     float index_c = GetStageOffset((int)Math.Ceiling(index));
 
     double t = (index - Math.Floor(index));
 
     return (float)(t * index_c + (1.0 - t) * index_f);
+  }
+
+  public void MarkSourceIndex() {
+    int index = Target;
+    selected_sprite.PixelX = GetMenuOffset(Target);
+    selected_sprite.Opacity = 1.0f;
+  }
+
+  public void ResetSelections() {
+    selected_sprite.Opacity = 0.0f;
   }
 
   public override void Reflow(ICanvas canvas) {

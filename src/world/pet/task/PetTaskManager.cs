@@ -15,6 +15,7 @@ public class PetTaskManager {
     this.provider = provider;
     logger = this.GetLogger();
   }
+
   public IPetTask GetNextTask() {
     IReadOnlyList<IPetTaskFactory> tasks = provider.GetTasks();
     PriorityQueue<IPetTaskFactory, int> task_prio = new(new MaxComparer<int>());
@@ -30,7 +31,7 @@ public class PetTaskManager {
     }
 
     if (res == null) {
-      return new PassiveTask();
+      return new IdleTask();
     }
 
     return res;

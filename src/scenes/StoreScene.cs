@@ -11,7 +11,6 @@ using digipet.user;
 using digipet.util;
 using digipet.view.bg;
 using digipet.view.store;
-using digipet.view.text;
 
 namespace digipet.scenes;
 
@@ -46,7 +45,13 @@ public class StoreScene : Scene {
   }
 
   private void LeaveStore() {
+    if (!handler.HandlerIsActive) {
+      return;
+    }
+
     handler.Content = "Thank you for shopping!!!";
+    handler.HandlerIsActive = false;
+
     ColorRect rect = new(DigiColor.WHITE) {
       Opacity = 0.0f
     };

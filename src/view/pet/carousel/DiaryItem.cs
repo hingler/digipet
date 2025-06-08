@@ -1,6 +1,7 @@
 using digipet.framework;
 using digipet.image;
 using digipet.scenes;
+using digipet.sim;
 using digipet.user;
 using digipet.view.menu.carousel;
 
@@ -16,14 +17,20 @@ public class DiaryItem : ICarouselMenuItem {
 
   private readonly IEngine engine;
   private readonly IUserData userdata;
+  private readonly SimProvider provider;
 
-  public DiaryItem(IEngine engine, IUserData userdata) {
+  public DiaryItem(
+    IEngine engine, 
+    IUserData userdata,
+    SimProvider provider
+  ) {
     this.engine = engine;
     this.userdata = userdata;
+    this.provider = provider;
     Sprite = engine.GetSpriteFetcher().GetSprite(sprite.attrib.SpriteID.OFFSET_FOOD + 2);
   }
 
   public void OnSelected() {
-    engine.PushScene(new DiaryScene(engine));
+    engine.PushScene(new DiaryScene(engine, provider));
   }
 }

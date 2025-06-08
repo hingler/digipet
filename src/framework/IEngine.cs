@@ -4,6 +4,7 @@ using digipet.canvas.font;
 using digipet.component;
 using digipet.db;
 using digipet.file;
+using digipet.framework.time;
 using digipet.input;
 using digipet.sim;
 using digipet.sim.db;
@@ -25,6 +26,7 @@ public interface IEngine : IEngineBase {
 
   // returns ref to underlying 
   IPhysWorld GetPhysWorld();
+  ISystemClock GetClock();
 }
 
 public interface IEngineBase {
@@ -36,6 +38,11 @@ public interface IEngineBase {
   IFileLoader GetUserdataLoader();
   IFileLoader GetDigipetAssetLoader();
   IDataStore GetSaveStore();
+
+  // how to propagate invert call up?
+  // dk lolol
+  // uhhhhhhhh
+  public bool Invert { get; set; }
 
   IFontHelper GetFontHelper();
 

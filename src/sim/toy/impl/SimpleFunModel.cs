@@ -9,7 +9,7 @@ public class SimpleFunModel : IFunModel {
 
   private readonly IToyModel toy_model;
 
-  private const int DECAY_RATE = 6 * 60 * 60;
+  private const int DECAY_RATE = 14 * 60 * 60;
 
   public SimpleFunModel(IToyModel toy_model) {
     this.toy_model = toy_model;

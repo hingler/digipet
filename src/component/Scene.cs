@@ -18,7 +18,7 @@ public abstract class Scene : IDigiComponent {
     get => _finished;
   }
 
-  private TransitionQueue transitions = new();
+  private readonly TransitionQueue transitions = new();
   public readonly IEngine Engine;
 
   // how do we want to "initialize" scenes?

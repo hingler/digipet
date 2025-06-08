@@ -1,7 +1,11 @@
 using digipet.db;
 using digipet.framework;
 using digipet.sim.edible;
+using digipet.sim.energy;
+using digipet.sim.energy.impl;
 using digipet.sim.impl;
+using digipet.sim.social;
+using digipet.sim.social.impl;
 using digipet.sim.toy;
 using digipet.sim.toy.impl;
 using digipet.sim.water;
@@ -19,6 +23,11 @@ public class SimProvider {
   private IPetModel? petModelSingleton;
   private IToyModel? toyModelSingleton;
   private IFunModel? funModelSingleton;
+  private IDiaryScoreModel? diaryScoreModelSingleton;
+  private ISocialModel? socialModelSingleton;
+
+  private ILightModel? lightModelSingleton;
+  private IEnergyModel? energyModelSingleton;
   private readonly IDataStore? simData;
 
   private readonly IEngine engine;
@@ -28,11 +37,14 @@ public class SimProvider {
   private static readonly string TOYS_KEY = "toydata";
   private readonly SimpleTicker ticker;
 
+  private readonly List<ISimComponent> simComponents;
+
   public SimProvider(IEngine engine) {
     simData = engine.GetSaveStore()?.GetSubspace("sim") ?? null;
     this.engine = engine;
 
     ticker = new(1.0);
+    simComponents = [];
   }
 
   public IWaterSource GetWaterSource() {
@@ -73,6 +85,9 @@ public class SimProvider {
     return funModelSingleton ??= new SimpleFunModel(GetToyModel());
   }
 
+  // social model is super super simple
+
+
   public IPetModel GetPetModel() {
     if (petModelSingleton == null) {
       IPetData data = simData?.Fetch<IPetData>(PET_KEY) ?? new PetDataParcel();
@@ -80,6 +95,8 @@ public class SimProvider {
         GetHungerModel(),
         GetThirstModel(),
         GetFunModel(),
+        GetSocialModel(),
+        GetEnergyModel(),
         data
       );
     }
@@ -87,16 +104,40 @@ public class SimProvider {
     return petModelSingleton;
   }
 
+  public IDiaryScoreModel GetDiaryScoreModel() {
+    return diaryScoreModelSingleton ??= new TrivialDiaryScoreModel();
+  }
+
+  public ISocialModel GetSocialModel() {
+    return socialModelSingleton ??= new SimpleSocialModel(
+      GetDiaryScoreModel()
+    );
+  }
+
+  public ILightModel GetLightModel() {
+    return lightModelSingleton ??= new SimpleLightModel();
+  }
+
+  public IEnergyModel GetEnergyModel() {
+    return energyModelSingleton ??= new SimpleEnergyModel(GetLightModel());
+  }
+
   public void Tick(double delta_sec) {
     ticker.Update(delta_sec);
     if (ticker.Updates > 0) {
-      Tick(ticker.Updates);
+      TickSeconds(ticker.Updates);
       ticker.Updates = 0;
     }
   }
 
-  private void Tick(int tick_seconds) {
+  public void TickSeconds(int tick_seconds) {
     GetPetModel().Tick(tick_seconds);
+
+    GetHungerModel().Tick(tick_seconds);
+    GetThirstModel().Tick(tick_seconds);
+    GetFunModel().Tick(tick_seconds);
+    GetSocialModel().Tick(tick_seconds);
+    GetToyModel().Tick(tick_seconds);
   }
 
   public void SaveSimState() {

@@ -4,7 +4,9 @@ using digipet.framework;
 using digipet.image;
 using digipet.input;
 using digipet.sim;
+using digipet.sim.energy;
 using digipet.sim.toy;
+using digipet.sim.util;
 using digipet.sprite;
 using digipet.sprite.attrib;
 using digipet.transition;
@@ -40,6 +42,8 @@ public class PetScene : Scene {
   private readonly IUserData userdata;
   private readonly SimpleToyManager toy_manager;
 
+  private readonly TimestampManager timestamp;
+
   public PetScene(
     IEngine engine, 
     ISpriteFetcher fetcher,
@@ -54,6 +58,15 @@ public class PetScene : Scene {
 
     this.userdata = userdata;
     toy_manager = new SimpleToyManager(engine);
+
+    timestamp = new(engine, engine.GetSaveStore(), "last_pet_scene_update");
+
+    provider.GetLightModel().RegisterToggleListener(UpdateLights);
+  }
+
+  private void UpdateLights() {
+    ILightModel light_model = provider.GetLightModel();
+    Engine.Invert = !light_model.IsLit();
   }
 
   public override bool HandleInput(IKeyEvent @event) {
@@ -108,7 +121,7 @@ public class PetScene : Scene {
   }
 
   private void CreateCarouselMenu() {
-    PushToStack(new PetCarouselMenu(Engine, userdata));
+    PushToStack(new PetCarouselMenu(Engine, userdata, provider));
   }
 
   public override void InitScene() {
@@ -133,8 +146,26 @@ public class PetScene : Scene {
 
   public override void Activate() {
     base.Activate();
+    UpdateLights();
+
+    // cap at 1 week
+    int delta_sec = (int)Math.Min(
+      timestamp.UpdateAndGetDelta() / 1_000_000,
+      60 * 60 * 24 * 7
+    );
+
+    // provider tick by delta_sec
+    provider.TickSeconds(delta_sec);
+    logger.Log("advanced ", delta_sec, " seconds on update");
+
     root.Y = 1.0f;
     EnqueueTransition(GetTransition());
+  }
+
+  public override void Deactivate() {
+    base.Deactivate();
+    timestamp.Update();
+    Engine.Invert = false;
   }
 
   public override void Tick(double delta) {

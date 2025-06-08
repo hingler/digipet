@@ -12,6 +12,7 @@ public enum PetAnimation {
   EXPRESS,
   ACTIVE,
   REJECT,
+  SLEEP,
 }
 
 

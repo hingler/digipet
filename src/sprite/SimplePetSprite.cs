@@ -12,13 +12,16 @@ using digipet.world.pet.task.tasks;
 namespace digipet.sprite;
 
 public class SimplePetSprite : ViewComponent {
-  private readonly SimplePetController controller = new();
+  private readonly SimplePetController controller;
   private readonly IEngine engine;
+
+  public float Scale = 2.0f;
 
   // thinking: maintain a pixel scale??
   // (ex. 2 sprite-px per screenpx)
 
   public SimplePetSprite(IEngine engine) {
+    controller = new(engine);
     this.engine = engine;
   }
 
@@ -38,7 +41,7 @@ public class SimplePetSprite : ViewComponent {
     // thinking:
     // - we have an emote layer, and a pet layer
     IPetStateReadOnly state = controller.GetPetState();
-    ISprite sprite = state.Animation.Sprite;
+    ISprite sprite = state.Animation?.Sprite;
 
     PetEmote emote = state.Emote;
     ISprite emote_sprite = engine.GetSpriteFetcher().GetSprite(attrib.SpriteID.OFFSET_EMOTE + (int)emote);
@@ -47,10 +50,10 @@ public class SimplePetSprite : ViewComponent {
     Vector2 canvas_pos = new(0.5f + world_pos.X, 0.8f - world_pos.Y);
 
     Vector2 pixel_size = canvas.GetPixelDims();
-    Vector2 screen_size = pixel_size * 2.0f * sprite.Dims;
+    Vector2 screen_size = pixel_size * Scale * (sprite?.Dims ?? Vector2.One);
     Vector2 screen_start = new(canvas_pos.X - (screen_size.X / 2.0f), canvas_pos.Y - screen_size.Y);
 
-    Vector2 emote_start = screen_start + (state.Animation.FaceOffsetPx * 2.0f) * pixel_size;
+    Vector2 emote_start = screen_start + ((state.Animation?.FaceOffsetPx ?? Vector2.Zero) * Scale * pixel_size);
     
 
 

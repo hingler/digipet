@@ -6,6 +6,7 @@ using digipet.canvas.font;
 using digipet.component;
 using digipet.db;
 using digipet.file;
+using digipet.framework.time;
 using digipet.input;
 using digipet.scenes;
 using digipet.sim;
@@ -29,6 +30,7 @@ public class DigiEngine : IEngine, IInputListener {
   private readonly DampedObjectShow phys_world;
   private readonly Dictionary<Type, object> repos = [];
   private readonly BabyTimer timer = new();
+  private readonly SimpleClock clock = new();
 
   private bool debug = false;
 
@@ -69,19 +71,25 @@ public class DigiEngine : IEngine, IInputListener {
     // (tba: handle finished scenes - thinking we can just crawl up and remove finished scenes)
   }
 
+  private void PopTopScene() {
+    Scene? scene = scene_stack.Peek();
+    scene?.PreDeactivate();
+    scene?.PreDestroy();
+    scene_stack.Pop();
+  }
+
   private Scene? GetActiveScene() {
     Scene? result;
     bool pop = false;
 
     while (scene_stack.TryPeek(out result) && result != null && result.Finished) {
-      result?.PreDestroy();
-      scene_stack.Pop();
+      PopTopScene();
       pop = true;
     }
 
     if (pop) {
       // ie: if the result is being "reactivated"
-      result?.Activate();
+      result?.PreActivate();
     }
 
     return result;
@@ -107,6 +115,13 @@ public class DigiEngine : IEngine, IInputListener {
 
   public IPhysWorld GetPhysWorld() {
     return phys_world;
+  }
+
+  public ISystemClock GetClock() => clock;
+
+  public bool Invert {
+    get => platform_base.Invert;
+    set => platform_base.Invert = value;
   }
 
   public ISubCanvas CreateSubCanvas() {
@@ -143,12 +158,16 @@ public class DigiEngine : IEngine, IInputListener {
 
   public void TearDown() {
     // tear down
-    GetActiveScene()?.PreDestroy();
+    while (scene_stack.Count > 0) {
+      // eff guarantees that something is on the stack
+      PopTopScene();
+    }
+
     platform_base.TearDown();
   }
 
   public void CloseGame() {
-    GetActiveScene()?.PreDestroy();
+    TearDown();
     platform_base.CloseGame();
   }
 

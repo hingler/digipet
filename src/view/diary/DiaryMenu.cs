@@ -1,6 +1,8 @@
 using digipet.component;
 using digipet.diary.store;
 using digipet.framework;
+using digipet.input;
+using digipet.sim;
 using digipet.transition;
 using digipet.transition.animator;
 using digipet.transition.state;
@@ -11,11 +13,13 @@ namespace digipet.view.diary;
 public class DiaryMenu : ViewComponent {
   private readonly SimpleTextMenuView menu;
   private readonly IDiaryRepo repo;
+  private readonly SimProvider provider;
   private readonly IEngine engine;
 
-  public DiaryMenu(IEngine engine, IDiaryRepo repo) : base() {
+  public DiaryMenu(IEngine engine, IDiaryRepo repo, SimProvider provider) : base() {
     this.engine = engine;
     this.repo = repo;
+    this.provider = provider;
 
     menu = new(engine, canvas.font.FontType.SMALL) {
       Size = new(0.5f),
@@ -45,7 +49,7 @@ public class DiaryMenu : ViewComponent {
   private void OpenCreateMenu(int index) {
     // add view
     // call some tx to open create menu
-    DiaryEditorWrap wrap = new(engine, repo);
+    DiaryEditorWrap wrap = new(engine, repo, provider);
 
     TransitionBuilder b = new();
     TransitionStateBuilder bb = new();

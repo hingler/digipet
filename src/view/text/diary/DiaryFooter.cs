@@ -47,6 +47,8 @@ public class DiaryFooter : ViewComponent {
       _ => 0.0f,
     };
 
+    float scale_fac = text_origin * 2.0f - 1.0f;
+
     // right: l coord defined
     // center: l and r coords defined
     // left: r coord defined only
@@ -54,7 +56,7 @@ public class DiaryFooter : ViewComponent {
     Vector2 canvas_size = canvas.GetSizePx();
 
     Vector2 text_size = helper.GetStringSizePx(Content, Font, 1.0f);
-    float box_start = (canvas_size.X * text_origin) - (text_origin * text_size.X) - MarginPx;
+    float box_start = (canvas_size.X * text_origin) - (text_origin * text_size.X) - (MarginPx * scale_fac);
     box_start = MathF.Floor(box_start);
     float box_end = box_start + text_size.X + 2.0f * MarginPx;
     box_end = MathF.Ceiling(box_end);

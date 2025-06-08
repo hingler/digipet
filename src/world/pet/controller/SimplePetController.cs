@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using digipet.framework;
 using digipet.util;
 using digipet.world.pet.animation;
 using digipet.world.pet.task;
@@ -20,8 +21,8 @@ public class SimplePetController : IPetController {
 
   private readonly ILogger logger;
 
-  public SimplePetController() {
-    animation_manager = new();
+  public SimplePetController(IEngine engine) {
+    animation_manager = new(engine);
     provider = new();
     task_manager = new(provider);
 
@@ -81,6 +82,8 @@ public class SimplePetController : IPetController {
       currentAnimation.Reset();
     }
 
+    // if handler is null, swap out for an idle
+    // if animator is null, swap out for an idle
     currentAnimation.Update(delta);
 
     state_new.Animation = currentAnimation;
@@ -95,6 +98,7 @@ public class SimplePetController : IPetController {
       PetAction.EXPRESS => PetAnimation.EXPRESS,
       PetAction.MOVING => PetAnimation.ACTIVE,
       PetAction.SHAKE_HEAD => PetAnimation.REJECT,
+      PetAction.SLEEP => PetAnimation.SLEEP,
       _ => PetAnimation.IDLE
     };
   }

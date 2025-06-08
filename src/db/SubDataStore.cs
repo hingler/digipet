@@ -17,6 +17,14 @@ public class SubDataStore : IDataStore {
     superstore.Store(prefix + index, data);
   }
 
+  public void StoreLong(string index, long data) {
+    superstore.Store(prefix + index, data);
+  }
+
+  public bool TryFetchLong(string index, out long data) {
+    return superstore.TryFetchLong(prefix + index, out data);
+  }
+
   public T? Fetch<T>(string index) where T : class {
     return superstore.Fetch<T>(prefix + index);
   }

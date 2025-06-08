@@ -14,6 +14,7 @@ public enum PetAction {
   EXPRESS,
   PAUSE,
   SHAKE_HEAD,
+  SLEEP
 }
 
 public interface IPetStateReadOnly {

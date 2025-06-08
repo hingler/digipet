@@ -10,6 +10,7 @@ using digipet.db;
 using digipet.diary.store;
 using digipet.framework;
 using digipet.input;
+using digipet.sim;
 using digipet.sprite.attrib;
 using digipet.view.bg;
 using digipet.view.container;
@@ -22,10 +23,15 @@ namespace digipet.scenes;
 
 public class DiaryScene : Scene {
   private readonly DiaryRepo repo;
+  private readonly SimProvider provider;
 
   private static readonly string REPO_NAME = "diary_repo";
 
-  public DiaryScene(IEngine engine) : base(engine) {
+  public DiaryScene(
+    IEngine engine,
+    SimProvider provider
+  ) : base(engine) {
+    this.provider = provider;
     IDataStore store = engine.GetSaveStore();
     if (!store.TryFetch(REPO_NAME, out DiaryRepo? repo_local)) {
       repo_local = new DiaryRepo();
@@ -34,7 +40,7 @@ public class DiaryScene : Scene {
 
     repo = repo_local!;
 
-
+    // simprovider
   }
 
   public override void InitScene() {
@@ -46,7 +52,7 @@ public class DiaryScene : Scene {
     );
 
     PushToStack(
-      new DiaryMenu(Engine, repo)
+      new DiaryMenu(Engine, repo, provider)
     );
   }
 

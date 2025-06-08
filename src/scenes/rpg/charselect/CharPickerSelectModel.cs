@@ -8,6 +8,9 @@ public class CharPickerSelectModel(CharPickerMenu picker) : ICharSelectModel {
   public int GetSelectedIndex() => -1;
   public ICharData GetSelectedCharData() => picker.Select();
 
+  // nop - exit accounts for it
+  public void MarkSourceIndex() {}
+
   public bool OnInput(Direction dir) {
     if (dir == Direction.UP && picker.Index > 0) {
       picker.Decrement();

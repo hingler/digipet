@@ -41,9 +41,10 @@ public class QuickMenu : ViewComponent {
       menu.AddItem(i.ToString(), (int g) => LoggerSingleton.GetLogger().Log("you fool"));
     }
     // fetching DB references?
-    menu.AddItem("food!!!", (int i) => HandleFoodMenu());
-    menu.AddItem("water!!!", (int i) => HandleWaterMenu());
-    menu.AddItem("toys!!!", (int i) => HandleToyMenu());
+    menu.AddItem("food!!!", i => HandleFoodMenu());
+    menu.AddItem("water!!!", i => HandleWaterMenu());
+    menu.AddItem("toys!!!", i => HandleToyMenu());
+    menu.AddItem("lights!!!", i => HandleLights());
     for (int i = 17; i < 32; i++) {
       menu.AddItem(i.ToString());
     }
@@ -108,6 +109,10 @@ public class QuickMenu : ViewComponent {
     AnimateMenu(inv_menu);
     inv_menu.AddConfirmListener(PopSelf);
     AddView(inv_menu);
+  }
+
+  private void HandleLights() {
+    provider.GetLightModel().Toggle(!provider.GetLightModel().IsLit());
   }
 
   private void AnimateMenu(ViewComponent view) {

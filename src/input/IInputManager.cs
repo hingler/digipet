@@ -5,6 +5,8 @@ public interface IKeyEvent {
   InputState State { get; }
   InputType Action { get; }
   KeyFlags Flags { get; }
+
+  public bool IsInputPressed(InputType type);
 }
 
 public interface IInputListener {

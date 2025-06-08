@@ -11,8 +11,18 @@ public class PartyViewSelectModel(PartyView view) : ICharSelectModel {
   public int GetSelectedIndex() => view.Target;
   public ICharData GetSelectedCharData() => view.GetSelectedChar();
 
+  // save party state somewhere
+  // map repo data to IDs
+  // - save mercs (base stats + progression)
+  // - don't save pets but DO save progression and ensure we can re-associate them
+
   public ICharData SwapIn(ICharData source, int dest_index) {
+    view.ResetSelections();
     return view.Swap(dest_index, source);
+  }
+
+  public void MarkSourceIndex() {
+    view.MarkSourceIndex();
   }
 
   public bool OnInput(Direction dir) {

@@ -19,6 +19,9 @@ public class ComponentMenu : ViewComponent {
 
   private readonly SpriteView selector_sprite;
 
+  private readonly ISprite selector_active;
+  private readonly ISprite selector_inactive;
+
   private float margin_ = 8.0f;
 
   public float Margin {
@@ -30,8 +33,8 @@ public class ComponentMenu : ViewComponent {
   }
 
   public bool Active {
-    get => selector_sprite.Opacity > 0.5f;
-    set => selector_sprite.Opacity = value ? 1.0f : 0.0f;
+    get => selector_sprite.Sprite == selector_active;
+    set => selector_sprite.Sprite = value ? selector_active : selector_inactive;
   }
 
   private int item_offset;
@@ -50,14 +53,15 @@ public class ComponentMenu : ViewComponent {
 
     item_offset = 0;
 
-    ISprite sprite = engine.GetSpriteFetcher().GetSprite(SpriteID.ICON_SELECTOR);
+    selector_active = engine.GetSpriteFetcher().GetSprite(SpriteID.ICON_SELECTOR);
+    selector_inactive = engine.GetDigipetAssetLoader().LoadSprite("sprites/menu/menu_inactive.png");
 
     {
       selector_sprite = new() {
-        sprite = sprite,
+        sprite = selector_active,
         Anchor = new(0.0f, 0.5f),
         OffsetPx = new(margin_ / 2.0f, 0.0f),
-        SizePx = sprite.Dims
+        SizePx = selector_active.Dims
       };
 
       sub_canvas.AddView(selector_sprite);

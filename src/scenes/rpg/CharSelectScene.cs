@@ -47,7 +47,15 @@ public class CharSelectScene : Scene {
       return true;
     }
 
+    if (@event.IsInputPressed(InputType.CONFIRM)) {
+      coordinator.Select();
+    }
+
     coordinator.Step(InputToUIDirection.Convert(@event));
+    // tba: add "hollow" menu indicator
+    // swap to "hollow" indicator over selected
+    // "picker" needs one
+    // "party" needs two (hollow and selected)
 
     return false;
   }
